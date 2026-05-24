@@ -1531,44 +1531,13 @@
     </div>
     <p>Training sessions, events, and everyday life at the gym.</p>
   </div>
-  <div class="gallery-grid">
-    <div class="gallery-item gi-tall reveal d1" data-video="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/677e436987f77cdae0184837_481378d6-235a-4224-9366-ced613034e7a.mp4">
-      <video class="gi-video-thumb" src="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/677e436987f77cdae0184837_481378d6-235a-4224-9366-ced613034e7a.mp4" autoplay muted loop playsinline style="pointer-events:none"></video>
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-    <div class="gallery-item gi-wide reveal d2" data-img="gallery%20imgs/featured/6628d05ba89169d95e451ac8_Messenger_creation_056A52AF-9CBE-424E-85C6-F789710FD284_4-p-2600.webp">
-      <img src="gallery%20imgs/featured/6628d05ba89169d95e451ac8_Messenger_creation_056A52AF-9CBE-424E-85C6-F789710FD284_4-p-2600.webp" alt="Training">
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-    <div class="gallery-item reveal d3" data-img="gallery%20imgs/featured/677e4e79334f5eae5fed01fb_84ea69ab-6d98-4d38-b418-67603822b821.jpg">
-      <img src="gallery%20imgs/featured/677e4e79334f5eae5fed01fb_84ea69ab-6d98-4d38-b418-67603822b821.jpg" alt="Training">
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-    <div class="gallery-item reveal d1" data-img="gallery%20imgs/featured/6512b45cea060cc3956f1bbc_373457900_828442072111677_1641044789413669100_n.webp">
-      <img src="gallery%20imgs/featured/6512b45cea060cc3956f1bbc_373457900_828442072111677_1641044789413669100_n.webp" alt="Training">
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-    <div class="gallery-item reveal d2" data-img="gallery%20imgs/featured/677e4e79428806cd6bc4f768_b2bd311d-980c-44a1-8434-e0e01ed27ba0.jpg">
-      <img src="gallery%20imgs/featured/677e4e79428806cd6bc4f768_b2bd311d-980c-44a1-8434-e0e01ed27ba0.jpg" alt="Training" style="object-position:center top">
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-    <div class="gallery-item reveal d3" data-img="gallery%20imgs/featured/677e4e7a80a8303d03f1848d_f9d85ec7-357d-4176-9b2c-ae3250ec4d0f.jpg">
-      <img src="gallery%20imgs/featured/677e4e7a80a8303d03f1848d_f9d85ec7-357d-4176-9b2c-ae3250ec4d0f.jpg" alt="Training">
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-    <div class="gallery-item gi-wide reveal d1" data-img="gallery%20imgs/featured/6628d05b39f121b79617c525_Messenger_creation_0F1411AF-0939-42BD-844D-CFECD6BB59CC_3-p-2600.webp">
-      <img src="gallery%20imgs/featured/6628d05b39f121b79617c525_Messenger_creation_0F1411AF-0939-42BD-844D-CFECD6BB59CC_3-p-2600.webp" alt="Training">
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
-    <div class="gallery-item reveal d2" data-img="gallery%20imgs/featured/677e4e79e5fc6e2e2421aa3e_0b6224a7-5106-42a7-9471-48e35dcd7cc2.jpg">
-      <img src="gallery%20imgs/featured/677e4e79e5fc6e2e2421aa3e_0b6224a7-5106-42a7-9471-48e35dcd7cc2.jpg" alt="Training">
-      <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
-    </div>
+  <div class="gallery-grid" id="galleryGrid">
+    <!-- populated by JS from Supabase featured items -->
     <a href="gallery.html" class="gallery-view-all reveal d3">
       <span class="gallery-view-all-inner">
-        <span class="gallery-view-all-label">View All</span>
-        <span class="gallery-view-all-sub">Gallery</span>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span class="gallery-view-all-label">See all</span>
+        <span class="gallery-view-all-sub">Full gallery</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </span>
     </a>
   </div>
@@ -1731,6 +1700,35 @@
       const html = items.map(i => `<span class="ticker-item">${i.medal ? `<span class="ticker-medal">${i.medal}</span> ` : ''}${i.text}</span>${sep}`).join('');
       track.innerHTML = html + html;
     } catch(e) { console.warn('Ticker:', e); }
+  })();
+
+  // ── Gallery: render featured items from Supabase ──────────────────────
+  (async function() {
+    try {
+      const { data } = await _sb.from('gallery_items').select('*').eq('featured', true).order('ord');
+      if (!data || !data.length) return;
+      const grid = document.getElementById('galleryGrid');
+      if (!grid) return;
+      const viewAll = grid.querySelector('.gallery-view-all');
+      const sizes = ['gi-tall','gi-wide','','','gi-wide','','gi-tall',''];
+      const delays = ['d1','d2','d3','d1','d2','d3','d1','d2'];
+      data.slice(0, 8).forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = `gallery-item ${sizes[i] || ''} reveal ${delays[i]}`.trim();
+        if (item.is_video) {
+          div.dataset.video = item.src;
+          div.innerHTML = `<video class="gi-video-thumb" src="${item.src}" autoplay muted loop playsinline style="pointer-events:none"></video>
+            <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>`;
+        } else {
+          div.dataset.img = item.src;
+          div.innerHTML = `<img src="${item.src}" alt="${item.name || 'Training'}">
+            <div class="gallery-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>`;
+        }
+        grid.insertBefore(div, viewAll);
+      });
+      // re-trigger reveal observer for new items if needed
+      if (window._pfRevealObs) grid.querySelectorAll('.reveal').forEach(el => window._pfRevealObs.observe(el));
+    } catch(e) { console.warn('Gallery:', e); }
   })();
 
   // ── Schedule: fixed class definitions (source of truth) ─────────────
