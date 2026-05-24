@@ -547,6 +547,24 @@
       </div>
       <div class="panel-body">
 
+  <!-- Categories management -->
+  <div class="adm-card">
+    <div class="adm-card-head"><span class="adm-card-title">Categories</span></div>
+    <div class="adm-card-body">
+      <div id="catList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+      <div class="adm-form-row" style="align-items:flex-end">
+        <div class="adm-field">
+          <label>New category</label>
+          <input type="text" id="newCatInput" placeholder="e.g. Competitions" maxlength="40">
+        </div>
+        <button class="btn-adm btn-ghost" id="addCatBtn" style="flex-shrink:0">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Add Video by URL card -->
   <div class="adm-card">
     <div class="adm-card-head"><span class="adm-card-title">Add Video by URL</span></div>
@@ -602,24 +620,6 @@
         <button class="btn-adm btn-lime" id="confirmUploadBtn">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           Save to Gallery
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Categories management -->
-  <div class="adm-card">
-    <div class="adm-card-head"><span class="adm-card-title">Categories</span></div>
-    <div class="adm-card-body">
-      <div id="catList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
-      <div class="adm-form-row" style="align-items:flex-end">
-        <div class="adm-field">
-          <label>New category</label>
-          <input type="text" id="newCatInput" placeholder="e.g. Competitions" maxlength="40">
-        </div>
-        <button class="btn-adm btn-ghost" id="addCatBtn" style="flex-shrink:0">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add
         </button>
       </div>
     </div>
@@ -872,6 +872,9 @@
     try { await fn(); } finally { Progress.tick(); Progress.done(); }
   }
 
+  // ── Optimistic-update cache ───────────────────────────────────────
+  const _cache = {};
+
   const _sb = supabase.createClient(
     'https://nzfqsgdzbainfijbhwag.supabase.co',
     'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al'
@@ -890,8 +893,9 @@
 
   // ── Supabase data helpers ─────────────────────────────────────────
   async function sbLoadTicker() {
+    if (_cache.ticker) return _cache.ticker;
     const { data } = await _sb.from('ticker_items').select('*').order('ord');
-    return data || [];
+    return (_cache.ticker = data || []);
   }
   async function sbSaveTicker(items) {
     await _sb.from('ticker_items').delete().gte('ord', 0);
@@ -900,8 +904,9 @@
     );
   }
   async function sbLoadGallery() {
+    if (_cache.gallery) return _cache.gallery;
     const { data } = await _sb.from('gallery_items').select('*').order('ord');
-    return (data || []).map(r => ({ id: r.id, src: r.src, name: r.name, cat: r.cat, date: r.date, isVideo: r.is_video, featured: !!r.featured }));
+    return (_cache.gallery = (data || []).map(r => ({ id: r.id, src: r.src, name: r.name, cat: r.cat, date: r.date, isVideo: r.is_video, featured: !!r.featured })));
   }
   async function sbSaveGallery(items) {
     await _sb.from('gallery_items').delete().gte('ord', 0);
@@ -910,16 +915,17 @@
     );
   }
   async function sbLoadCategories() {
+    if (_cache.categories) return _cache.categories;
     const v = await sbGetSetting('gallery_categories', '');
-    if (v) { try { return JSON.parse(v); } catch(e) {} }
-    return ['trainings','events','special-guests','videos'];
+    return (_cache.categories = v ? (JSON.parse(v) || ['trainings','events','special-guests','videos']) : ['trainings','events','special-guests','videos']);
   }
   async function sbSaveCategories(cats) {
     await sbSetSetting('gallery_categories', JSON.stringify(cats));
   }
   async function sbLoadEvents() {
+    if (_cache.events) return _cache.events;
     const { data } = await _sb.from('events').select('*').order('ord');
-    return (data || []).map(r => ({ id: r.id, title: r.title, date: r.ev_date, time: r.ev_time, location: r.location, desc: r.description, img: r.img, type: r.type }));
+    return (_cache.events = (data || []).map(r => ({ id: r.id, title: r.title, date: r.ev_date, time: r.ev_time, location: r.location, desc: r.description, img: r.img, type: r.type })));
   }
   async function sbSaveEvents(items) {
     await _sb.from('events').delete().gte('ord', 0);
@@ -928,8 +934,9 @@
     );
   }
   async function sbLoadSchedule() {
+    if (_cache.schedule) return _cache.schedule;
     const { data } = await _sb.from('schedule_overrides').select('*');
-    return (data || []).map(r => ({ id: r.id, day: r.day, dayName: r.day_name, timeStart: r.time_start, timeEnd: r.time_end }));
+    return (_cache.schedule = (data || []).map(r => ({ id: r.id, day: r.day, dayName: r.day_name, timeStart: r.time_start, timeEnd: r.time_end })));
   }
   async function sbSaveSchedule(items) {
     await _sb.from('schedule_overrides').delete().neq('id', 'x');
@@ -938,8 +945,9 @@
     );
   }
   async function sbLoadInstagram() {
+    if (_cache.instagram) return _cache.instagram;
     const { data } = await _sb.from('instagram_posts').select('*').order('ord');
-    return (data || []).map(r => r.url);
+    return (_cache.instagram = (data || []).map(r => r.url));
   }
   async function sbSaveInstagram(urls) {
     await _sb.from('instagram_posts').delete().gte('ord', 0);
@@ -948,8 +956,9 @@
     );
   }
   async function sbLoadFeedback() {
+    if (_cache.feedback) return _cache.feedback;
     const { data } = await _sb.from('feedback').select('*').order('created_at');
-    return data || [];
+    return (_cache.feedback = data || []);
   }
   async function sbGetSetting(key, def = '') {
     const { data } = await _sb.from('settings').select('value').eq('key', key).maybeSingle();
@@ -1071,6 +1080,7 @@
 
   // ── RENDER ALL ────────────────────────────────────────────────────
   async function renderAll() {
+    Object.keys(_cache).forEach(k => delete _cache[k]); // fresh on every full reload
     Progress.start(7); // 6 renders + badges
     await Promise.all([
       renderTicker()      .then(() => Progress.tick()),
@@ -1088,8 +1098,8 @@
   // ═══════════════════════════════════════════════════════════════════
   //  TICKER
   // ═══════════════════════════════════════════════════════════════════
-  async function renderTicker() {
-    const items = await sbLoadTicker();
+  async function renderTicker(items) {
+    if (!items) items = await sbLoadTicker();
     const list = document.getElementById('tickerItems');
     const empty = document.getElementById('tickerEmpty');
     list.innerHTML = '';
@@ -1114,49 +1124,53 @@
   document.getElementById('addTickerBtn').addEventListener('click', () => {
     const text = document.getElementById('tText').value.trim();
     if (!text) { document.getElementById('tText').focus(); return; }
-    withProg(async () => {
-      const medal = document.getElementById('tMedal').value;
-      const items = await sbLoadTicker();
-      items.push({ id: uid(), medal, text });
-      await sbSaveTicker(items);
-      document.getElementById('tText').value = '';
-      await renderTicker();
-      toast('Added to ticker ✓');
-    });
+    const medal = document.getElementById('tMedal').value;
+    const items = await sbLoadTicker();
+    items.push({ id: uid(), medal, text });
+    _cache.ticker = items;
+    renderTicker(items);
+    sbSaveTicker(items).catch(() => { delete _cache.ticker; renderTicker(); });
+    document.getElementById('tText').value = '';
+    toast('Added to ticker ✓');
   });
 
   document.getElementById('tText').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('addTickerBtn').click(); });
 
   document.getElementById('clearTickerBtn').addEventListener('click', async () => {
     if (!confirm('Clear all ticker items?')) return;
-    withProg(async () => { await sbSaveTicker([]); await renderTicker(); toast('Ticker cleared'); });
+    _cache.ticker = [];
+    renderTicker([]);
+    sbSaveTicker([]).catch(() => { delete _cache.ticker; renderTicker(); });
+    toast('Ticker cleared');
   });
 
-  window.tickerDelete = idx => withProg(async () => {
+  window.tickerDelete = async idx => {
     const items = await sbLoadTicker();
     items.splice(idx, 1);
-    await sbSaveTicker(items);
-    await renderTicker();
+    _cache.ticker = items;
+    renderTicker(items);
+    sbSaveTicker(items).catch(() => { delete _cache.ticker; renderTicker(); });
     toast('Removed');
-  });
+  };
 
-  window.tickerMove = (idx, dir) => withProg(async () => {
+  window.tickerMove = async (idx, dir) => {
     const items = await sbLoadTicker();
     const to = idx + dir;
     if (to < 0 || to >= items.length) return;
     [items[idx], items[to]] = [items[to], items[idx]];
-    await sbSaveTicker(items);
-    await renderTicker();
-  });
+    _cache.ticker = items;
+    renderTicker(items);
+    sbSaveTicker(items).catch(() => { delete _cache.ticker; renderTicker(); });
+  };
 
   // ── Ticker visibility toggle ───────────────────────────────────────
   (async function() {
     const chk = document.getElementById('tickerEnabled');
     chk.checked = (await sbGetSetting('ticker_enabled', '1')) !== '0';
-    chk.addEventListener('change', () => withProg(async () => {
-      await sbSetSetting('ticker_enabled', chk.checked ? '1' : '0');
+    chk.addEventListener('change', () => {
+      sbSetSetting('ticker_enabled', chk.checked ? '1' : '0');
       toast(chk.checked ? 'Ticker is now live ✓' : 'Ticker hidden from site');
-    }));
+    });
   })();
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1210,20 +1224,19 @@
 
   document.getElementById('confirmUploadBtn').addEventListener('click', async () => {
     if (!pendingFiles.length) return;
-    withProg(async () => {
-      const cat = document.getElementById('uploadCat').value;
-      const date = document.getElementById('uploadDate').value;
-      const gallery = await sbLoadGallery();
-      pendingFiles.forEach(f => {
-        gallery.push({ id: uid(), src: f.dataUrl, name: f.name, cat, date, isVideo: f.isVideo, featured: false });
-      });
-      await sbSaveGallery(gallery);
-      pendingFiles = [];
-      document.getElementById('uploadSettingsCard').style.display = 'none';
-      document.getElementById('uploadPreviews').innerHTML = '';
-      await renderGallery();
-      toast(`${gallery.length} — saved to gallery ✓`);
+    const cat = document.getElementById('uploadCat').value;
+    const date = document.getElementById('uploadDate').value;
+    const gallery = await sbLoadGallery();
+    pendingFiles.forEach(f => {
+      gallery.push({ id: uid(), src: f.dataUrl, name: f.name, cat, date, isVideo: f.isVideo, featured: false });
     });
+    _cache.gallery = gallery;
+    renderGallery(gallery);
+    sbSaveGallery(gallery).catch(() => { delete _cache.gallery; renderGallery(); });
+    pendingFiles = [];
+    document.getElementById('uploadSettingsCard').style.display = 'none';
+    document.getElementById('uploadPreviews').innerHTML = '';
+    toast('Saved to gallery ✓');
   });
 
   // Add Video URL
@@ -1263,12 +1276,13 @@
     return slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
   }
 
-  async function renderGallery() {
+  async function renderGallery(items, cats) {
     // clear multi-select state on every re-render
     selectedGalleryIds.clear();
     const bar = document.getElementById('galSelBar');
     if (bar) bar.style.display = 'none';
-    const [items, cats] = await Promise.all([sbLoadGallery(), sbLoadCategories()]);
+    if (!items) items = await sbLoadGallery();
+    if (!cats)  cats  = await sbLoadCategories();
     // Update filter tabs
     const filterEl = document.getElementById('galleryFilter');
     filterEl.innerHTML = '<button class="adm-gf-tab active" data-gf="all">All</button>' +
@@ -1296,8 +1310,12 @@
     const grid = document.getElementById('galleryGrid');
     const empty = document.getElementById('galleryEmpty');
     grid.innerHTML = '';
-    empty.style.display = items.length ? 'none' : '';
-    grid.style.display = items.length ? '' : 'none';
+    const emptyP = empty.querySelector('p');
+    if (emptyP) emptyP.textContent = items.length === 0
+      ? 'No assets yet — upload images or add a video URL above'
+      : 'No items in this category';
+    empty.style.display = filtered.length ? 'none' : '';
+    grid.style.display  = filtered.length ? '' : 'none';
     filtered.forEach((item, idx) => {
       const card = document.createElement('div');
       card.className = 'adm-img-card';
@@ -1334,34 +1352,42 @@
   }
 
   window.galleryDelete = async function(id) {
-    if (!confirm('Delete this image?')) return;
-    withProg(async () => {
-      const gallery = (await sbLoadGallery()).filter(i => i.id !== id);
-      await sbSaveGallery(gallery);
-      await renderGallery();
-      toast('Deleted');
-    });
+    if (!confirm('Delete this item?')) return;
+    const gallery = (await sbLoadGallery()).filter(i => i.id !== id);
+    _cache.gallery = gallery;
+    renderGallery(gallery);
+    sbSaveGallery(gallery).catch(() => { delete _cache.gallery; renderGallery(); });
+    toast('Deleted');
   };
 
-  window.galleryToggleFeatured = id => withProg(async () => {
+  window.galleryToggleFeatured = async id => {
     const items = await sbLoadGallery();
     const item = items.find(i => i.id === id);
     if (!item) return;
     item.featured = !item.featured;
-    await sbSaveGallery(items);
-    await renderGallery();
+    _cache.gallery = items;
+    renderGallery(items);
+    sbSaveGallery(items).catch(() => { delete _cache.gallery; renderGallery(); });
     toast(item.featured ? 'Pinned to homepage ✓' : 'Removed from homepage');
-  });
+  };
 
-  window.deleteCat = slug => withProg(async () => {
-    const cats = await sbLoadCategories();
-    const idx = cats.indexOf(slug);
-    if (idx < 0) return;
-    cats.splice(idx, 1);
-    await sbSaveCategories(cats);
-    await renderGallery();
-    toast('Category removed');
-  });
+  window.deleteCat = async slug => {
+    const [items, cats] = await Promise.all([sbLoadGallery(), sbLoadCategories()]);
+    const newCats = cats.filter(c => c !== slug);
+    const affected = items.filter(i => i.cat === slug).length;
+    const fallback = newCats[0] || 'trainings';
+    if (affected > 0) {
+      if (!confirm(`"${catLabel(slug)}" has ${affected} item${affected > 1 ? 's' : ''}. They will be moved to "${catLabel(fallback)}". Continue?`)) return;
+    }
+    const newItems = affected > 0 ? items.map(i => i.cat === slug ? {...i, cat: fallback} : i) : items;
+    _cache.categories = newCats;
+    _cache.gallery = newItems;
+    renderGallery(newItems, newCats);
+    const saves = [sbSaveCategories(newCats)];
+    if (affected > 0) saves.push(sbSaveGallery(newItems));
+    Promise.all(saves).catch(() => { delete _cache.categories; delete _cache.gallery; renderGallery(); toast('Save failed'); });
+    toast(affected > 0 ? `Category removed — ${affected} item${affected > 1 ? 's' : ''} moved to ${catLabel(fallback)}` : 'Category removed');
+  };
 
   // ── Gallery multi-select ───────────────────────────────────────────
   const selectedGalleryIds = new Set();
@@ -1397,12 +1423,11 @@
     const n = selectedGalleryIds.size;
     if (!confirm(`Delete ${n} item${n > 1 ? 's' : ''}? This cannot be undone.`)) return;
     const ids = new Set(selectedGalleryIds);
-    withProg(async () => {
-      const items = await sbLoadGallery();
-      await sbSaveGallery(items.filter(i => !ids.has(i.id)));
-      await renderGallery();
-      toast(`${n} item${n > 1 ? 's' : ''} deleted`);
-    });
+    const newItems = (await sbLoadGallery()).filter(i => !ids.has(i.id));
+    _cache.gallery = newItems;
+    renderGallery(newItems);
+    sbSaveGallery(newItems).catch(() => { delete _cache.gallery; renderGallery(); });
+    toast(`${n} item${n > 1 ? 's' : ''} deleted`);
   });
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1440,13 +1465,13 @@
     }
     // Sort by date ascending
     events.sort((a, b) => a.date.localeCompare(b.date));
-    withProg(async () => {
-      await sbSaveEvents(events);
-      cancelEventEdit();
-      await renderEvents();
-      toast(editingEventId ? 'Event updated ✓' : 'Event added ✓');
-      editingEventId = null;
-    });
+    const _wasEditing = editingEventId;
+    _cache.events = events;
+    cancelEventEdit();
+    renderEvents(events);
+    sbSaveEvents(events).catch(() => { delete _cache.events; renderEvents(); toast('Save failed'); });
+    toast(_wasEditing ? 'Event updated ✓' : 'Event added ✓');
+    editingEventId = null;
   }
 
   function cancelEventEdit() {
@@ -1481,16 +1506,15 @@
 
   window.deleteEvent = async function(id) {
     if (!confirm('Delete this event?')) return;
-    withProg(async () => {
-      const events = (await sbLoadEvents()).filter(e => e.id !== id);
-      await sbSaveEvents(events);
-      await renderEvents();
-      toast('Event deleted');
-    });
+    const events = (await sbLoadEvents()).filter(e => e.id !== id);
+    _cache.events = events;
+    renderEvents(events);
+    sbSaveEvents(events).catch(() => { delete _cache.events; renderEvents(); });
+    toast('Event deleted');
   };
 
-  async function renderEvents() {
-    const events = await sbLoadEvents();
+  async function renderEvents(events) {
+    if (!events) events = await sbLoadEvents();
     const list  = document.getElementById('eventList');
     const empty = document.getElementById('eventEmpty');
     list.innerHTML = '';
@@ -1525,9 +1549,10 @@
   // ═══════════════════════════════════════════════════════════════════
   // (FIXED_SCHEDULE, DAY_OPTS, inpStyle are declared at top of script)
 
-  async function renderSchedule() {
+  async function renderSchedule(scheduleData) {
     const saved = {};
-    (await sbLoadSchedule()).forEach(o => { saved[o.id] = o; });
+    const overrides = scheduleData !== undefined ? scheduleData : await sbLoadSchedule();
+    overrides.forEach(o => { saved[o.id] = o; });
 
     const card = document.getElementById('scheduleEditorCard');
     card.innerHTML = '';
@@ -1592,30 +1617,28 @@
         overrides.push({id, day, dayName, timeStart: ts, timeEnd: te});
       }
     });
-    withProg(async () => {
-      await sbSaveSchedule(overrides);
-      await renderSchedule();
-      const n = overrides.length;
-      toast(n ? `${n} change${n > 1 ? 's' : ''} saved ✓` : 'All defaults restored ✓');
-    });
+    _cache.schedule = overrides;
+    renderSchedule();
+    sbSaveSchedule(overrides).catch(() => { delete _cache.schedule; renderSchedule(); });
+    const n = overrides.length;
+    toast(n ? `${n} change${n > 1 ? 's' : ''} saved ✓` : 'All defaults restored ✓');
   }
 
   document.getElementById('saveScheduleBtn').addEventListener('click', saveSchedule);
 
   document.getElementById('resetScheduleBtn').addEventListener('click', async () => {
     if (!confirm('Reset all days and times to defaults?')) return;
-    withProg(async () => {
-      await sbSaveSchedule([]);
-      await renderSchedule();
-      toast('Schedule reset to defaults');
-    });
+    _cache.schedule = [];
+    renderSchedule();
+    sbSaveSchedule([]).catch(() => { delete _cache.schedule; renderSchedule(); });
+    toast('Schedule reset to defaults');
   });
 
   // ═══════════════════════════════════════════════════════════════════
   //  TESTIMONIALS / REVIEWS
   // ═══════════════════════════════════════════════════════════════════
-  async function renderTestimonials() {
-    const all  = await sbLoadFeedback();
+  async function renderTestimonials(all) {
+    if (!all) all = await sbLoadFeedback();
     const list  = document.getElementById('reviewList');
     const empty = document.getElementById('reviewEmpty');
     list.innerHTML = '';
@@ -1652,25 +1675,26 @@
     });
   }
 
-  window.approveReview = id => withProg(async () => {
-    await _sb.from('feedback').update({ approved: true }).eq('id', id);
-    await renderTestimonials();
+  window.approveReview = async id => {
+    if (_cache.feedback) { const e = _cache.feedback.find(x => x.id === id); if (e) e.approved = true; }
+    renderTestimonials(_cache.feedback || undefined);
+    _sb.from('feedback').update({ approved: true }).eq('id', id).catch(() => { delete _cache.feedback; renderTestimonials(); });
     toast('Review published on site ✓');
-  });
+  };
 
-  window.unapproveReview = id => withProg(async () => {
-    await _sb.from('feedback').update({ approved: false }).eq('id', id);
-    await renderTestimonials();
+  window.unapproveReview = async id => {
+    if (_cache.feedback) { const e = _cache.feedback.find(x => x.id === id); if (e) e.approved = false; }
+    renderTestimonials(_cache.feedback || undefined);
+    _sb.from('feedback').update({ approved: false }).eq('id', id).catch(() => { delete _cache.feedback; renderTestimonials(); });
     toast('Review unpublished');
-  });
+  };
 
   window.deleteReview = async function(id) {
     if (!confirm('Delete this review permanently?')) return;
-    withProg(async () => {
-      await _sb.from('feedback').delete().eq('id', id);
-      await renderTestimonials();
-      toast('Deleted');
-    });
+    if (_cache.feedback) _cache.feedback = _cache.feedback.filter(x => x.id !== id);
+    renderTestimonials(_cache.feedback || undefined);
+    _sb.from('feedback').delete().eq('id', id).catch(() => { delete _cache.feedback; renderTestimonials(); });
+    toast('Deleted');
   };
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1682,8 +1706,8 @@
     return m ? `https://www.instagram.com/${m[1]}/${m[2]}/` : raw.trim();
   }
 
-  async function renderInstagram() {
-    const posts = await sbLoadInstagram();
+  async function renderInstagram(posts) {
+    if (!posts) posts = await sbLoadInstagram();
     const list  = document.getElementById('igList');
     const empty = document.getElementById('igEmpty');
     list.innerHTML = '';
@@ -1722,34 +1746,35 @@
     if (!raw.includes('instagram.com')) {
       toast('Paste a full instagram.com URL'); return;
     }
-    const url   = normaliseIgUrl(raw);
-    withProg(async () => {
-      const posts = await sbLoadInstagram();
-      if (posts.includes(url)) { toast('Already added'); return; }
-      posts.unshift(url);
-      await sbSaveInstagram(posts);
-      input.value = '';
-      await renderInstagram();
-      toast('Post added ✓');
-    });
+    const url = normaliseIgUrl(raw);
+    const posts = await sbLoadInstagram();
+    if (posts.includes(url)) { toast('Already added'); return; }
+    posts.unshift(url);
+    _cache.instagram = posts;
+    renderInstagram(posts);
+    sbSaveInstagram(posts).catch(() => { delete _cache.instagram; renderInstagram(); });
+    input.value = '';
+    toast('Post added ✓');
   });
 
-  window.igRemove = idx => withProg(async () => {
+  window.igRemove = async idx => {
     const posts = await sbLoadInstagram();
     posts.splice(idx, 1);
-    await sbSaveInstagram(posts);
-    await renderInstagram();
+    _cache.instagram = posts;
+    renderInstagram(posts);
+    sbSaveInstagram(posts).catch(() => { delete _cache.instagram; renderInstagram(); });
     toast('Removed');
-  });
+  };
 
-  window.igMove = (idx, dir) => withProg(async () => {
+  window.igMove = async (idx, dir) => {
     const posts = await sbLoadInstagram();
     const to = idx + dir;
     if (to < 0 || to >= posts.length) return;
     [posts[idx], posts[to]] = [posts[to], posts[idx]];
-    await sbSaveInstagram(posts);
-    await renderInstagram();
-  });
+    _cache.instagram = posts;
+    renderInstagram(posts);
+    sbSaveInstagram(posts).catch(() => { delete _cache.instagram; renderInstagram(); });
+  };
 
   // ── UTILITIES ─────────────────────────────────────────────────────
   function escHtml(str) {

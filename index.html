@@ -1714,7 +1714,7 @@
       const delays = ['d1','d2','d3','d1','d2','d3','d1','d2'];
       data.slice(0, 8).forEach((item, i) => {
         const div = document.createElement('div');
-        div.className = `gallery-item ${sizes[i] || ''} reveal ${delays[i]}`.trim();
+        div.className = `gallery-item ${sizes[i] || ''} ${delays[i]}`.trim();
         if (item.is_video) {
           div.dataset.video = item.src;
           div.innerHTML = `<video class="gi-video-thumb" src="${item.src}" autoplay muted loop playsinline style="pointer-events:none"></video>
@@ -2463,7 +2463,7 @@
       // Render link cards first — work everywhere, no API needed
       posts.forEach(url => {
         const a = document.createElement('a');
-        a.className = 'insta-card reveal';
+        a.className = 'insta-card';
         a.href = url;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
