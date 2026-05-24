@@ -716,9 +716,22 @@
                 <textarea id="evDesc" placeholder="What's happening, who it's for, any requirements…"></textarea>
               </div>
               <div class="adm-field">
-                <label>Cover Image URL <span style="color:var(--ink-mute)">(optional)</span></label>
-                <input type="url" id="evImg" placeholder="https://…">
-                <span class="adm-field-hint">Paste a link to an image hosted online</span>
+                <label>Cover Image <span style="color:var(--ink-mute)">(optional)</span></label>
+                <input type="url" id="evImg" placeholder="https://… (paste image URL)">
+                <div style="display:flex;align-items:center;gap:8px;margin:6px 0;color:var(--ink-mute);font-size:11px">
+                  <div style="flex:1;height:1px;background:var(--line-2)"></div>
+                  <span>or upload from device</span>
+                  <div style="flex:1;height:1px;background:var(--line-2)"></div>
+                </div>
+                <label class="btn-adm btn-ghost" style="cursor:pointer;text-align:center;display:block">
+                  Choose Image File
+                  <input type="file" id="evImgFile" accept="image/*" style="display:none">
+                </label>
+                <div id="evImgPreview" style="display:none;margin-top:8px;position:relative">
+                  <img id="evImgPreviewImg" src="" style="width:100%;max-height:160px;object-fit:cover;display:block">
+                  <button type="button" id="evImgClear" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);border:none;color:#fff;cursor:pointer;padding:2px 7px;font-size:12px">✕</button>
+                </div>
+                <span class="adm-field-hint">Paste a URL or pick a file from your device</span>
               </div>
               <div style="display:flex;justify-content:flex-end;gap:10px">
                 <button class="btn-adm btn-ghost" id="cancelEventBtn" style="display:none">Cancel</button>
@@ -775,6 +788,53 @@
         </div>
       </div>
       <div class="panel-body">
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Add Review</span></div>
+          <div class="adm-card-body">
+            <div class="adm-form">
+              <div class="adm-form-row cols3">
+                <div class="adm-field" style="grid-column:span 2">
+                  <label>Name</label>
+                  <input type="text" id="rvName" placeholder="e.g. Alex Müller">
+                </div>
+                <div class="adm-field">
+                  <label>Rating</label>
+                  <select id="rvRating">
+                    <option value="5">★★★★★ (5)</option>
+                    <option value="4">★★★★☆ (4)</option>
+                    <option value="3">★★★☆☆ (3)</option>
+                    <option value="2">★★☆☆☆ (2)</option>
+                    <option value="1">★☆☆☆☆ (1)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Training</label>
+                  <select id="rvTraining">
+                    <option value="MMA">MMA</option>
+                    <option value="Striking">Striking</option>
+                    <option value="Grappling">Grappling</option>
+                    <option value="Kids MMA">Kids MMA</option>
+                    <option value="Fight S&amp;C">Fight S&amp;C</option>
+                    <option value="">— (leave blank)</option>
+                  </select>
+                </div>
+                <div class="adm-field" style="grid-column:span 2">
+                  <label>Review Text</label>
+                  <textarea id="rvText" placeholder="What the member said…" style="min-height:64px"></textarea>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end">
+                <button class="btn-adm btn-lime" id="addReviewBtn">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add Review
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="adm-card">
           <div class="adm-card-head"><span class="adm-card-title">Submitted Reviews</span></div>
           <div id="reviewListWrap">
@@ -946,12 +1006,12 @@
   async function sbLoadSchedule() {
     if (_cache.schedule) return _cache.schedule;
     const { data } = await _sb.from('schedule_overrides').select('*');
-    return (_cache.schedule = (data || []).map(r => ({ id: r.id, day: r.day, dayName: r.day_name, timeStart: r.time_start, timeEnd: r.time_end })));
+    return (_cache.schedule = (data || []).map(r => ({ id: r.id, day: r.day, dayName: r.day_name, timeStart: r.time_start, timeEnd: r.time_end, hidden: !!r.hidden })));
   }
   async function sbSaveSchedule(items) {
     await _sb.from('schedule_overrides').delete().neq('id', 'x');
     if (items.length) await _sb.from('schedule_overrides').insert(
-      items.map(it => ({ id: it.id, day: it.day, day_name: it.dayName, time_start: it.timeStart, time_end: it.timeEnd }))
+      items.map(it => ({ id: it.id, day: it.day, day_name: it.dayName, time_start: it.timeStart, time_end: it.timeEnd, hidden: !!it.hidden }))
     );
   }
   async function sbLoadInstagram() {
@@ -1005,6 +1065,7 @@
   // ── MUTABLE STATE (declared early so renderAll() can access them safely) ──
   let toastTimer;
   let pendingFiles = [];   // gallery upload queue
+  let pendingEvImg  = null; // event cover image data-url
   let galleryFilter = 'all';
   let editingEventId = null;
 
@@ -1458,6 +1519,27 @@
   document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
   document.getElementById('cancelEventBtn').addEventListener('click', cancelEventEdit);
 
+  document.getElementById('evImgFile').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      pendingEvImg = e.target.result;
+      document.getElementById('evImg').value = '';
+      document.getElementById('evImgPreviewImg').src = pendingEvImg;
+      document.getElementById('evImgPreview').style.display = '';
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+
+  document.getElementById('evImgClear').addEventListener('click', () => {
+    pendingEvImg = null;
+    document.getElementById('evImgPreviewImg').src = '';
+    document.getElementById('evImgPreview').style.display = 'none';
+    document.getElementById('evImgFile').value = '';
+  });
+
   async function saveEvent() {
     const title = document.getElementById('evTitle').value.trim();
     const date  = document.getElementById('evDate').value;
@@ -1475,7 +1557,7 @@
       time:     document.getElementById('evTime').value,
       location: document.getElementById('evLocation').value.trim(),
       desc:     document.getElementById('evDesc').value.trim(),
-      img:      document.getElementById('evImg').value.trim(),
+      img:      pendingEvImg || document.getElementById('evImg').value.trim(),
     };
     if (editingEventId) {
       const idx = events.findIndex(e => e.id === editingEventId);
@@ -1496,6 +1578,7 @@
 
   function cancelEventEdit() {
     editingEventId = null;
+    pendingEvImg = null;
     ['evTitle','evTime','evLocation','evDesc','evImg'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('evDate').value = '';
     document.getElementById('evType').value = 'Open Mat';
@@ -1503,6 +1586,9 @@
     document.getElementById('saveEventLabel').textContent = 'Add Event';
     document.getElementById('cancelEventBtn').style.display = 'none';
     document.getElementById('saveEventBtn').querySelector('svg').style.display = '';
+    document.getElementById('evImgPreview').style.display = 'none';
+    document.getElementById('evImgPreviewImg').src = '';
+    document.getElementById('evImgFile').value = '';
   }
 
   window.editEvent = async function(id) {
@@ -1515,7 +1601,12 @@
     document.getElementById('evTime').value     = ev.time || '';
     document.getElementById('evLocation').value = ev.location || '';
     document.getElementById('evDesc').value     = ev.desc || '';
-    document.getElementById('evImg').value      = ev.img || '';
+    document.getElementById('evImg').value      = ev.img && !ev.img.startsWith('data:') ? ev.img : '';
+    pendingEvImg = ev.img && ev.img.startsWith('data:') ? ev.img : null;
+    if (ev.img) {
+      document.getElementById('evImgPreviewImg').src = ev.img;
+      document.getElementById('evImgPreview').style.display = '';
+    }
     document.getElementById('eventFormTitle').textContent = 'Edit Event';
     document.getElementById('saveEventLabel').textContent = 'Save Changes';
     document.getElementById('cancelEventBtn').style.display = '';
@@ -1595,6 +1686,7 @@
       grp.innerHTML = `<div class="sched-day-label">${dayName}</div>`;
 
       slots.forEach(s => {
+        if (saved[s.id]?.hidden) return;   // skip deleted rows
         const cur  = saved[s.id] || {};
         const ts   = cur.timeStart || s.defStart;
         const te   = cur.timeEnd   || s.defEnd;
@@ -1616,6 +1708,8 @@
             <input type="time" class="sl-start" value="${ts}" style="${inpStyle};width:106px">
             <span style="color:var(--ink-mute);font-size:11px">–</span>
             <input type="time" class="sl-end" value="${te}" style="${inpStyle};width:106px">
+            <button type="button" onclick="scheduleRemove('${s.id}')" title="Remove this class"
+              style="background:none;border:1px solid rgba(255,77,109,.3);color:var(--red);cursor:pointer;padding:4px 9px;font-size:13px;line-height:1">✕</button>
           </span>`;
         grp.appendChild(row);
       });
@@ -1625,6 +1719,9 @@
 
   async function saveSchedule() {
     const overrides = [];
+    // Re-include hidden overrides from cache so they aren't lost on save
+    const currentOverrides = _cache.schedule || await sbLoadSchedule();
+    currentOverrides.filter(o => o.hidden).forEach(o => overrides.push(o));
     document.querySelectorAll('#scheduleEditorCard .sched-slot-row[data-id]').forEach(row => {
       const id   = row.dataset.id;
       const slot = FIXED_SCHEDULE.find(s => s.id === id);
@@ -1653,6 +1750,21 @@
     sbSaveSchedule([]).catch(() => { delete _cache.schedule; renderSchedule(); });
     toast('Schedule reset to defaults');
   });
+
+  window.scheduleRemove = async id => {
+    const slot = FIXED_SCHEDULE.find(s => s.id === id);
+    if (!slot) return;
+    if (!confirm(`Remove "${slot.name}" from the schedule? (Reset button restores it)`)) return;
+    const overrides = _cache.schedule ? [..._cache.schedule] : await sbLoadSchedule();
+    const existing  = overrides.findIndex(o => o.id === id);
+    const hiddenEntry = { id, day: slot.day, dayName: slot.dayName, timeStart: slot.defStart, timeEnd: slot.defEnd, hidden: true };
+    if (existing !== -1) overrides[existing] = hiddenEntry;
+    else overrides.push(hiddenEntry);
+    _cache.schedule = overrides;
+    renderSchedule(overrides);
+    sbSaveSchedule(overrides).catch(() => { delete _cache.schedule; renderSchedule(); });
+    toast('Class removed — use Reset to restore');
+  };
 
   // ═══════════════════════════════════════════════════════════════════
   //  TESTIMONIALS / REVIEWS
@@ -1717,6 +1829,32 @@
     toast('Deleted');
   };
 
+  document.getElementById('addReviewBtn').addEventListener('click', async () => {
+    const name = document.getElementById('rvName').value.trim();
+    const text = document.getElementById('rvText').value.trim();
+    if (!name || !text) { toast('Name and review text required', true); return; }
+    const entry = {
+      id:         uid(),
+      name,
+      training:   document.getElementById('rvTraining').value,
+      rating:     parseInt(document.getElementById('rvRating').value),
+      text,
+      approved:   true,
+      ts:         new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+    const all = _cache.feedback ? [..._cache.feedback] : await sbLoadFeedback();
+    all.push(entry);
+    _cache.feedback = all;
+    renderTestimonials(all);
+    _sb.from('feedback').insert(entry).catch(() => { delete _cache.feedback; renderTestimonials(); toast('Save failed', true); });
+    document.getElementById('rvName').value = '';
+    document.getElementById('rvText').value = '';
+    document.getElementById('rvRating').value = '5';
+    toast('Review added and published ✓');
+    document.getElementById('badgeTestimonials').textContent = all.length;
+  });
+
   // ═══════════════════════════════════════════════════════════════════
   //  INSTAGRAM
   // ═══════════════════════════════════════════════════════════════════
@@ -1741,15 +1879,19 @@
       'rgba(52,211,153,.08)',   // teal
     ];
     posts.forEach((url, idx) => {
+      const accent = IG_COLORS[idx % IG_COLORS.length];
+      const border  = accent.replace('.10','0.6').replace('.08','0.5');
       const row = document.createElement('div');
       row.className = 'review-row';
-      row.style.cssText = `display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:${IG_COLORS[idx % IG_COLORS.length]};border-left:3px solid ${IG_COLORS[idx % IG_COLORS.length].replace('.10','0.6').replace('.08','0.5')};padding:10px 14px;margin-bottom:4px`;
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 14px';
       row.innerHTML = `
-        <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);min-width:20px;text-align:center">${idx + 1}</span>
-        <a href="${escHtml(url)}" target="_blank" rel="noopener"
-           style="flex:1;font-size:13px;color:var(--lime);word-break:break-all;text-decoration:none;min-width:0">
-          ${escHtml(url)}
-        </a>
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;background:${accent};border-left:3px solid ${border};padding:10px 14px;border-radius:0">
+          <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);min-width:18px;text-align:center;flex-shrink:0">${idx + 1}</span>
+          <a href="${escHtml(url)}" target="_blank" rel="noopener"
+             style="flex:1;font-size:13px;color:var(--lime);word-break:break-all;text-decoration:none;min-width:0">
+            ${escHtml(url)}
+          </a>
+        </div>
         <div style="display:flex;gap:6px;flex-shrink:0">
           ${idx > 0 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},-1)" style="padding:5px 10px;font-size:11px" title="Move up">↑</button>` : ''}
           ${idx < posts.length - 1 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},1)" style="padding:5px 10px;font-size:11px" title="Move down">↓</button>` : ''}
