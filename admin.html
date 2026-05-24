@@ -7,6 +7,7 @@
 <link rel="icon" type="image/png" href="favicon.png" />
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --bg:#040505;--bg-2:#0a0b0c;--bg-3:#111213;
@@ -716,6 +717,11 @@
   // ── CONFIG ────────────────────────────────────────────────────────
   const PASSWORD = 'powerfight';   // ← change this to your preferred password
 
+  const _sb = supabase.createClient(
+    'https://nzfqsgdzbainfijbhwag.supabase.co',
+    'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al'
+  );
+
   const KEYS = {
     ticker:    'pf_ticker_v1',
     gallery:   'pf_gallery_v1',
@@ -725,10 +731,70 @@
     instagram: 'pf_instagram_v1',
   };
 
-  // ── STORAGE ───────────────────────────────────────────────────────
-  function load(key) { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } }
-  function save(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) { toast('Storage full — delete some images first', true); } }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  // ── Supabase data helpers ─────────────────────────────────────────
+  async function sbLoadTicker() {
+    const { data } = await _sb.from('ticker_items').select('*').order('ord');
+    return data || [];
+  }
+  async function sbSaveTicker(items) {
+    await _sb.from('ticker_items').delete().gte('ord', 0);
+    if (items.length) await _sb.from('ticker_items').insert(
+      items.map((it, i) => ({ id: it.id || uid(), medal: it.medal || '', text: it.text, ord: i }))
+    );
+  }
+  async function sbLoadGallery() {
+    const { data } = await _sb.from('gallery_items').select('*').order('ord');
+    return (data || []).map(r => ({ id: r.id, src: r.src, name: r.name, cat: r.cat, date: r.date, isVideo: r.is_video }));
+  }
+  async function sbSaveGallery(items) {
+    await _sb.from('gallery_items').delete().gte('ord', 0);
+    if (items.length) await _sb.from('gallery_items').insert(
+      items.map((it, i) => ({ id: it.id, src: it.src, name: it.name || '', cat: it.cat || 'trainings', date: it.date || '', is_video: !!it.isVideo, ord: i }))
+    );
+  }
+  async function sbLoadEvents() {
+    const { data } = await _sb.from('events').select('*').order('ord');
+    return (data || []).map(r => ({ id: r.id, title: r.title, date: r.ev_date, time: r.ev_time, location: r.location, desc: r.description, img: r.img, type: r.type }));
+  }
+  async function sbSaveEvents(items) {
+    await _sb.from('events').delete().gte('ord', 0);
+    if (items.length) await _sb.from('events').insert(
+      items.map((it, i) => ({ id: it.id, title: it.title, ev_date: it.date || '', ev_time: it.time || '', location: it.location || '', description: it.desc || '', img: it.img || '', type: it.type || 'competition', ord: i }))
+    );
+  }
+  async function sbLoadSchedule() {
+    const { data } = await _sb.from('schedule_overrides').select('*');
+    return (data || []).map(r => ({ id: r.id, day: r.day, dayName: r.day_name, timeStart: r.time_start, timeEnd: r.time_end }));
+  }
+  async function sbSaveSchedule(items) {
+    await _sb.from('schedule_overrides').delete().neq('id', 'x');
+    if (items.length) await _sb.from('schedule_overrides').insert(
+      items.map(it => ({ id: it.id, day: it.day, day_name: it.dayName, time_start: it.timeStart, time_end: it.timeEnd }))
+    );
+  }
+  async function sbLoadInstagram() {
+    const { data } = await _sb.from('instagram_posts').select('*').order('ord');
+    return (data || []).map(r => r.url);
+  }
+  async function sbSaveInstagram(urls) {
+    await _sb.from('instagram_posts').delete().gte('ord', 0);
+    if (urls.length) await _sb.from('instagram_posts').insert(
+      urls.map((url, i) => ({ id: uid(), url, ord: i }))
+    );
+  }
+  async function sbLoadFeedback() {
+    const { data } = await _sb.from('feedback').select('*').order('created_at');
+    return data || [];
+  }
+  async function sbGetSetting(key, def = '') {
+    const { data } = await _sb.from('settings').select('value').eq('key', key).maybeSingle();
+    return data?.value ?? def;
+  }
+  async function sbSetSetting(key, value) {
+    await _sb.from('settings').upsert({ key, value });
+  }
 
   // ── SCHEDULE DATA (declared early so renderSchedule() works on first renderAll) ──
   const FIXED_SCHEDULE = [
@@ -819,28 +885,38 @@
   });
 
   // ── BADGES ────────────────────────────────────────────────────────
-  function updateBadges() {
-    document.getElementById('badgeTicker').textContent = load(KEYS.ticker).length;
-    document.getElementById('badgeGallery').textContent = load(KEYS.gallery).length;
-    document.getElementById('badgeEvents').textContent = load(KEYS.events).length;
-    const schedChanges = load(KEYS.schedule).length;
+  async function updateBadges() {
+    const [ticker, gallery, events, schedule, reviews, instagram] = await Promise.all([
+      sbLoadTicker(),
+      sbLoadGallery(),
+      sbLoadEvents(),
+      sbLoadSchedule(),
+      sbLoadFeedback(),
+      sbLoadInstagram(),
+    ]);
+    document.getElementById('badgeTicker').textContent = ticker.length;
+    document.getElementById('badgeGallery').textContent = gallery.length;
+    document.getElementById('badgeEvents').textContent = events.length;
+    const schedChanges = schedule.length;
     document.getElementById('badgeSchedule').textContent = schedChanges ? schedChanges + ' edited' : '—';
-    const allReviews = load(KEYS.reviews);
-    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
-    document.getElementById('badgeReviews').textContent = allReviews.length - approved.size > 0
-      ? allReviews.length - approved.size + ' pending'
-      : allReviews.length;
-    document.getElementById('badgeInstagram').textContent = load(KEYS.instagram).length;
+    const pending = reviews.filter(r => !r.approved).length;
+    document.getElementById('badgeReviews').textContent = pending > 0
+      ? pending + ' pending'
+      : reviews.length;
+    document.getElementById('badgeInstagram').textContent = instagram.length;
   }
 
   // ── RENDER ALL ────────────────────────────────────────────────────
-  function renderAll() { renderTicker(); renderGallery(); renderEvents(); renderSchedule(); renderTestimonials(); renderInstagram(); updateBadges(); }
+  async function renderAll() {
+    await Promise.all([renderTicker(), renderGallery(), renderEvents(), renderSchedule(), renderTestimonials(), renderInstagram()]);
+    await updateBadges();
+  }
 
   // ═══════════════════════════════════════════════════════════════════
   //  TICKER
   // ═══════════════════════════════════════════════════════════════════
-  function renderTicker() {
-    const items = load(KEYS.ticker);
+  async function renderTicker() {
+    const items = await sbLoadTicker();
     const list = document.getElementById('tickerItems');
     const empty = document.getElementById('tickerEmpty');
     list.innerHTML = '';
@@ -860,54 +936,52 @@
         </div>`;
       list.appendChild(row);
     });
-    updateBadges();
   }
 
-  document.getElementById('addTickerBtn').addEventListener('click', () => {
+  document.getElementById('addTickerBtn').addEventListener('click', async () => {
     const text = document.getElementById('tText').value.trim();
     if (!text) { document.getElementById('tText').focus(); return; }
     const medal = document.getElementById('tMedal').value;
-    const items = load(KEYS.ticker);
+    const items = await sbLoadTicker();
     items.push({ id: uid(), medal, text });
-    save(KEYS.ticker, items);
+    await sbSaveTicker(items);
     document.getElementById('tText').value = '';
-    renderTicker();
+    await renderTicker();
     toast('Added to ticker ✓');
   });
 
   document.getElementById('tText').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('addTickerBtn').click(); });
 
-  document.getElementById('clearTickerBtn').addEventListener('click', () => {
+  document.getElementById('clearTickerBtn').addEventListener('click', async () => {
     if (!confirm('Clear all ticker items?')) return;
-    save(KEYS.ticker, []);
-    renderTicker();
+    await sbSaveTicker([]);
+    await renderTicker();
     toast('Ticker cleared');
   });
 
-  window.tickerDelete = function(idx) {
-    const items = load(KEYS.ticker);
+  window.tickerDelete = async function(idx) {
+    const items = await sbLoadTicker();
     items.splice(idx, 1);
-    save(KEYS.ticker, items);
-    renderTicker();
+    await sbSaveTicker(items);
+    await renderTicker();
     toast('Removed');
   };
 
-  window.tickerMove = function(idx, dir) {
-    const items = load(KEYS.ticker);
+  window.tickerMove = async function(idx, dir) {
+    const items = await sbLoadTicker();
     const to = idx + dir;
     if (to < 0 || to >= items.length) return;
     [items[idx], items[to]] = [items[to], items[idx]];
-    save(KEYS.ticker, items);
-    renderTicker();
+    await sbSaveTicker(items);
+    await renderTicker();
   };
 
   // ── Ticker visibility toggle ───────────────────────────────────────
-  (function() {
+  (async function() {
     const chk = document.getElementById('tickerEnabled');
-    // Load saved state (default: enabled)
-    chk.checked = localStorage.getItem('pf_ticker_on_v1') !== '0';
-    chk.addEventListener('change', () => {
-      localStorage.setItem('pf_ticker_on_v1', chk.checked ? '1' : '0');
+    chk.checked = (await sbGetSetting('ticker_enabled', '1')) !== '0';
+    chk.addEventListener('change', async () => {
+      await sbSetSetting('ticker_enabled', chk.checked ? '1' : '0');
       toast(chk.checked ? 'Ticker is now live ✓' : 'Ticker hidden from site');
     });
   })();
@@ -961,19 +1035,19 @@
     document.getElementById('uploadPreviews').innerHTML = '';
   });
 
-  document.getElementById('confirmUploadBtn').addEventListener('click', () => {
+  document.getElementById('confirmUploadBtn').addEventListener('click', async () => {
     if (!pendingFiles.length) return;
     const cat = document.getElementById('uploadCat').value;
     const date = document.getElementById('uploadDate').value;
-    const gallery = load(KEYS.gallery);
+    const gallery = await sbLoadGallery();
     pendingFiles.forEach(f => {
       gallery.push({ id: uid(), src: f.dataUrl, name: f.name, cat, date, isVideo: f.isVideo });
     });
-    save(KEYS.gallery, gallery);
+    await sbSaveGallery(gallery);
     pendingFiles = [];
     document.getElementById('uploadSettingsCard').style.display = 'none';
     document.getElementById('uploadPreviews').innerHTML = '';
-    renderGallery();
+    await renderGallery();
     toast(`${gallery.length} — saved to gallery ✓`);
   });
 
@@ -986,8 +1060,8 @@
     });
   });
 
-  function renderGallery() {
-    const all = load(KEYS.gallery);
+  async function renderGallery() {
+    const all = await sbLoadGallery();
     const filtered = galleryFilter === 'all' ? all : all.filter(i => i.cat === galleryFilter);
     const grid = document.getElementById('galleryGrid');
     const empty = document.getElementById('galleryEmpty');
@@ -1011,14 +1085,13 @@
         </div>`;
       grid.appendChild(el);
     });
-    updateBadges();
   }
 
-  window.galleryDelete = function(id) {
+  window.galleryDelete = async function(id) {
     if (!confirm('Delete this image?')) return;
-    const gallery = load(KEYS.gallery).filter(i => i.id !== id);
-    save(KEYS.gallery, gallery);
-    renderGallery();
+    const gallery = (await sbLoadGallery()).filter(i => i.id !== id);
+    await sbSaveGallery(gallery);
+    await renderGallery();
     toast('Deleted');
   };
 
@@ -1030,7 +1103,7 @@
   document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
   document.getElementById('cancelEventBtn').addEventListener('click', cancelEventEdit);
 
-  function saveEvent() {
+  async function saveEvent() {
     const title = document.getElementById('evTitle').value.trim();
     const date  = document.getElementById('evDate').value;
     if (!title || !date) {
@@ -1038,7 +1111,7 @@
       else document.getElementById('evDate').focus();
       return;
     }
-    const events = load(KEYS.events);
+    const events = await sbLoadEvents();
     const payload = {
       id:       editingEventId || uid(),
       title,
@@ -1057,9 +1130,9 @@
     }
     // Sort by date ascending
     events.sort((a, b) => a.date.localeCompare(b.date));
-    save(KEYS.events, events);
+    await sbSaveEvents(events);
     cancelEventEdit();
-    renderEvents();
+    await renderEvents();
     toast(editingEventId ? 'Event updated ✓' : 'Event added ✓');
     editingEventId = null;
   }
@@ -1075,8 +1148,8 @@
     document.getElementById('saveEventBtn').querySelector('svg').style.display = '';
   }
 
-  window.editEvent = function(id) {
-    const ev = load(KEYS.events).find(e => e.id === id);
+  window.editEvent = async function(id) {
+    const ev = (await sbLoadEvents()).find(e => e.id === id);
     if (!ev) return;
     editingEventId = id;
     document.getElementById('evTitle').value    = ev.title;
@@ -1094,16 +1167,16 @@
     document.getElementById('evTitle').focus();
   };
 
-  window.deleteEvent = function(id) {
+  window.deleteEvent = async function(id) {
     if (!confirm('Delete this event?')) return;
-    const events = load(KEYS.events).filter(e => e.id !== id);
-    save(KEYS.events, events);
-    renderEvents();
+    const events = (await sbLoadEvents()).filter(e => e.id !== id);
+    await sbSaveEvents(events);
+    await renderEvents();
     toast('Event deleted');
   };
 
-  function renderEvents() {
-    const events = load(KEYS.events);
+  async function renderEvents() {
+    const events = await sbLoadEvents();
     const list  = document.getElementById('eventList');
     const empty = document.getElementById('eventEmpty');
     list.innerHTML = '';
@@ -1131,7 +1204,6 @@
         </div>`;
       list.appendChild(row);
     });
-    updateBadges();
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1139,9 +1211,9 @@
   // ═══════════════════════════════════════════════════════════════════
   // (FIXED_SCHEDULE, DAY_OPTS, inpStyle are declared at top of script)
 
-  function renderSchedule() {
+  async function renderSchedule() {
     const saved = {};
-    load(KEYS.schedule).forEach(o => { saved[o.id] = o; });
+    (await sbLoadSchedule()).forEach(o => { saved[o.id] = o; });
 
     const card = document.getElementById('scheduleEditorCard');
     card.innerHTML = '';
@@ -1190,10 +1262,9 @@
       });
       card.appendChild(grp);
     });
-    updateBadges();
   }
 
-  function saveSchedule() {
+  async function saveSchedule() {
     const overrides = [];
     document.querySelectorAll('#scheduleEditorCard .sched-slot-row[data-id]').forEach(row => {
       const id   = row.dataset.id;
@@ -1207,36 +1278,35 @@
         overrides.push({id, day, dayName, timeStart: ts, timeEnd: te});
       }
     });
-    save(KEYS.schedule, overrides);
-    renderSchedule();   // re-render so classes appear under their new day immediately
+    await sbSaveSchedule(overrides);
+    await renderSchedule();   // re-render so classes appear under their new day immediately
     const n = overrides.length;
     toast(n ? `${n} change${n > 1 ? 's' : ''} saved ✓` : 'All defaults restored ✓');
   }
 
   document.getElementById('saveScheduleBtn').addEventListener('click', saveSchedule);
 
-  document.getElementById('resetScheduleBtn').addEventListener('click', () => {
+  document.getElementById('resetScheduleBtn').addEventListener('click', async () => {
     if (!confirm('Reset all days and times to defaults?')) return;
-    save(KEYS.schedule, []);
-    renderSchedule();
+    await sbSaveSchedule([]);
+    await renderSchedule();
     toast('Schedule reset to defaults');
   });
 
   // ═══════════════════════════════════════════════════════════════════
   //  TESTIMONIALS / REVIEWS
   // ═══════════════════════════════════════════════════════════════════
-  function renderTestimonials() {
-    const all      = load(KEYS.reviews);
-    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
-    const list     = document.getElementById('reviewList');
-    const empty    = document.getElementById('reviewEmpty');
+  async function renderTestimonials() {
+    const all  = await sbLoadFeedback();
+    const list  = document.getElementById('reviewList');
+    const empty = document.getElementById('reviewEmpty');
     list.innerHTML = '';
     empty.style.display = all.length ? 'none' : '';
-    if (!all.length) { updateBadges(); return; }
+    if (!all.length) { return; }
 
     // Newest first
     [...all].reverse().forEach(entry => {
-      const isApproved = approved.has(entry.ts);
+      const isApproved = entry.approved;
       const stars = '★'.repeat(entry.rating || 5) + '☆'.repeat(5 - (entry.rating || 5));
       const date  = entry.ts ? new Date(entry.ts).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '—';
       const row   = document.createElement('div');
@@ -1244,7 +1314,7 @@
       row.innerHTML = `
         <div class="review-head">
           <span class="review-name">${escHtml(entry.name)}</span>
-          <span class="review-training">${escHtml(entry.training)}</span>
+          <span class="review-training">${escHtml(entry.training || '')}</span>
           <span class="review-stars">${stars}</span>
           ${isApproved ? '<span class="review-approved">✓ Published</span>' : ''}
         </div>
@@ -1252,42 +1322,34 @@
         <div class="review-date">${date}</div>
         <div class="review-actions">
           ${isApproved
-            ? `<button class="btn-adm btn-ghost" onclick="unapproveReview(${entry.ts})" style="font-size:10px;padding:6px 12px">Unpublish</button>`
-            : `<button class="btn-adm btn-lime" onclick="approveReview(${entry.ts})" style="font-size:10px;padding:6px 12px">
+            ? `<button class="btn-adm btn-ghost" onclick="unapproveReview('${entry.id}')" style="font-size:10px;padding:6px 12px">Unpublish</button>`
+            : `<button class="btn-adm btn-lime" onclick="approveReview('${entry.id}')" style="font-size:10px;padding:6px 12px">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve
                </button>`}
-          <button class="btn-icon" onclick="deleteReview(${entry.ts})" title="Delete">
+          <button class="btn-icon" onclick="deleteReview('${entry.id}')" title="Delete">
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
           </button>
         </div>`;
       list.appendChild(row);
     });
-    updateBadges();
   }
 
-  window.approveReview = function(ts) {
-    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
-    approved.add(ts);
-    localStorage.setItem('pf_approved_v1', JSON.stringify([...approved]));
-    renderTestimonials();
+  window.approveReview = async function(id) {
+    await _sb.from('feedback').update({ approved: true }).eq('id', id);
+    await renderTestimonials();
     toast('Review published on site ✓');
   };
 
-  window.unapproveReview = function(ts) {
-    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
-    approved.delete(ts);
-    localStorage.setItem('pf_approved_v1', JSON.stringify([...approved]));
-    renderTestimonials();
+  window.unapproveReview = async function(id) {
+    await _sb.from('feedback').update({ approved: false }).eq('id', id);
+    await renderTestimonials();
     toast('Review unpublished');
   };
 
-  window.deleteReview = function(ts) {
+  window.deleteReview = async function(id) {
     if (!confirm('Delete this review permanently?')) return;
-    save(KEYS.reviews, load(KEYS.reviews).filter(e => e.ts !== ts));
-    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
-    approved.delete(ts);
-    localStorage.setItem('pf_approved_v1', JSON.stringify([...approved]));
-    renderTestimonials();
+    await _sb.from('feedback').delete().eq('id', id);
+    await renderTestimonials();
     toast('Deleted');
   };
 
@@ -1300,8 +1362,8 @@
     return m ? `https://www.instagram.com/${m[1]}/${m[2]}/` : raw.trim();
   }
 
-  function renderInstagram() {
-    const posts = load(KEYS.instagram);
+  async function renderInstagram() {
+    const posts = await sbLoadInstagram();
     const list  = document.getElementById('igList');
     const empty = document.getElementById('igEmpty');
     list.innerHTML = '';
@@ -1331,10 +1393,9 @@
         </div>`;
       list.appendChild(row);
     });
-    updateBadges();
   }
 
-  document.getElementById('addIgBtn').addEventListener('click', () => {
+  document.getElementById('addIgBtn').addEventListener('click', async () => {
     const input = document.getElementById('igUrl');
     const raw   = input.value.trim();
     if (!raw) { input.focus(); return; }
@@ -1342,30 +1403,30 @@
       toast('Paste a full instagram.com URL'); return;
     }
     const url   = normaliseIgUrl(raw);
-    const posts = load(KEYS.instagram);
+    const posts = await sbLoadInstagram();
     if (posts.includes(url)) { toast('Already added'); return; }
     posts.unshift(url);  // newest first
-    save(KEYS.instagram, posts);
+    await sbSaveInstagram(posts);
     input.value = '';
-    renderInstagram();
+    await renderInstagram();
     toast('Post added ✓');
   });
 
-  window.igRemove = function(idx) {
-    const posts = load(KEYS.instagram);
+  window.igRemove = async function(idx) {
+    const posts = await sbLoadInstagram();
     posts.splice(idx, 1);
-    save(KEYS.instagram, posts);
-    renderInstagram();
+    await sbSaveInstagram(posts);
+    await renderInstagram();
     toast('Removed');
   };
 
-  window.igMove = function(idx, dir) {
-    const posts = load(KEYS.instagram);
+  window.igMove = async function(idx, dir) {
+    const posts = await sbLoadInstagram();
     const to = idx + dir;
     if (to < 0 || to >= posts.length) return;
     [posts[idx], posts[to]] = [posts[to], posts[idx]];
-    save(KEYS.instagram, posts);
-    renderInstagram();
+    await sbSaveInstagram(posts);
+    await renderInstagram();
   };
 
   // ── UTILITIES ─────────────────────────────────────────────────────

@@ -1735,31 +1735,32 @@
   </button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="components.js"></script>
 <script>
   initComponents('home');
 
-  // Inject admin ticker items (prepended before hardcoded ones)
-  (function() {
+  // ── Supabase client (shared by all IIFEs below) ───────────────────
+  const _sb = supabase.createClient(
+    'https://nzfqsgdzbainfijbhwag.supabase.co',
+    'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al'
+  );
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  // Inject admin ticker items (fetched from Supabase)
+  (async function() {
     try {
-      // Respect admin show/hide toggle (default: on)
-      if (localStorage.getItem('pf_ticker_on_v1') === '0') {
-        const w = document.getElementById('tickerWrap');
-        if (w) w.style.display = 'none';
-        return;
-      }
-      const adminItems = JSON.parse(localStorage.getItem('pf_ticker_v1') || '[]');
-      if (!adminItems.length) return;
+      const { data: setting } = await _sb.from('settings').select('value').eq('key','ticker_enabled').maybeSingle();
+      if (setting?.value === '0') { const w = document.getElementById('tickerWrap'); if (w) w.style.display = 'none'; return; }
+      const { data: items } = await _sb.from('ticker_items').select('*').order('ord');
+      if (!items?.length) return;
       const track = document.querySelector('.ticker-track');
       if (!track) return;
       const sep = '<span class="ticker-sep">·</span>';
-      const html = adminItems.map(i =>
-        `<span class="ticker-item">${i.medal ? `<span class="ticker-medal">${i.medal}</span> ` : ''}${i.text}</span>${sep}`
-      ).join('');
+      const html = items.map(i => `<span class="ticker-item">${i.medal ? `<span class="ticker-medal">${i.medal}</span> ` : ''}${i.text}</span>${sep}`).join('');
       track.insertAdjacentHTML('afterbegin', html);
-      // Duplicate the whole track for seamless scroll
       track.innerHTML += track.innerHTML;
-    } catch(e) {}
+    } catch(e) { console.warn('Ticker:', e); }
   })();
 
   // ── Schedule: fixed class definitions (source of truth) ─────────────
@@ -1782,10 +1783,11 @@
   ];
 
   // ── Dynamic schedule render (respects admin day + time overrides) ─────
-  (function() {
+  (async function() {
     try {
       const ov = {};
-      JSON.parse(localStorage.getItem('pf_schedule_v1') || '[]').forEach(o => { ov[o.id] = o; });
+      const { data: schedData } = await _sb.from('schedule_overrides').select('*');
+      (schedData || []).forEach(o => { ov[o.id] = { id: o.id, day: o.day, dayName: o.day_name, timeStart: o.time_start, timeEnd: o.time_end }; });
 
       // Build effective slots (apply overrides)
       window._pfSlots = FIXED_SCHEDULE_SITE.map(s => {
@@ -2473,71 +2475,81 @@
     tDots.push(d);
   }
 
-  // Only show admin-approved testimonials (approved in admin panel)
-  const approvedTs = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
-  window.loadFeedback().filter(e => approvedTs.has(e.ts)).forEach(addToTestimonials);
-
-  // ── Instagram posts (managed from admin) ─────────────────────────────
-  (function () {
-    const posts = JSON.parse(localStorage.getItem('pf_instagram_v1') || '[]');
-    if (!posts.length) return;
-    const section = document.getElementById('instaSection');
-    const grid    = document.getElementById('instaGrid');
-
-    // Render link cards first — work everywhere, no API needed
-    posts.forEach(url => {
-      const a = document.createElement('a');
-      a.className = 'insta-card reveal';
-      a.href = url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.setAttribute('aria-label', 'View Instagram post');
-      a.innerHTML = `
-        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
-        <span class="insta-card-label">View post</span>
-        <span class="insta-card-arrow">↗</span>`;
-      grid.appendChild(a);
-    });
-
-    section.removeAttribute('hidden');
+  // Only show admin-approved testimonials (fetched from Supabase)
+  (async function() {
+    try {
+      const { data } = await _sb.from('feedback').select('*').eq('approved', true).order('created_at');
+      (data || []).forEach(addToTestimonials);
+    } catch(e) { console.warn('Feedback load:', e); }
   })();
 
-  // ── Club Highlights / Events ──────────────────────────────────────
-  (function () {
-    const events = JSON.parse(localStorage.getItem('pf_events_v1') || '[]');
-    if (!events.length) return;
-    const section = document.getElementById('highlights');
-    const scroll  = document.getElementById('hlScroll');
-    const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const typeSlug = t => t.toLowerCase().replace(/[^a-z]/g,'');
-    events.forEach(ev => {
-      const d   = ev.date ? new Date(ev.date + 'T00:00:00') : null;
-      const day = d ? d.getDate() : '';
-      const mon = d ? MONTHS[d.getMonth()] : '';
-      const card = document.createElement('div');
-      card.className = 'hl-card';
-      if (ev.img) {
-        const bg = document.createElement('div');
-        bg.className = 'hl-card-bg';
-        bg.style.backgroundImage = `url('${ev.img}')`;
-        card.appendChild(bg);
-      }
-      const slug = typeSlug(ev.type || 'other');
-      const typeClass = ['openmat','seminar','competition','kidsevent','specialguest'].includes(slug) ? `hl-type-${slug}` : 'hl-type-other';
-      card.innerHTML += `
-        <span class="hl-type ${typeClass}">${ev.type || 'Event'}</span>
-        <div class="hl-date-row">
-          <div class="hl-cal"><div class="hl-cal-day">${day}</div><div class="hl-cal-mon">${mon}</div></div>
-          <div class="hl-meta">
-            ${ev.time ? `<div class="hl-time">${ev.time}</div>` : ''}
-            ${ev.location ? `<div class="hl-loc">${ev.location}</div>` : ''}
+  // ── Instagram posts (managed from admin, fetched from Supabase) ───────
+  (async function () {
+    try {
+      const { data } = await _sb.from('instagram_posts').select('*').order('ord');
+      const posts = (data || []).map(r => r.url);
+      if (!posts.length) return;
+      const section = document.getElementById('instaSection');
+      const grid    = document.getElementById('instaGrid');
+
+      // Render link cards first — work everywhere, no API needed
+      posts.forEach(url => {
+        const a = document.createElement('a');
+        a.className = 'insta-card reveal';
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.setAttribute('aria-label', 'View Instagram post');
+        a.innerHTML = `
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+          <span class="insta-card-label">View post</span>
+          <span class="insta-card-arrow">↗</span>`;
+        grid.appendChild(a);
+      });
+
+      section.removeAttribute('hidden');
+    } catch(e) { console.warn('Instagram:', e); }
+  })();
+
+  // ── Club Highlights / Events (fetched from Supabase) ─────────────
+  (async function () {
+    try {
+      const { data } = await _sb.from('events').select('*').order('ord');
+      const events = (data || []).map(r => ({ id: r.id, title: r.title, date: r.ev_date, time: r.ev_time, location: r.location, desc: r.description, img: r.img, type: r.type }));
+      if (!events.length) return;
+      const section = document.getElementById('highlights');
+      const scroll  = document.getElementById('hlScroll');
+      const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const typeSlug = t => t.toLowerCase().replace(/[^a-z]/g,'');
+      events.forEach(ev => {
+        const d   = ev.date ? new Date(ev.date + 'T00:00:00') : null;
+        const day = d ? d.getDate() : '';
+        const mon = d ? MONTHS[d.getMonth()] : '';
+        const card = document.createElement('div');
+        card.className = 'hl-card';
+        if (ev.img) {
+          const bg = document.createElement('div');
+          bg.className = 'hl-card-bg';
+          bg.style.backgroundImage = `url('${ev.img}')`;
+          card.appendChild(bg);
+        }
+        const slug = typeSlug(ev.type || 'other');
+        const typeClass = ['openmat','seminar','competition','kidsevent','specialguest'].includes(slug) ? `hl-type-${slug}` : 'hl-type-other';
+        card.innerHTML += `
+          <span class="hl-type ${typeClass}">${ev.type || 'Event'}</span>
+          <div class="hl-date-row">
+            <div class="hl-cal"><div class="hl-cal-day">${day}</div><div class="hl-cal-mon">${mon}</div></div>
+            <div class="hl-meta">
+              ${ev.time ? `<div class="hl-time">${ev.time}</div>` : ''}
+              ${ev.location ? `<div class="hl-loc">${ev.location}</div>` : ''}
+            </div>
           </div>
-        </div>
-        <h3 class="hl-title">${ev.title}</h3>
-        ${ev.desc ? `<p class="hl-desc">${ev.desc}</p>` : ''}`;
-      scroll.appendChild(card);
-    });
-    section.removeAttribute('hidden');
+          <h3 class="hl-title">${ev.title}</h3>
+          ${ev.desc ? `<p class="hl-desc">${ev.desc}</p>` : ''}`;
+        scroll.appendChild(card);
+      });
+      section.removeAttribute('hidden');
+    } catch(e) { console.warn('Highlights:', e); }
   })();
 
 </script>
