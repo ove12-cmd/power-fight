@@ -1006,12 +1006,12 @@
   async function sbLoadSchedule() {
     if (_cache.schedule) return _cache.schedule;
     const { data } = await _sb.from('schedule_overrides').select('*');
-    return (_cache.schedule = (data || []).map(r => ({ id: r.id, day: r.day, dayName: r.day_name, timeStart: r.time_start, timeEnd: r.time_end, hidden: !!r.hidden })));
+    return (_cache.schedule = (data || []).map(r => ({ id: r.id, day: r.day, dayName: r.day_name, timeStart: r.time_start, timeEnd: r.time_end, hidden: !!r.hidden, archived: !!r.archived })));
   }
   async function sbSaveSchedule(items) {
     await _sb.from('schedule_overrides').delete().neq('id', 'x');
     if (items.length) await _sb.from('schedule_overrides').insert(
-      items.map(it => ({ id: it.id, day: it.day, day_name: it.dayName, time_start: it.timeStart, time_end: it.timeEnd, hidden: !!it.hidden }))
+      items.map(it => ({ id: it.id, day: it.day, day_name: it.dayName, time_start: it.timeStart, time_end: it.timeEnd, hidden: !!it.hidden, archived: !!it.archived }))
     );
   }
   async function sbLoadInstagram() {
@@ -1686,7 +1686,8 @@
       grp.innerHTML = `<div class="sched-day-label">${dayName}</div>`;
 
       slots.forEach(s => {
-        if (saved[s.id]?.hidden) return;   // skip deleted rows
+        if (saved[s.id]?.hidden) return;   // skip removed rows entirely
+        const isArchived = !!saved[s.id]?.archived;
         const cur  = saved[s.id] || {};
         const ts   = cur.timeStart || s.defStart;
         const te   = cur.timeEnd   || s.defEnd;
@@ -1699,16 +1700,23 @@
         const row = document.createElement('div');
         row.className = 'sched-slot-row';
         row.dataset.id = s.id;
-        row.style.cssText = 'flex-wrap:wrap;gap:8px';
+        row.style.cssText = `flex-wrap:wrap;gap:8px;${isArchived ? 'opacity:.45;' : ''}`;
         row.innerHTML = `
-          <span class="sched-slot-name" style="min-width:160px;flex:1">${escHtml(s.name)}</span>
+          <span class="sched-slot-name" style="min-width:160px;flex:1${isArchived ? ';text-decoration:line-through;color:var(--ink-mute)' : ''}">${escHtml(s.name)}</span>
           ${s.level ? `<span class="sched-slot-badge">${escHtml(s.level)}</span>` : ''}
+          ${isArchived ? `<span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);border:1px solid var(--line-2);padding:2px 7px">Archived</span>` : ''}
           <span style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap">
+            ${!isArchived ? `
             <select class="sl-day" style="${inpStyle};width:130px">${dayOptsHtml}</select>
             <input type="time" class="sl-start" value="${ts}" style="${inpStyle};width:106px">
             <span style="color:var(--ink-mute);font-size:11px">–</span>
-            <input type="time" class="sl-end" value="${te}" style="${inpStyle};width:106px">
-            <button type="button" onclick="scheduleRemove('${s.id}')" title="Remove this class"
+            <input type="time" class="sl-end" value="${te}" style="${inpStyle};width:106px">` : ''}
+            ${isArchived
+              ? `<button type="button" onclick="scheduleRestore('${s.id}')" title="Publish again"
+                   style="background:none;border:1px solid rgba(199,255,63,.35);color:var(--lime);cursor:pointer;padding:4px 10px;font-size:11px;letter-spacing:.04em">Publish</button>`
+              : `<button type="button" onclick="scheduleArchive('${s.id}')" title="Unpublish (hide from site, keep in admin)"
+                   style="background:none;border:1px solid var(--line-2);color:var(--ink-mute);cursor:pointer;padding:4px 10px;font-size:11px;letter-spacing:.04em">Unpublish</button>`}
+            <button type="button" onclick="scheduleRemove('${s.id}')" title="Remove entirely"
               style="background:none;border:1px solid rgba(255,77,109,.3);color:var(--red);cursor:pointer;padding:4px 9px;font-size:13px;line-height:1">✕</button>
           </span>`;
         grp.appendChild(row);
@@ -1721,7 +1729,7 @@
     const overrides = [];
     // Re-include hidden overrides from cache so they aren't lost on save
     const currentOverrides = _cache.schedule || await sbLoadSchedule();
-    currentOverrides.filter(o => o.hidden).forEach(o => overrides.push(o));
+    currentOverrides.filter(o => o.hidden || o.archived).forEach(o => overrides.push(o));
     document.querySelectorAll('#scheduleEditorCard .sched-slot-row[data-id]').forEach(row => {
       const id   = row.dataset.id;
       const slot = FIXED_SCHEDULE.find(s => s.id === id);
@@ -1751,10 +1759,43 @@
     toast('Schedule reset to defaults');
   });
 
+  window.scheduleArchive = async id => {
+    const slot = FIXED_SCHEDULE.find(s => s.id === id);
+    if (!slot) return;
+    const overrides = _cache.schedule ? [..._cache.schedule] : await sbLoadSchedule();
+    const existing  = overrides.findIndex(o => o.id === id);
+    const entry = { id, day: slot.day, dayName: slot.dayName, timeStart: slot.defStart, timeEnd: slot.defEnd, archived: true };
+    if (existing !== -1) overrides[existing] = { ...overrides[existing], archived: true, hidden: false };
+    else overrides.push(entry);
+    _cache.schedule = overrides;
+    renderSchedule(overrides);
+    sbSaveSchedule(overrides).catch(() => { delete _cache.schedule; renderSchedule(); });
+    toast('Class unpublished — still visible in admin, hidden from site');
+  };
+
+  window.scheduleRestore = async id => {
+    const overrides = _cache.schedule ? [..._cache.schedule] : await sbLoadSchedule();
+    const idx = overrides.findIndex(o => o.id === id);
+    if (idx !== -1) {
+      // Remove archived/hidden flags; if it's otherwise at defaults, drop the override entirely
+      const o = overrides[idx];
+      const slot = FIXED_SCHEDULE.find(s => s.id === id);
+      const isDefault = slot && o.day === slot.day && o.timeStart === slot.defStart && o.timeEnd === slot.defEnd;
+      if (isDefault) overrides.splice(idx, 1);
+      else overrides[idx] = { ...o, archived: false, hidden: false };
+    }
+    _cache.schedule = overrides;
+    renderSchedule(overrides);
+    sbSaveSchedule(overrides).catch(() => { delete _cache.schedule; renderSchedule(); });
+    toast('Class published on site ✓');
+  };
+
   window.scheduleRemove = async id => {
     const slot = FIXED_SCHEDULE.find(s => s.id === id);
     if (!slot) return;
-    if (!confirm(`Remove "${slot.name}" from the schedule? (Reset button restores it)`)) return;
+    if (!confirm(`Remove "${slot.name}" entirely? (Tip: use Unpublish to just hide it from the site while keeping it here)
+
+Reset button restores removed classes.`)) return;
     const overrides = _cache.schedule ? [..._cache.schedule] : await sbLoadSchedule();
     const existing  = overrides.findIndex(o => o.id === id);
     const hiddenEntry = { id, day: slot.day, dayName: slot.dayName, timeStart: slot.defStart, timeEnd: slot.defEnd, hidden: true };

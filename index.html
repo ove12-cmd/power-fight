@@ -1755,10 +1755,11 @@
     try {
       const ov = {};
       const { data: schedData } = await _sb.from('schedule_overrides').select('*');
-      (schedData || []).forEach(o => { ov[o.id] = { id: o.id, day: o.day, dayName: o.day_name, timeStart: o.time_start, timeEnd: o.time_end }; });
+      (schedData || []).forEach(o => { if (o.hidden || o.archived) return; ov[o.id] = { id: o.id, day: o.day, dayName: o.day_name, timeStart: o.time_start, timeEnd: o.time_end }; });
+      const _hiddenIds = new Set((schedData || []).filter(o => o.hidden || o.archived).map(o => o.id));
 
       // Build effective slots (apply overrides)
-      window._pfSlots = FIXED_SCHEDULE_SITE.map(s => {
+      window._pfSlots = FIXED_SCHEDULE_SITE.filter(s => !_hiddenIds.has(s.id)).map(s => {
         const o = ov[s.id];
         return o ? {...s, day: o.day ?? s.day, dayName: o.dayName ?? s.dayName,
                        timeStart: o.timeStart ?? s.defStart, timeEnd: o.timeEnd ?? s.defEnd}
