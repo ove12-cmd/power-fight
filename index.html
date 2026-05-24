@@ -1149,36 +1149,7 @@
 <!-- RESULTS TICKER -->
 <div class="ticker-wrap" id="tickerWrap">
   <div class="ticker-scroll" aria-hidden="true">
-  <div class="ticker-track">
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Emil Larsen &mdash; UAE Championship 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥈</span> Sofia Brandt &mdash; Swiss Open 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Niklas Voss &mdash; Nordic MMA Championships 2023</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Amara Mbeki &mdash; Basel Combat Sports Cup 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥈</span> Jonas Lie &mdash; IMMAF European Open 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Karoline Vold &mdash; Swiss Grappling Open 2023</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥉</span> Petter Haugen &mdash; European Striking Masters 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Emil Larsen &mdash; UAE Championship 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥈</span> Sofia Brandt &mdash; Swiss Open 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Niklas Voss &mdash; Nordic MMA Championships 2023</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Amara Mbeki &mdash; Basel Combat Sports Cup 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥈</span> Jonas Lie &mdash; IMMAF European Open 2024</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥇</span> Karoline Vold &mdash; Swiss Grappling Open 2023</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item"><span class="ticker-medal">🥉</span> Petter Haugen &mdash; European Striking Masters 2024</span>
-    <span class="ticker-sep">·</span>
-  </div>
+  <div class="ticker-track"></div>
   </div>
   <button class="ticker-close" id="tickerClose" aria-label="Close ticker">
     <svg viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg>
@@ -1758,8 +1729,7 @@
       if (!track) return;
       const sep = '<span class="ticker-sep">·</span>';
       const html = items.map(i => `<span class="ticker-item">${i.medal ? `<span class="ticker-medal">${i.medal}</span> ` : ''}${i.text}</span>${sep}`).join('');
-      track.insertAdjacentHTML('afterbegin', html);
-      track.innerHTML += track.innerHTML;
+      track.innerHTML = html + html;
     } catch(e) { console.warn('Ticker:', e); }
   })();
 
