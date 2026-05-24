@@ -1121,7 +1121,7 @@
     });
   }
 
-  document.getElementById('addTickerBtn').addEventListener('click', () => {
+  document.getElementById('addTickerBtn').addEventListener('click', async () => {
     const text = document.getElementById('tText').value.trim();
     if (!text) { document.getElementById('tText').focus(); return; }
     const medal = document.getElementById('tMedal').value;
