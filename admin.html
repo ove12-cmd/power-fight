@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin — Power Fight</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#040505;--bg-2:#0a0b0c;--bg-3:#111213;
+    --line:rgba(231,255,164,0.08);--line-2:rgba(255,255,255,0.06);--line-3:rgba(255,255,255,0.1);
+    --ink:#e8e8e4;--ink-dim:#8a8c86;--ink-mute:#4a4c47;
+    --lime:#C7FF3F;--lime-glow:rgba(199,255,63,0.55);--lime-bg:rgba(199,255,63,0.08);
+    --red:#FF4D6D;--red-bg:rgba(255,77,109,0.1);
+    --display:"Clash Display",ui-sans-serif,system-ui,sans-serif;
+    --sans:"General Sans",ui-sans-serif,system-ui,sans-serif;
+    --sidebar:220px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;height:100%;overflow:hidden}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;cursor:pointer}
+  input,textarea,select{font:inherit;color:inherit}
+  ::selection{background:var(--lime);color:#000}
+
+  /* ── LOGIN ────────────────────────────────────────────────────── */
+  #loginScreen{
+    position:fixed;inset:0;z-index:999;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--bg);
+  }
+  .login-box{
+    width:100%;max-width:380px;padding:24px;
+    display:flex;flex-direction:column;align-items:center;gap:32px;
+  }
+  .login-logo{height:60px;width:auto;display:block;filter:brightness(0) invert(1)}
+  .login-title{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.01em;text-align:center}
+  .login-sub{font-size:13px;color:var(--ink-dim);text-align:center;margin-top:-22px}
+  .login-form{width:100%;display:flex;flex-direction:column;gap:12px}
+  .login-field{position:relative}
+  .login-field input{
+    width:100%;background:var(--bg-2);border:1px solid var(--line-2);
+    padding:14px 16px;font-size:14px;color:var(--ink);outline:none;
+    transition:border-color .2s;letter-spacing:.04em;
+  }
+  .login-field input:focus{border-color:rgba(199,255,63,.4)}
+  .login-btn{
+    width:100%;padding:14px;background:transparent;color:var(--lime);
+    border:1px solid rgba(199,255,63,.4);font-family:var(--display);font-size:13px;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+    transition:background .2s,border-color .2s;
+  }
+  .login-btn:hover{background:var(--lime-bg);border-color:rgba(199,255,63,.65)}
+  .login-err{
+    font-size:12px;color:var(--red);text-align:center;
+    padding:8px 12px;background:var(--red-bg);border:1px solid rgba(255,77,109,.2);
+    display:none;
+  }
+  .login-err.show{display:block}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .login-box.shake{animation:shake .35s ease}
+
+  /* ── DASHBOARD SHELL ─────────────────────────────────────────── */
+  #dashboard{display:none;height:100vh;overflow:hidden}
+  #dashboard.visible{display:flex}
+
+  /* ── SIDEBAR ──────────────────────────────────────────────────── */
+  #sidebar{
+    width:var(--sidebar);flex-shrink:0;
+    background:var(--bg-2);border-right:1px solid var(--line-2);
+    display:flex;flex-direction:column;height:100vh;overflow-y:auto;
+  }
+  .sb-logo{padding:24px 20px 20px;border-bottom:1px solid var(--line-2)}
+  .sb-logo img{height:32px;width:auto;display:block}
+  .sb-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute);padding:20px 20px 8px}
+  .sb-nav{display:flex;flex-direction:column;gap:2px;padding:0 10px}
+  .sb-link{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;font-size:13px;letter-spacing:.04em;
+    color:var(--ink-dim);border-radius:0;cursor:pointer;
+    border:none;background:none;text-align:left;width:100%;
+    transition:color .2s,background .2s;
+  }
+  .sb-link svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  .sb-link:hover{color:var(--ink);background:var(--bg-3)}
+  .sb-link.active{color:var(--lime);background:none;box-shadow:inset 2px 0 0 var(--lime)}
+  .sb-link.active svg{stroke:var(--lime)}
+  .sb-badge{margin-left:auto;font-size:10px;background:transparent;color:var(--lime);padding:1px 7px;font-weight:700;border-radius:2px;min-width:20px;text-align:center;border:1px solid rgba(199,255,63,.35)}
+  .sb-footer{margin-top:auto;padding:16px 10px;border-top:1px solid var(--line-2)}
+  .sb-logout{
+    display:flex;align-items:center;gap:8px;
+    width:100%;padding:9px 12px;background:none;border:1px solid var(--line-2);
+    font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-dim);cursor:pointer;transition:color .2s,border-color .2s;
+  }
+  .sb-logout:hover{color:var(--red);border-color:var(--red)}
+  .sb-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round}
+
+  /* ── MAIN CONTENT ─────────────────────────────────────────────── */
+  #content{flex:1;overflow-y:auto;height:100vh;background:var(--bg)}
+
+  /* ── PANEL HEADER ─────────────────────────────────────────────── */
+  .panel-head{
+    padding:32px 36px 28px;
+    border-bottom:1px solid var(--line-2);
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;position:sticky;top:0;z-index:10;
+    background:rgba(4,5,5,.92);backdrop-filter:blur(12px);
+  }
+  .panel-title{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.01em}
+  .panel-subtitle{font-size:13px;color:var(--ink-dim);margin-top:2px}
+
+  /* ── PANEL BODY ───────────────────────────────────────────────── */
+  .panel-body{padding:32px 36px;display:flex;flex-direction:column;gap:32px}
+
+  /* ── CARDS ────────────────────────────────────────────────────── */
+  .adm-card{background:var(--bg-2);border:1px solid var(--line-2)}
+  .adm-card-head{
+    padding:18px 24px;border-bottom:1px solid var(--line-2);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .adm-card-title{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim)}
+  .adm-card-body{padding:24px}
+
+  /* ── BUTTONS ──────────────────────────────────────────────────── */
+  .btn-adm{
+    display:inline-flex;align-items:center;gap:7px;
+    padding:9px 18px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    border:1px solid var(--line-2);cursor:pointer;font-family:var(--sans);font-weight:600;
+    transition:background .2s,border-color .2s,color .2s;
+  }
+  .btn-adm svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+  .btn-lime{background:transparent;color:var(--lime);border-color:rgba(199,255,63,.35)}
+  .btn-lime:hover{background:var(--lime-bg);border-color:rgba(199,255,63,.6)}
+  .btn-ghost{background:transparent;color:var(--ink-dim);border-color:var(--line-2)}
+  .btn-ghost:hover{color:var(--ink);border-color:var(--line-3)}
+  .btn-danger{background:var(--red-bg);color:var(--red);border:1px solid rgba(255,77,109,.2)}
+
+  /* ── TOGGLE SWITCH ───────────────────────────────────────────────── */
+  .adm-toggle{display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+  .adm-toggle input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+  .adm-toggle-track{
+    position:relative;width:38px;height:22px;
+    background:var(--line-2);border-radius:11px;
+    transition:background .2s;flex-shrink:0;
+  }
+  .adm-toggle-track::after{
+    content:'';position:absolute;top:3px;left:3px;
+    width:16px;height:16px;border-radius:50%;
+    background:var(--ink-mute);transition:left .2s,background .2s;
+  }
+  .adm-toggle input:checked + .adm-toggle-track{background:var(--lime)}
+  .adm-toggle input:checked + .adm-toggle-track::after{left:19px;background:#040505}
+  .adm-toggle-text{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);transition:color .2s}
+  .adm-toggle input:checked ~ .adm-toggle-text{color:var(--lime)}
+  .btn-icon{padding:7px;background:none;border:1px solid var(--line-2);color:var(--ink-dim);transition:color .2s,border-color .2s}
+  .btn-icon:hover{color:var(--red);border-color:rgba(255,77,109,.4)}
+  .btn-icon svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;display:block}
+
+  /* ── FORM FIELDS ──────────────────────────────────────────────── */
+  .adm-form{display:grid;gap:16px}
+  .adm-form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .adm-form-row.cols3{grid-template-columns:1fr 1fr 1fr}
+  .adm-field{display:flex;flex-direction:column;gap:6px}
+  .adm-field label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim)}
+  .adm-field input,.adm-field textarea,.adm-field select{
+    background:var(--bg);border:1px solid var(--line-2);
+    padding:10px 12px;font-size:14px;color:var(--ink);outline:none;
+    transition:border-color .25s;width:100%;
+  }
+  .adm-field input:focus,.adm-field textarea:focus,.adm-field select:focus{border-color:rgba(199,255,63,.4)}
+  .adm-field textarea{resize:vertical;min-height:80px}
+  .adm-field select{appearance:none;-webkit-appearance:none;cursor:pointer}
+  .adm-field-hint{font-size:11px;color:var(--ink-mute);margin-top:2px}
+
+  /* ── EMPTY STATE ──────────────────────────────────────────────── */
+  .empty-state{
+    padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;
+  }
+  .empty-state svg{width:40px;height:40px;stroke:var(--ink-mute);fill:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
+  .empty-state p{font-size:13px;color:var(--ink-mute)}
+
+  /* ── TICKER ITEMS LIST ────────────────────────────────────────── */
+  .ticker-list{display:flex;flex-direction:column}
+  .ticker-row{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 20px;border-bottom:1px solid var(--line-2);
+    transition:background .15s;
+  }
+  .ticker-row:last-child{border-bottom:none}
+  .ticker-row:hover{background:var(--bg-3)}
+  .ticker-row-medal{font-size:18px;flex-shrink:0;width:28px;text-align:center}
+  .ticker-row-text{flex:1;min-width:0;font-size:14px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ticker-row-type{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;background:var(--lime-bg);color:var(--lime);flex-shrink:0}
+  .ticker-row-actions{display:flex;gap:6px;flex-shrink:0}
+
+  /* ── GALLERY GRID ────────────────────────────────────────────── */
+  .adm-gallery-filter{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:20px}
+  .adm-gf-tab{
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    padding:6px 14px;background:none;border:1px solid var(--line-2);
+    color:var(--ink-dim);cursor:pointer;transition:color .2s,border-color .2s,background .2s;
+  }
+  .adm-gf-tab:hover{color:var(--ink)}
+  .adm-gf-tab.active{color:var(--lime);border-color:rgba(199,255,63,.35);background:var(--lime-bg)}
+
+  .adm-img-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;
+  }
+  .adm-img-item{
+    position:relative;aspect-ratio:1;overflow:hidden;background:var(--bg-3);
+    cursor:pointer;
+  }
+  .adm-img-item img,.adm-img-item video{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .4s ease;
+  }
+  .adm-img-item:hover img,.adm-img-item:hover video{transform:scale(1.05)}
+  .adm-img-overlay{
+    position:absolute;inset:0;background:rgba(4,5,5,.6);
+    opacity:0;transition:opacity .2s;
+    display:flex;align-items:flex-end;justify-content:space-between;
+    padding:10px;
+  }
+  .adm-img-item:hover .adm-img-overlay{opacity:1}
+  .adm-img-cat{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);background:rgba(4,5,5,.8);padding:2px 7px}
+  .adm-img-del{width:28px;height:28px;background:var(--red-bg);border:1px solid rgba(255,77,109,.3);display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0}
+  .adm-img-del svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+  .adm-upload-btn{
+    position:relative;overflow:hidden;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 20px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    background:transparent;border:1px dashed rgba(199,255,63,.35);
+    color:var(--lime);cursor:pointer;font-family:var(--sans);font-weight:600;
+    transition:background .2s,border-color .2s;
+  }
+  .adm-upload-btn:hover{background:var(--lime-bg);border-color:rgba(199,255,63,.6)}
+  .adm-upload-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+  .adm-upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+  .adm-upload-note{font-size:11px;color:var(--ink-mute);margin-top:10px}
+
+  /* ── EVENTS LIST ─────────────────────────────────────────────── */
+  .event-list{display:flex;flex-direction:column}
+  .event-row{
+    display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
+    padding:16px 20px;border-bottom:1px solid var(--line-2);
+    transition:background .15s;
+  }
+  .event-row:last-child{border-bottom:none}
+  .event-row:hover{background:var(--bg-3)}
+  .event-date-block{
+    text-align:center;min-width:48px;
+    background:var(--lime-bg);border:1px solid rgba(199,255,63,.15);
+    padding:8px 10px;
+  }
+  .event-date-day{font-family:var(--display);font-size:22px;font-weight:700;color:var(--lime);line-height:1}
+  .event-date-mon{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:2px}
+  .event-info{min-width:0}
+  .event-title{font-size:15px;font-family:var(--display);font-weight:700;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .event-meta{font-size:12px;color:var(--ink-dim)}
+  .event-actions{display:flex;gap:6px;flex-shrink:0}
+
+  /* ── TOAST ───────────────────────────────────────────────────── */
+  #toast{
+    position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--bg-2);border:1px solid var(--lime);
+    padding:10px 22px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--lime);z-index:9999;opacity:0;transition:opacity .3s,transform .3s;
+    pointer-events:none;white-space:nowrap;
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ── SCHEDULE SLOT LIST ─────────────────────────────────────────── */
+  .sched-day-group{padding:16px 20px 4px;border-bottom:1px solid var(--line-2)}
+  .sched-day-group:last-child{border-bottom:none}
+  .sched-day-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);margin-bottom:8px}
+  .sched-slot-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+  .sched-slot-row:last-child{border-bottom:none}
+  .sched-slot-time{font-size:12px;font-weight:600;color:var(--ink);min-width:120px;flex-shrink:0}
+  .sched-slot-name{flex:1;font-size:14px;color:var(--ink)}
+  .sched-slot-badge{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:var(--bg-3);border:1px solid var(--line-2);color:var(--ink-dim);flex-shrink:0}
+
+  /* ── REVIEW CARDS ────────────────────────────────────────────────── */
+  .review-row{padding:20px 24px;border-bottom:1px solid var(--line-2);transition:background .15s}
+  .review-row:last-child{border-bottom:none}
+  .review-row:hover{background:var(--bg-3)}
+  .review-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .review-name{font-size:14px;font-family:var(--display);font-weight:700;color:var(--ink)}
+  .review-training{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);padding:2px 8px;border:1px solid var(--line-2)}
+  .review-stars{color:#FACC15;font-size:13px;letter-spacing:2px}
+  .review-approved{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);border:1px solid rgba(199,255,63,.3);padding:2px 8px;margin-left:auto}
+  .review-text{font-size:14px;line-height:1.6;color:var(--ink-dim);margin-bottom:6px}
+  .review-date{font-size:10px;color:var(--ink-mute);margin-bottom:10px}
+  .review-actions{display:flex;gap:8px}
+
+  /* ── SCROLLBAR ───────────────────────────────────────────────── */
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-track{background:var(--bg-2)}
+  ::-webkit-scrollbar-thumb{background:var(--line-3);border-radius:2px}
+
+  /* ── RESPONSIVE ──────────────────────────────────────────────── */
+  @media(max-width:700px){
+    :root{--sidebar:100%}
+    #sidebar{width:100%;height:auto;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--line-2)}
+    .sb-logo,.sb-label,.sb-footer{display:none}
+    .sb-nav{flex-direction:row;padding:8px;width:100%;gap:4px}
+    .sb-link{flex-direction:column;gap:4px;padding:8px;font-size:10px;flex:1;align-items:center;text-align:center}
+    .sb-badge{margin:0}
+    #dashboard.visible{flex-direction:column}
+    #content{height:calc(100vh - 80px)}
+    .panel-head{padding:20px 20px 16px}
+    .panel-body{padding:20px}
+    .adm-form-row{grid-template-columns:1fr}
+    .adm-form-row.cols3{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ──────────────────────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-box" id="loginBox">
+    <img class="login-logo" src="logo2.png" alt="Power Fight">
+    <div>
+      <div class="login-title">Admin Access</div>
+      <p class="login-sub" style="margin-top:6px">Power Fight Management Panel</p>
+    </div>
+    <form class="login-form" id="loginForm" novalidate>
+      <div class="login-field">
+        <input type="password" id="loginPwd" placeholder="Enter password" autocomplete="current-password" autofocus>
+      </div>
+      <div class="login-err" id="loginErr">Incorrect password. Try again.</div>
+      <button class="login-btn" type="submit">Enter</button>
+    </form>
+    <p style="font-size:11px;color:var(--ink-mute);text-align:center">Power Fight · Admin Panel</p>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ─────────────────────────────────────────────────── -->
+<div id="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-logo">
+      <img src="logo2.png" alt="Power Fight">
+    </div>
+
+    <div class="sb-label">Content</div>
+    <nav class="sb-nav">
+      <button class="sb-link active" data-tab="ticker">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M5 6h14M5 18h8"/></svg>
+        <span>Ticker</span>
+        <span class="sb-badge" id="badgeTicker">0</span>
+      </button>
+      <button class="sb-link" data-tab="gallery">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>Gallery</span>
+        <span class="sb-badge" id="badgeGallery">0</span>
+      </button>
+      <button class="sb-link" data-tab="events">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="1"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Highlights</span>
+        <span class="sb-badge" id="badgeEvents">0</span>
+      </button>
+      <button class="sb-link" data-tab="schedule">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Schedule</span>
+        <span class="sb-badge" id="badgeSchedule">0</span>
+      </button>
+      <button class="sb-link" data-tab="testimonials">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>Reviews</span>
+        <span class="sb-badge" id="badgeReviews">0</span>
+      </button>
+      <button class="sb-link" data-tab="instagram">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <span>Instagram</span>
+        <span class="sb-badge" id="badgeInstagram">0</span>
+      </button>
+    </nav>
+
+    <div class="sb-label">Site</div>
+    <nav class="sb-nav">
+      <a class="sb-link" href="index.html" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        <span>Home</span>
+      </a>
+    </nav>
+
+    <div class="sb-footer">
+      <button class="sb-logout" id="logoutBtn">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENT AREA -->
+  <main id="content">
+
+    <!-- ── TICKER TAB ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="tabTicker">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Ticker / Announcements</div>
+          <div class="panel-subtitle">Items that scroll in the bar below the navigation on the home page</div>
+        </div>
+        <label class="adm-toggle" title="Show or hide the ticker bar on the homepage">
+          <input type="checkbox" id="tickerEnabled">
+          <span class="adm-toggle-track"></span>
+          <span class="adm-toggle-text">Live</span>
+        </label>
+      </div>
+      <div class="panel-body">
+
+        <!-- Add form -->
+        <div class="adm-card">
+          <div class="adm-card-head">
+            <span class="adm-card-title">Add Item</span>
+          </div>
+          <div class="adm-card-body">
+            <div class="adm-form">
+              <div class="adm-form-row cols3">
+                <div class="adm-field">
+                  <label>Medal / Icon</label>
+                  <select id="tMedal">
+                    <option value="🥇">🥇 Gold</option>
+                    <option value="🥈">🥈 Silver</option>
+                    <option value="🥉">🥉 Bronze</option>
+                    <option value="🏆">🏆 Trophy</option>
+                    <option value="⚡">⚡ Lightning</option>
+                    <option value="📢">📢 Announcement</option>
+                    <option value="🎯">🎯 Target</option>
+                    <option value="">— None</option>
+                  </select>
+                </div>
+                <div class="adm-field" style="grid-column:span 2">
+                  <label>Text</label>
+                  <input type="text" id="tText" placeholder="e.g. Emil Larsen — Swiss Open 2025" maxlength="120">
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end">
+                <button class="btn-adm btn-lime" id="addTickerBtn">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add to Ticker
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current items -->
+        <div class="adm-card">
+          <div class="adm-card-head">
+            <span class="adm-card-title">Current Items</span>
+            <button class="btn-adm btn-ghost" id="clearTickerBtn" style="font-size:10px;padding:6px 12px">Clear All</button>
+          </div>
+          <div id="tickerList">
+            <div class="empty-state" id="tickerEmpty">
+              <svg viewBox="0 0 24 24"><path d="M5 12h14M5 6h14M5 18h8"/></svg>
+              <p>No items yet — add your first ticker entry above</p>
+            </div>
+            <div class="ticker-list" id="tickerItems"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GALLERY TAB ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="tabGallery" style="display:none">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Gallery</div>
+          <div class="panel-subtitle">Images and videos shown on the gallery page</div>
+        </div>
+        <label class="adm-upload-btn">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Images
+          <input type="file" id="galleryUpload" accept="image/*,video/*" multiple>
+        </label>
+      </div>
+      <div class="panel-body">
+
+        <!-- Upload settings -->
+        <div class="adm-card" id="uploadSettingsCard" style="display:none">
+          <div class="adm-card-head"><span class="adm-card-title">Upload Settings</span></div>
+          <div class="adm-card-body">
+            <div class="adm-form-row">
+              <div class="adm-field">
+                <label>Category</label>
+                <select id="uploadCat">
+                  <option value="trainings">Trainings</option>
+                  <option value="events">Events</option>
+                  <option value="special-guests">Special Guests</option>
+                  <option value="videos">Videos</option>
+                </select>
+              </div>
+              <div class="adm-field">
+                <label>Date</label>
+                <input type="date" id="uploadDate">
+              </div>
+            </div>
+            <div id="uploadPreviews" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-top:16px"></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:16px;gap:10px">
+              <button class="btn-adm btn-ghost" id="cancelUploadBtn">Cancel</button>
+              <button class="btn-adm btn-lime" id="confirmUploadBtn">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Save to Gallery
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="adm-upload-note">Tip — images are stored in the browser. For production, use a cloud storage service.</p>
+
+        <!-- Filter -->
+        <div class="adm-gallery-filter" id="galleryFilter">
+          <button class="adm-gf-tab active" data-gf="all">All</button>
+          <button class="adm-gf-tab" data-gf="trainings">Trainings</button>
+          <button class="adm-gf-tab" data-gf="events">Events</button>
+          <button class="adm-gf-tab" data-gf="special-guests">Special Guests</button>
+          <button class="adm-gf-tab" data-gf="videos">Videos</button>
+        </div>
+
+        <!-- Grid -->
+        <div id="galleryGridWrap">
+          <div class="empty-state" id="galleryEmpty">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <p>No images uploaded yet — use the Upload button above</p>
+          </div>
+          <div class="adm-img-grid" id="galleryGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EVENTS TAB ─────────────────────────────────────────────── -->
+    <div class="tab-panel" id="tabEvents" style="display:none">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Highlights</div>
+          <div class="panel-subtitle">Seminars, competitions, open mats, and other highlights</div>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <!-- Add / edit form -->
+        <div class="adm-card" id="eventFormCard">
+          <div class="adm-card-head">
+            <span class="adm-card-title" id="eventFormTitle">Add Event</span>
+          </div>
+          <div class="adm-card-body">
+            <div class="adm-form">
+              <div class="adm-form-row cols3">
+                <div class="adm-field" style="grid-column:span 2">
+                  <label>Event Title</label>
+                  <input type="text" id="evTitle" placeholder="e.g. Open Mat Saturday">
+                </div>
+                <div class="adm-field">
+                  <label>Type / Tag</label>
+                  <select id="evType">
+                    <option value="Open Mat">Open Mat</option>
+                    <option value="Seminar">Seminar</option>
+                    <option value="Competition">Competition</option>
+                    <option value="Kids Event">Kids Event</option>
+                    <option value="Special Guest">Special Guest</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Date</label>
+                  <input type="date" id="evDate">
+                </div>
+                <div class="adm-field">
+                  <label>Time</label>
+                  <input type="time" id="evTime" placeholder="10:00">
+                </div>
+              </div>
+              <div class="adm-field">
+                <label>Location</label>
+                <input type="text" id="evLocation" placeholder="Power Fight Gym — Pfeffingerring 201, Aesch">
+              </div>
+              <div class="adm-field">
+                <label>Description</label>
+                <textarea id="evDesc" placeholder="What's happening, who it's for, any requirements…"></textarea>
+              </div>
+              <div class="adm-field">
+                <label>Cover Image URL <span style="color:var(--ink-mute)">(optional)</span></label>
+                <input type="url" id="evImg" placeholder="https://…">
+                <span class="adm-field-hint">Paste a link to an image hosted online</span>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px">
+                <button class="btn-adm btn-ghost" id="cancelEventBtn" style="display:none">Cancel</button>
+                <button class="btn-adm btn-lime" id="saveEventBtn">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span id="saveEventLabel">Add Event</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event list -->
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Upcoming Highlights</span></div>
+          <div id="eventListWrap">
+            <div class="empty-state" id="eventEmpty">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="1"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <p>No events yet — add your first event above</p>
+            </div>
+            <div class="event-list" id="eventList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SCHEDULE TAB ──────────────────────────────────────────────── -->
+    <div class="tab-panel" id="tabSchedule" style="display:none">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Weekly Schedule</div>
+          <div class="panel-subtitle">Edit class times — class names stay the same</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-adm btn-ghost" id="resetScheduleBtn">Reset to defaults</button>
+          <button class="btn-adm btn-lime" id="saveScheduleBtn">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="adm-card" id="scheduleEditorCard"></div>
+      </div>
+    </div>
+
+    <!-- ── TESTIMONIALS TAB ──────────────────────────────────────────── -->
+    <div class="tab-panel" id="tabTestimonials" style="display:none">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Reviews</div>
+          <div class="panel-subtitle">Approve or delete submitted feedback — only approved reviews appear on the site</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Submitted Reviews</span></div>
+          <div id="reviewListWrap">
+            <div class="empty-state" id="reviewEmpty">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <p>No reviews submitted yet</p>
+            </div>
+            <div id="reviewList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── INSTAGRAM TAB ─────────────────────────────────────────────── -->
+    <div class="tab-panel" id="tabInstagram" style="display:none">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Instagram Posts</div>
+          <div class="panel-subtitle">Paste post URLs — they appear in the Instagram section on the homepage</div>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <!-- Add form -->
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Add Post</span></div>
+          <div class="adm-card-body">
+            <div class="adm-form">
+              <div class="adm-field">
+                <label>Instagram Post URL</label>
+                <input type="url" id="igUrl" placeholder="https://www.instagram.com/p/ABC123xyz/" />
+                <span class="adm-field-hint">Open the post on Instagram → copy the URL from the address bar</span>
+              </div>
+              <div style="display:flex;justify-content:flex-end">
+                <button class="btn-adm btn-lime" id="addIgBtn">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add Post
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Post list -->
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Active Posts</span><span style="font-size:11px;color:var(--ink-dim)">drag to reorder</span></div>
+          <div id="igListWrap">
+            <div class="empty-state" id="igEmpty">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              <p>No posts added yet</p>
+            </div>
+            <div id="igList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+  // ── CONFIG ────────────────────────────────────────────────────────
+  const PASSWORD = 'powerfight';   // ← change this to your preferred password
+
+  const KEYS = {
+    ticker:    'pf_ticker_v1',
+    gallery:   'pf_gallery_v1',
+    events:    'pf_events_v1',
+    schedule:  'pf_schedule_v1',
+    reviews:   'pf_feedback_v1',
+    instagram: 'pf_instagram_v1',
+  };
+
+  // ── STORAGE ───────────────────────────────────────────────────────
+  function load(key) { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } }
+  function save(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) { toast('Storage full — delete some images first', true); } }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  // ── SCHEDULE DATA (declared early so renderSchedule() works on first renderAll) ──
+  const FIXED_SCHEDULE = [
+    {id:'1-17', day:1, dayName:'Monday',    name:'MMA Striking',          level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00'},
+    {id:'1-18', day:1, dayName:'Monday',    name:'Striking / Grappling',  level:'Amateur',        defStart:'18:00', defEnd:'19:00'},
+    {id:'1-19', day:1, dayName:'Monday',    name:'MMA Grappling',         level:'',               defStart:'19:00', defEnd:'20:30'},
+    {id:'2-17', day:2, dayName:'Tuesday',   name:'MMA Striking',          level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00'},
+    {id:'2-18', day:2, dayName:'Tuesday',   name:'MMA Striking',          level:'Amateur',        defStart:'18:00', defEnd:'19:00'},
+    {id:'2-19', day:2, dayName:'Tuesday',   name:'MMA Striking',          level:'',               defStart:'19:00', defEnd:'20:30'},
+    {id:'3-17', day:3, dayName:'Wednesday', name:'MMA Striking',          level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00'},
+    {id:'3-18', day:3, dayName:'Wednesday', name:'MMA Striking',          level:'Amateur',        defStart:'18:00', defEnd:'19:00'},
+    {id:'3-19', day:3, dayName:'Wednesday', name:'MMA Grappling',         level:'',               defStart:'19:00', defEnd:'20:30'},
+    {id:'4-16', day:4, dayName:'Thursday',  name:'Kids MMA',              level:'Ages 5–9',       defStart:'16:00', defEnd:'17:00'},
+    {id:'4-17', day:4, dayName:'Thursday',  name:'MMA Striking',          level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00'},
+    {id:'4-18', day:4, dayName:'Thursday',  name:'Fight S&C',             level:'',               defStart:'18:00', defEnd:'19:00'},
+    {id:'4-19', day:4, dayName:'Thursday',  name:'MMA Striking',          level:'',               defStart:'19:00', defEnd:'20:30'},
+    {id:'5-18', day:5, dayName:'Friday',    name:'MMA Striking Sparring', level:'',               defStart:'18:00', defEnd:'19:00'},
+    {id:'5-19', day:5, dayName:'Friday',    name:'MMA Sparring',          level:'',               defStart:'19:00', defEnd:'20:30'},
+  ];
+  const DAY_OPTS = [
+    {v:1,l:'Monday'},{v:2,l:'Tuesday'},{v:3,l:'Wednesday'},
+    {v:4,l:'Thursday'},{v:5,l:'Friday'},{v:6,l:'Saturday'},{v:7,l:'Sunday'},
+  ];
+  const inpStyle = 'background:var(--bg);border:1px solid var(--line-2);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;outline:none';
+
+  // ── MUTABLE STATE (declared early so renderAll() can access them safely) ──
+  let toastTimer;
+  let pendingFiles = [];   // gallery upload queue
+  let galleryFilter = 'all';
+  let editingEventId = null;
+
+  // ── TOAST ─────────────────────────────────────────────────────────
+  function toast(msg, isErr) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.style.borderColor = isErr ? 'var(--red)' : 'var(--lime)';
+    el.style.color = isErr ? 'var(--red)' : 'var(--lime)';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
+  // ── AUTH ──────────────────────────────────────────────────────────
+  const loginScreen = document.getElementById('loginScreen');
+  const dashboard = document.getElementById('dashboard');
+  const loginBox = document.getElementById('loginBox');
+  const loginErr = document.getElementById('loginErr');
+
+  if (sessionStorage.getItem('pf_admin') === '1') {
+    loginScreen.style.display = 'none';
+    dashboard.classList.add('visible');
+    renderAll();
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const pwd = document.getElementById('loginPwd').value;
+    if (pwd === PASSWORD) {
+      sessionStorage.setItem('pf_admin', '1');
+      loginScreen.style.display = 'none';
+      dashboard.classList.add('visible');
+      renderAll();
+    } else {
+      loginErr.classList.add('show');
+      loginBox.classList.remove('shake');
+      void loginBox.offsetWidth;
+      loginBox.classList.add('shake');
+      document.getElementById('loginPwd').value = '';
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('pf_admin');
+    location.reload();
+  });
+
+  // ── TABS ──────────────────────────────────────────────────────────
+  const tabBtns = document.querySelectorAll('.sb-link[data-tab]');
+  const tabPanels = { ticker: 'tabTicker', gallery: 'tabGallery', events: 'tabEvents', schedule: 'tabSchedule', testimonials: 'tabTestimonials', instagram: 'tabInstagram' };
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(tabPanels).forEach(id => document.getElementById(id).style.display = 'none');
+      document.getElementById(tabPanels[btn.dataset.tab]).style.display = '';
+    });
+  });
+
+  // ── BADGES ────────────────────────────────────────────────────────
+  function updateBadges() {
+    document.getElementById('badgeTicker').textContent = load(KEYS.ticker).length;
+    document.getElementById('badgeGallery').textContent = load(KEYS.gallery).length;
+    document.getElementById('badgeEvents').textContent = load(KEYS.events).length;
+    const schedChanges = load(KEYS.schedule).length;
+    document.getElementById('badgeSchedule').textContent = schedChanges ? schedChanges + ' edited' : '—';
+    const allReviews = load(KEYS.reviews);
+    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
+    document.getElementById('badgeReviews').textContent = allReviews.length - approved.size > 0
+      ? allReviews.length - approved.size + ' pending'
+      : allReviews.length;
+    document.getElementById('badgeInstagram').textContent = load(KEYS.instagram).length;
+  }
+
+  // ── RENDER ALL ────────────────────────────────────────────────────
+  function renderAll() { renderTicker(); renderGallery(); renderEvents(); renderSchedule(); renderTestimonials(); renderInstagram(); updateBadges(); }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  TICKER
+  // ═══════════════════════════════════════════════════════════════════
+  function renderTicker() {
+    const items = load(KEYS.ticker);
+    const list = document.getElementById('tickerItems');
+    const empty = document.getElementById('tickerEmpty');
+    list.innerHTML = '';
+    empty.style.display = items.length ? 'none' : '';
+    list.style.display = items.length ? '' : 'none';
+
+    items.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = 'ticker-row';
+      row.innerHTML = `
+        <span class="ticker-row-medal">${item.medal || ''}</span>
+        <span class="ticker-row-text">${escHtml(item.text)}</span>
+        <div class="ticker-row-actions">
+          <button class="btn-icon" title="Move up" onclick="tickerMove(${idx}, -1)"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>
+          <button class="btn-icon" title="Move down" onclick="tickerMove(${idx}, 1)"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="btn-icon" title="Delete" onclick="tickerDelete(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+        </div>`;
+      list.appendChild(row);
+    });
+    updateBadges();
+  }
+
+  document.getElementById('addTickerBtn').addEventListener('click', () => {
+    const text = document.getElementById('tText').value.trim();
+    if (!text) { document.getElementById('tText').focus(); return; }
+    const medal = document.getElementById('tMedal').value;
+    const items = load(KEYS.ticker);
+    items.push({ id: uid(), medal, text });
+    save(KEYS.ticker, items);
+    document.getElementById('tText').value = '';
+    renderTicker();
+    toast('Added to ticker ✓');
+  });
+
+  document.getElementById('tText').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('addTickerBtn').click(); });
+
+  document.getElementById('clearTickerBtn').addEventListener('click', () => {
+    if (!confirm('Clear all ticker items?')) return;
+    save(KEYS.ticker, []);
+    renderTicker();
+    toast('Ticker cleared');
+  });
+
+  window.tickerDelete = function(idx) {
+    const items = load(KEYS.ticker);
+    items.splice(idx, 1);
+    save(KEYS.ticker, items);
+    renderTicker();
+    toast('Removed');
+  };
+
+  window.tickerMove = function(idx, dir) {
+    const items = load(KEYS.ticker);
+    const to = idx + dir;
+    if (to < 0 || to >= items.length) return;
+    [items[idx], items[to]] = [items[to], items[idx]];
+    save(KEYS.ticker, items);
+    renderTicker();
+  };
+
+  // ── Ticker visibility toggle ───────────────────────────────────────
+  (function() {
+    const chk = document.getElementById('tickerEnabled');
+    // Load saved state (default: enabled)
+    chk.checked = localStorage.getItem('pf_ticker_on_v1') !== '0';
+    chk.addEventListener('change', () => {
+      localStorage.setItem('pf_ticker_on_v1', chk.checked ? '1' : '0');
+      toast(chk.checked ? 'Ticker is now live ✓' : 'Ticker hidden from site');
+    });
+  })();
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  GALLERY
+  // ═══════════════════════════════════════════════════════════════════
+  // (pendingFiles and galleryFilter are declared at top of script)
+
+  document.getElementById('galleryUpload').addEventListener('change', function() {
+    const files = Array.from(this.files);
+    if (!files.length) return;
+    pendingFiles = [];
+    const previews = document.getElementById('uploadPreviews');
+    previews.innerHTML = '';
+    document.getElementById('uploadSettingsCard').style.display = '';
+    document.getElementById('uploadDate').value = new Date().toISOString().slice(0, 10);
+
+    let loaded = 0;
+    files.forEach(file => {
+      const isVideo = file.type.startsWith('video/');
+      const reader = new FileReader();
+      reader.onload = e => {
+        pendingFiles.push({ dataUrl: e.target.result, name: file.name, isVideo });
+        // Show preview thumbnail
+        const thumb = document.createElement('div');
+        thumb.style.cssText = 'aspect-ratio:1;overflow:hidden;background:var(--bg-3)';
+        if (isVideo) {
+          const v = document.createElement('video');
+          v.src = e.target.result;
+          v.style.cssText = 'width:100%;height:100%;object-fit:cover';
+          v.muted = true; v.preload = 'metadata';
+          thumb.appendChild(v);
+        } else {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+          thumb.appendChild(img);
+        }
+        previews.appendChild(thumb);
+        loaded++;
+      };
+      reader.readAsDataURL(file);
+    });
+    this.value = '';
+  });
+
+  document.getElementById('cancelUploadBtn').addEventListener('click', () => {
+    pendingFiles = [];
+    document.getElementById('uploadSettingsCard').style.display = 'none';
+    document.getElementById('uploadPreviews').innerHTML = '';
+  });
+
+  document.getElementById('confirmUploadBtn').addEventListener('click', () => {
+    if (!pendingFiles.length) return;
+    const cat = document.getElementById('uploadCat').value;
+    const date = document.getElementById('uploadDate').value;
+    const gallery = load(KEYS.gallery);
+    pendingFiles.forEach(f => {
+      gallery.push({ id: uid(), src: f.dataUrl, name: f.name, cat, date, isVideo: f.isVideo });
+    });
+    save(KEYS.gallery, gallery);
+    pendingFiles = [];
+    document.getElementById('uploadSettingsCard').style.display = 'none';
+    document.getElementById('uploadPreviews').innerHTML = '';
+    renderGallery();
+    toast(`${gallery.length} — saved to gallery ✓`);
+  });
+
+  document.querySelectorAll('.adm-gf-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.adm-gf-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      galleryFilter = btn.dataset.gf;
+      renderGallery();
+    });
+  });
+
+  function renderGallery() {
+    const all = load(KEYS.gallery);
+    const filtered = galleryFilter === 'all' ? all : all.filter(i => i.cat === galleryFilter);
+    const grid = document.getElementById('galleryGrid');
+    const empty = document.getElementById('galleryEmpty');
+    grid.innerHTML = '';
+    empty.style.display = filtered.length ? 'none' : '';
+    grid.style.display = filtered.length ? '' : 'none';
+
+    filtered.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'adm-img-item';
+      const mediaEl = item.isVideo
+        ? `<video src="${item.src}" preload="metadata" muted playsinline></video>`
+        : `<img src="${item.src}" alt="${escHtml(item.name)}" loading="lazy">`;
+      el.innerHTML = `
+        ${mediaEl}
+        <div class="adm-img-overlay">
+          <span class="adm-img-cat">${escHtml(item.cat)}</span>
+          <button class="adm-img-del" onclick="galleryDelete('${item.id}')" title="Delete">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </div>`;
+      grid.appendChild(el);
+    });
+    updateBadges();
+  }
+
+  window.galleryDelete = function(id) {
+    if (!confirm('Delete this image?')) return;
+    const gallery = load(KEYS.gallery).filter(i => i.id !== id);
+    save(KEYS.gallery, gallery);
+    renderGallery();
+    toast('Deleted');
+  };
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  EVENTS
+  // ═══════════════════════════════════════════════════════════════════
+  // (editingEventId is declared at top of script)
+
+  document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+  document.getElementById('cancelEventBtn').addEventListener('click', cancelEventEdit);
+
+  function saveEvent() {
+    const title = document.getElementById('evTitle').value.trim();
+    const date  = document.getElementById('evDate').value;
+    if (!title || !date) {
+      if (!title) document.getElementById('evTitle').focus();
+      else document.getElementById('evDate').focus();
+      return;
+    }
+    const events = load(KEYS.events);
+    const payload = {
+      id:       editingEventId || uid(),
+      title,
+      type:     document.getElementById('evType').value,
+      date,
+      time:     document.getElementById('evTime').value,
+      location: document.getElementById('evLocation').value.trim(),
+      desc:     document.getElementById('evDesc').value.trim(),
+      img:      document.getElementById('evImg').value.trim(),
+    };
+    if (editingEventId) {
+      const idx = events.findIndex(e => e.id === editingEventId);
+      if (idx !== -1) events[idx] = payload;
+    } else {
+      events.push(payload);
+    }
+    // Sort by date ascending
+    events.sort((a, b) => a.date.localeCompare(b.date));
+    save(KEYS.events, events);
+    cancelEventEdit();
+    renderEvents();
+    toast(editingEventId ? 'Event updated ✓' : 'Event added ✓');
+    editingEventId = null;
+  }
+
+  function cancelEventEdit() {
+    editingEventId = null;
+    ['evTitle','evTime','evLocation','evDesc','evImg'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('evDate').value = '';
+    document.getElementById('evType').value = 'Open Mat';
+    document.getElementById('eventFormTitle').textContent = 'Add Event';
+    document.getElementById('saveEventLabel').textContent = 'Add Event';
+    document.getElementById('cancelEventBtn').style.display = 'none';
+    document.getElementById('saveEventBtn').querySelector('svg').style.display = '';
+  }
+
+  window.editEvent = function(id) {
+    const ev = load(KEYS.events).find(e => e.id === id);
+    if (!ev) return;
+    editingEventId = id;
+    document.getElementById('evTitle').value    = ev.title;
+    document.getElementById('evType').value     = ev.type;
+    document.getElementById('evDate').value     = ev.date;
+    document.getElementById('evTime').value     = ev.time || '';
+    document.getElementById('evLocation').value = ev.location || '';
+    document.getElementById('evDesc').value     = ev.desc || '';
+    document.getElementById('evImg').value      = ev.img || '';
+    document.getElementById('eventFormTitle').textContent = 'Edit Event';
+    document.getElementById('saveEventLabel').textContent = 'Save Changes';
+    document.getElementById('cancelEventBtn').style.display = '';
+    document.getElementById('saveEventBtn').querySelector('svg').style.display = 'none';
+    document.getElementById('tabEvents').scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('evTitle').focus();
+  };
+
+  window.deleteEvent = function(id) {
+    if (!confirm('Delete this event?')) return;
+    const events = load(KEYS.events).filter(e => e.id !== id);
+    save(KEYS.events, events);
+    renderEvents();
+    toast('Event deleted');
+  };
+
+  function renderEvents() {
+    const events = load(KEYS.events);
+    const list  = document.getElementById('eventList');
+    const empty = document.getElementById('eventEmpty');
+    list.innerHTML = '';
+    empty.style.display = events.length ? 'none' : '';
+    list.style.display  = events.length ? '' : 'none';
+
+    events.forEach(ev => {
+      const d = ev.date ? new Date(ev.date + 'T00:00:00') : null;
+      const day = d ? d.getDate() : '?';
+      const mon = d ? d.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase() : '';
+      const row = document.createElement('div');
+      row.className = 'event-row';
+      row.innerHTML = `
+        <div class="event-date-block">
+          <div class="event-date-day">${day}</div>
+          <div class="event-date-mon">${mon}</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">${escHtml(ev.title)}</div>
+          <div class="event-meta">${escHtml(ev.type)}${ev.time ? ' · ' + ev.time : ''}${ev.location ? ' · ' + ev.location : ''}</div>
+        </div>
+        <div class="event-actions">
+          <button class="btn-adm btn-ghost" onclick="editEvent('${ev.id}')" style="padding:7px 12px;font-size:10px">Edit</button>
+          <button class="btn-icon" onclick="deleteEvent('${ev.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+        </div>`;
+      list.appendChild(row);
+    });
+    updateBadges();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  SCHEDULE  (day + time editor — class names are fixed)
+  // ═══════════════════════════════════════════════════════════════════
+  // (FIXED_SCHEDULE, DAY_OPTS, inpStyle are declared at top of script)
+
+  function renderSchedule() {
+    const saved = {};
+    load(KEYS.schedule).forEach(o => { saved[o.id] = o; });
+
+    const card = document.getElementById('scheduleEditorCard');
+    card.innerHTML = '';
+
+    // Group by EFFECTIVE day (so moved classes appear under their new day)
+    const DAY_ORDER = {Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5,Saturday:6,Sunday:7};
+    const days = {};
+    FIXED_SCHEDULE.forEach(s => {
+      const effectiveDayName = saved[s.id]?.dayName ?? s.dayName;
+      (days[effectiveDayName] = days[effectiveDayName] || []).push(s);
+    });
+
+    // Sort groups by day-of-week order
+    const sortedEntries = Object.entries(days).sort((a, b) =>
+      (DAY_ORDER[a[0]] || 8) - (DAY_ORDER[b[0]] || 8));
+
+    sortedEntries.forEach(([dayName, slots]) => {
+      const grp = document.createElement('div');
+      grp.className = 'sched-day-group';
+      grp.innerHTML = `<div class="sched-day-label">${dayName}</div>`;
+
+      slots.forEach(s => {
+        const cur  = saved[s.id] || {};
+        const ts   = cur.timeStart || s.defStart;
+        const te   = cur.timeEnd   || s.defEnd;
+        const curD = cur.day != null ? cur.day : s.day;
+
+        const dayOptsHtml = DAY_OPTS.map(d =>
+          `<option value="${d.v}"${curD === d.v ? ' selected' : ''}>${d.l}</option>`
+        ).join('');
+
+        const row = document.createElement('div');
+        row.className = 'sched-slot-row';
+        row.dataset.id = s.id;
+        row.style.cssText = 'flex-wrap:wrap;gap:8px';
+        row.innerHTML = `
+          <span class="sched-slot-name" style="min-width:160px;flex:1">${escHtml(s.name)}</span>
+          ${s.level ? `<span class="sched-slot-badge">${escHtml(s.level)}</span>` : ''}
+          <span style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap">
+            <select class="sl-day" style="${inpStyle};width:130px">${dayOptsHtml}</select>
+            <input type="time" class="sl-start" value="${ts}" style="${inpStyle};width:106px">
+            <span style="color:var(--ink-mute);font-size:11px">–</span>
+            <input type="time" class="sl-end" value="${te}" style="${inpStyle};width:106px">
+          </span>`;
+        grp.appendChild(row);
+      });
+      card.appendChild(grp);
+    });
+    updateBadges();
+  }
+
+  function saveSchedule() {
+    const overrides = [];
+    document.querySelectorAll('#scheduleEditorCard .sched-slot-row[data-id]').forEach(row => {
+      const id   = row.dataset.id;
+      const slot = FIXED_SCHEDULE.find(s => s.id === id);
+      if (!slot) return;
+      const ts  = row.querySelector('.sl-start').value || slot.defStart;
+      const te  = row.querySelector('.sl-end').value   || slot.defEnd;
+      const day = parseInt(row.querySelector('.sl-day').value);
+      const dayName = (DAY_OPTS.find(d => d.v === day) || {l: slot.dayName}).l;
+      if (ts !== slot.defStart || te !== slot.defEnd || day !== slot.day) {
+        overrides.push({id, day, dayName, timeStart: ts, timeEnd: te});
+      }
+    });
+    save(KEYS.schedule, overrides);
+    renderSchedule();   // re-render so classes appear under their new day immediately
+    const n = overrides.length;
+    toast(n ? `${n} change${n > 1 ? 's' : ''} saved ✓` : 'All defaults restored ✓');
+  }
+
+  document.getElementById('saveScheduleBtn').addEventListener('click', saveSchedule);
+
+  document.getElementById('resetScheduleBtn').addEventListener('click', () => {
+    if (!confirm('Reset all days and times to defaults?')) return;
+    save(KEYS.schedule, []);
+    renderSchedule();
+    toast('Schedule reset to defaults');
+  });
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  TESTIMONIALS / REVIEWS
+  // ═══════════════════════════════════════════════════════════════════
+  function renderTestimonials() {
+    const all      = load(KEYS.reviews);
+    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
+    const list     = document.getElementById('reviewList');
+    const empty    = document.getElementById('reviewEmpty');
+    list.innerHTML = '';
+    empty.style.display = all.length ? 'none' : '';
+    if (!all.length) { updateBadges(); return; }
+
+    // Newest first
+    [...all].reverse().forEach(entry => {
+      const isApproved = approved.has(entry.ts);
+      const stars = '★'.repeat(entry.rating || 5) + '☆'.repeat(5 - (entry.rating || 5));
+      const date  = entry.ts ? new Date(entry.ts).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '—';
+      const row   = document.createElement('div');
+      row.className = 'review-row';
+      row.innerHTML = `
+        <div class="review-head">
+          <span class="review-name">${escHtml(entry.name)}</span>
+          <span class="review-training">${escHtml(entry.training)}</span>
+          <span class="review-stars">${stars}</span>
+          ${isApproved ? '<span class="review-approved">✓ Published</span>' : ''}
+        </div>
+        <div class="review-text">"${escHtml(entry.text)}"</div>
+        <div class="review-date">${date}</div>
+        <div class="review-actions">
+          ${isApproved
+            ? `<button class="btn-adm btn-ghost" onclick="unapproveReview(${entry.ts})" style="font-size:10px;padding:6px 12px">Unpublish</button>`
+            : `<button class="btn-adm btn-lime" onclick="approveReview(${entry.ts})" style="font-size:10px;padding:6px 12px">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve
+               </button>`}
+          <button class="btn-icon" onclick="deleteReview(${entry.ts})" title="Delete">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>`;
+      list.appendChild(row);
+    });
+    updateBadges();
+  }
+
+  window.approveReview = function(ts) {
+    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
+    approved.add(ts);
+    localStorage.setItem('pf_approved_v1', JSON.stringify([...approved]));
+    renderTestimonials();
+    toast('Review published on site ✓');
+  };
+
+  window.unapproveReview = function(ts) {
+    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
+    approved.delete(ts);
+    localStorage.setItem('pf_approved_v1', JSON.stringify([...approved]));
+    renderTestimonials();
+    toast('Review unpublished');
+  };
+
+  window.deleteReview = function(ts) {
+    if (!confirm('Delete this review permanently?')) return;
+    save(KEYS.reviews, load(KEYS.reviews).filter(e => e.ts !== ts));
+    const approved = new Set(JSON.parse(localStorage.getItem('pf_approved_v1') || '[]'));
+    approved.delete(ts);
+    localStorage.setItem('pf_approved_v1', JSON.stringify([...approved]));
+    renderTestimonials();
+    toast('Deleted');
+  };
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  INSTAGRAM
+  // ═══════════════════════════════════════════════════════════════════
+  function normaliseIgUrl(raw) {
+    // Extract just the /p/CODE/ portion and return clean URL
+    const m = raw.match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    return m ? `https://www.instagram.com/${m[1]}/${m[2]}/` : raw.trim();
+  }
+
+  function renderInstagram() {
+    const posts = load(KEYS.instagram);
+    const list  = document.getElementById('igList');
+    const empty = document.getElementById('igEmpty');
+    list.innerHTML = '';
+    empty.style.display = posts.length ? 'none' : '';
+    // Subtle accent colours cycling per row so items are visually distinct
+    const IG_COLORS = [
+      'rgba(99,179,237,.10)',   // blue
+      'rgba(167,139,250,.10)',  // purple
+      'rgba(252,129,147,.10)',  // rose
+      'rgba(250,204,21,.08)',   // amber
+      'rgba(52,211,153,.08)',   // teal
+    ];
+    posts.forEach((url, idx) => {
+      const row = document.createElement('div');
+      row.className = 'review-row';
+      row.style.cssText = `display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:${IG_COLORS[idx % IG_COLORS.length]};border-left:3px solid ${IG_COLORS[idx % IG_COLORS.length].replace('.10','0.6').replace('.08','0.5')};padding:10px 14px;margin-bottom:4px`;
+      row.innerHTML = `
+        <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);min-width:20px;text-align:center">${idx + 1}</span>
+        <a href="${escHtml(url)}" target="_blank" rel="noopener"
+           style="flex:1;font-size:13px;color:var(--lime);word-break:break-all;text-decoration:none;min-width:0">
+          ${escHtml(url)}
+        </a>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          ${idx > 0 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},-1)" style="padding:5px 10px;font-size:11px" title="Move up">↑</button>` : ''}
+          ${idx < posts.length - 1 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},1)" style="padding:5px 10px;font-size:11px" title="Move down">↓</button>` : ''}
+          <button class="btn-adm btn-ghost" onclick="igRemove(${idx})" style="padding:5px 10px;font-size:11px;color:#FF6B6B;border-color:rgba(255,107,107,.3)">Remove</button>
+        </div>`;
+      list.appendChild(row);
+    });
+    updateBadges();
+  }
+
+  document.getElementById('addIgBtn').addEventListener('click', () => {
+    const input = document.getElementById('igUrl');
+    const raw   = input.value.trim();
+    if (!raw) { input.focus(); return; }
+    if (!raw.includes('instagram.com')) {
+      toast('Paste a full instagram.com URL'); return;
+    }
+    const url   = normaliseIgUrl(raw);
+    const posts = load(KEYS.instagram);
+    if (posts.includes(url)) { toast('Already added'); return; }
+    posts.unshift(url);  // newest first
+    save(KEYS.instagram, posts);
+    input.value = '';
+    renderInstagram();
+    toast('Post added ✓');
+  });
+
+  window.igRemove = function(idx) {
+    const posts = load(KEYS.instagram);
+    posts.splice(idx, 1);
+    save(KEYS.instagram, posts);
+    renderInstagram();
+    toast('Removed');
+  };
+
+  window.igMove = function(idx, dir) {
+    const posts = load(KEYS.instagram);
+    const to = idx + dir;
+    if (to < 0 || to >= posts.length) return;
+    [posts[idx], posts[to]] = [posts[to], posts[idx]];
+    save(KEYS.instagram, posts);
+    renderInstagram();
+  };
+
+  // ── UTILITIES ─────────────────────────────────────────────────────
+  function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
