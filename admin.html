@@ -520,6 +520,81 @@
           </div>
         </div>
       </div>
+
+        <!-- Athletes / Guest Legends -->
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Guest Legends — Athletes Section</span></div>
+          <div id="athList"></div>
+          <div class="adm-card-body" style="border-top:1px solid var(--line-2);padding-top:20px">
+            <div style="font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:14px" id="athFormTitle">Add Athlete</div>
+            <div class="adm-form">
+              <input type="hidden" id="ath-edit-idx" value="-1">
+              <div class="adm-form-row cols3">
+                <div class="adm-field" style="grid-column:span 2">
+                  <label>Name</label>
+                  <input type="text" id="ath-name" placeholder="Danilo Marques">
+                </div>
+                <div class="adm-field">
+                  <label>Badge</label>
+                  <input type="text" id="ath-tag" placeholder="UFC, World Champion…">
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Role / Subtitle</label>
+                  <input type="text" id="ath-role" placeholder="Former UFC World Champion">
+                </div>
+                <div class="adm-field">
+                  <label>Badge Colour <span style="color:var(--ink-mute)">(hex or blank)</span></label>
+                  <input type="text" id="ath-tagColor" placeholder="#FACC15">
+                </div>
+              </div>
+              <div class="adm-field">
+                <label>Bio</label>
+                <textarea id="ath-desc" placeholder="Short description shown on the homepage slide…"></textarea>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Stat 1 — Value</label>
+                  <input type="text" id="ath-s1n" placeholder="UFC">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 1 — Label</label>
+                  <input type="text" id="ath-s1l" placeholder="World Champion">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 2 — Value</label>
+                  <input type="text" id="ath-s2n" placeholder="20+">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 2 — Label</label>
+                  <input type="text" id="ath-s2l" placeholder="Years Competing">
+                </div>
+              </div>
+              <div class="adm-field">
+                <label>Photo <span style="color:var(--ink-mute)">(file or URL)</span></label>
+                <input type="text" id="ath-photo" placeholder="filename.avif or https://…">
+                <label class="btn-adm btn-ghost" style="cursor:pointer;text-align:center;display:block;margin-top:6px">
+                  Upload Photo
+                  <input type="file" id="ath-photo-file" accept="image/*" style="display:none">
+                </label>
+                <div id="ath-photo-preview-wrap" style="display:none;margin-top:8px;position:relative;display:inline-block">
+                  <img id="ath-photo-preview" src="" style="width:72px;height:72px;object-fit:cover;display:block">
+                  <button type="button" id="ath-photo-clear" style="display:block;margin-top:4px;background:none;border:1px solid rgba(255,77,109,.3);color:var(--red);cursor:pointer;padding:3px 10px;font-size:11px">Remove</button>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px">
+                <button class="btn-adm btn-ghost" id="cancelAthBtn" style="display:none">Cancel</button>
+                <button class="btn-adm btn-lime" id="saveAthBtn">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span id="saveAthLabel">Add Athlete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <!-- ── TICKER TAB ────────────────────────────────────────────── -->
@@ -1237,9 +1312,62 @@
   // ═══════════════════════════════════════════════════════════════════
   //  HOME PAGE
   // ═══════════════════════════════════════════════════════════════════
+  const DEFAULT_ATHLETES = [
+    {id:'a1',tag:'UFC',tagColor:'',name:'Danilo Marques',role:'Former UFC Fighter',desc:'World-class MMA fighter with experience at the highest level of the sport. Now training the next generation — bringing UFC-level technique and intensity to every session.',s1n:'UFC',s1l:'World Class Fighter',s2n:'10+',s2l:'Years Experience',photo:'Danilo Marques.avif'},
+    {id:'a2',tag:'World Champion',tagColor:'#FACC15',name:'Maurício Shogun Rua',role:'Former UFC World Champion',desc:'UFC Light Heavyweight World Champion and one of the most feared strikers in MMA history. A true legend of the sport who has graced our gym.',s1n:'UFC',s1l:'World Champion',s2n:'20+',s2l:'Years Competing',photo:'Shogun Rua.avif'},
+    {id:'a3',tag:'Legend',tagColor:'#A78BFA',name:'Rafael Cordeiro',role:'Trainer of Champions',desc:'One of the most respected striking coaches in combat sports history. Trainer of Mike Tyson and world champions across multiple disciplines.',s1n:'10+',s1l:'World Champions',s2n:'30+',s2l:'Years Coaching',photo:'Rafael Cordeiro.avif'},
+  ];
+
+  async function sbLoadAthletes() {
+    if (_cache.athletes) return _cache.athletes;
+    const v = await sbGetSetting('pf_athletes', '');
+    let parsed = [];
+    try { if (v) parsed = JSON.parse(v); } catch(e) {}
+    if (!parsed.length) parsed = DEFAULT_ATHLETES;
+    return (_cache.athletes = parsed);
+  }
+  async function sbSaveAthletes(athletes) {
+    await sbSetSetting('pf_athletes', JSON.stringify(athletes));
+  }
+
+  async function renderAdminAthletes(athletes) {
+    if (!athletes) athletes = await sbLoadAthletes();
+    const list = document.getElementById('athList');
+    list.innerHTML = '';
+    if (!athletes.length) {
+      list.innerHTML = '<div style="padding:16px 20px;color:var(--ink-mute);font-size:13px">No athletes yet — add one below</div>';
+      return;
+    }
+    athletes.forEach((a, idx) => {
+      const row = document.createElement('div');
+      row.className = 'review-row';
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 16px';
+      row.innerHTML = `
+        <img src="${escHtml(a.photo)}" onerror="this.style.display='none'"
+             style="width:48px;height:48px;object-fit:cover;flex-shrink:0;background:var(--bg-3)">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--display);font-weight:700;font-size:14px;color:var(--ink)">${escHtml(a.name)}</div>
+          <div style="font-size:11px;color:var(--ink-mute);margin-top:2px">${escHtml(a.tag)}${a.role ? ' · ' + escHtml(a.role) : ''}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          ${idx > 0 ? `<button class="btn-adm btn-ghost" onclick="athMove(${idx},-1)" style="padding:5px 10px;font-size:11px" title="Move up">↑</button>` : ''}
+          ${idx < athletes.length-1 ? `<button class="btn-adm btn-ghost" onclick="athMove(${idx},1)" style="padding:5px 10px;font-size:11px" title="Move down">↓</button>` : ''}
+          <button class="btn-adm btn-ghost" onclick="athEdit(${idx})" style="padding:5px 10px;font-size:11px">Edit</button>
+          <button class="btn-icon" onclick="athDelete(${idx})" title="Delete">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
   async function renderHome() {
-    const url = await sbGetSetting('hero_video_url', '');
+    const [url, athletes] = await Promise.all([
+      sbGetSetting('hero_video_url', ''),
+      sbLoadAthletes(),
+    ]);
     document.getElementById('heroVideoUrl').value = url;
+    renderAdminAthletes(athletes);
   }
 
   document.getElementById('saveHeroVideoBtn').addEventListener('click', async () => {
@@ -1253,6 +1381,7 @@
   });
 
   let _pendingHeroVideo = null;
+  let _pendingAthPhoto  = null;
 
   document.getElementById('heroVideoFile').addEventListener('change', function() {
     const file = this.files[0];
@@ -1274,6 +1403,120 @@
     document.getElementById('heroVideoPreview').style.display = 'none';
     document.getElementById('heroVideoFile').value = '';
   });
+
+  // ── Athlete form handlers ─────────────────────────────────────────
+  function _clearAthForm() {
+    document.getElementById('ath-edit-idx').value = '-1';
+    ['ath-name','ath-tag','ath-tagColor','ath-role','ath-s1n','ath-s1l','ath-s2n','ath-s2l','ath-photo'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('ath-desc').value = '';
+    _pendingAthPhoto = null;
+    document.getElementById('ath-photo-preview-wrap').style.display = 'none';
+    document.getElementById('ath-photo-preview').src = '';
+    document.getElementById('ath-photo-file').value = '';
+    document.getElementById('athFormTitle').textContent = 'Add Athlete';
+    document.getElementById('saveAthLabel').textContent = 'Add Athlete';
+    document.getElementById('cancelAthBtn').style.display = 'none';
+  }
+
+  document.getElementById('ath-photo-file').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      _pendingAthPhoto = e.target.result;
+      document.getElementById('ath-photo').value = '';
+      document.getElementById('ath-photo-preview').src = _pendingAthPhoto;
+      document.getElementById('ath-photo-preview-wrap').style.display = '';
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+
+  document.getElementById('ath-photo-clear').addEventListener('click', () => {
+    _pendingAthPhoto = null;
+    document.getElementById('ath-photo-preview').src = '';
+    document.getElementById('ath-photo-preview-wrap').style.display = 'none';
+    document.getElementById('ath-photo-file').value = '';
+  });
+
+  document.getElementById('saveAthBtn').addEventListener('click', async () => {
+    const name = document.getElementById('ath-name').value.trim();
+    if (!name) { document.getElementById('ath-name').focus(); toast('Name is required', true); return; }
+    const entry = {
+      id:       uid(),
+      tag:      document.getElementById('ath-tag').value.trim(),
+      tagColor: document.getElementById('ath-tagColor').value.trim(),
+      name,
+      role:     document.getElementById('ath-role').value.trim(),
+      desc:     document.getElementById('ath-desc').value.trim(),
+      s1n:      document.getElementById('ath-s1n').value.trim(),
+      s1l:      document.getElementById('ath-s1l').value.trim(),
+      s2n:      document.getElementById('ath-s2n').value.trim(),
+      s2l:      document.getElementById('ath-s2l').value.trim(),
+      photo:    _pendingAthPhoto || document.getElementById('ath-photo').value.trim(),
+    };
+    const athletes = _cache.athletes ? [..._cache.athletes] : await sbLoadAthletes();
+    const editIdx = parseInt(document.getElementById('ath-edit-idx').value);
+    if (editIdx >= 0) {
+      entry.id = athletes[editIdx]?.id || entry.id;
+      athletes[editIdx] = entry;
+    } else {
+      athletes.push(entry);
+    }
+    _cache.athletes = athletes;
+    renderAdminAthletes(athletes);
+    sbSaveAthletes(athletes).catch(() => { delete _cache.athletes; renderAdminAthletes(); });
+    _clearAthForm();
+    toast(editIdx >= 0 ? 'Athlete updated ✓' : 'Athlete added ✓');
+  });
+
+  document.getElementById('cancelAthBtn').addEventListener('click', _clearAthForm);
+
+  window.athEdit = async idx => {
+    const athletes = _cache.athletes ? _cache.athletes : await sbLoadAthletes();
+    const a = athletes[idx];
+    if (!a) return;
+    document.getElementById('ath-edit-idx').value = idx;
+    document.getElementById('ath-name').value     = a.name || '';
+    document.getElementById('ath-tag').value      = a.tag  || '';
+    document.getElementById('ath-tagColor').value = a.tagColor || '';
+    document.getElementById('ath-role').value     = a.role || '';
+    document.getElementById('ath-desc').value     = a.desc || '';
+    document.getElementById('ath-s1n').value      = a.s1n  || '';
+    document.getElementById('ath-s1l').value      = a.s1l  || '';
+    document.getElementById('ath-s2n').value      = a.s2n  || '';
+    document.getElementById('ath-s2l').value      = a.s2l  || '';
+    _pendingAthPhoto = a.photo && a.photo.startsWith('data:') ? a.photo : null;
+    document.getElementById('ath-photo').value = (!_pendingAthPhoto && a.photo) ? a.photo : '';
+    if (a.photo) {
+      document.getElementById('ath-photo-preview').src = a.photo;
+      document.getElementById('ath-photo-preview-wrap').style.display = '';
+    }
+    document.getElementById('athFormTitle').textContent = 'Edit Athlete';
+    document.getElementById('saveAthLabel').textContent = 'Save Changes';
+    document.getElementById('cancelAthBtn').style.display = '';
+    document.getElementById('tabHome').scrollTo({ top: 9999, behavior: 'smooth' });
+  };
+
+  window.athDelete = async idx => {
+    const athletes = _cache.athletes ? [..._cache.athletes] : await sbLoadAthletes();
+    if (!confirm(`Remove ${escHtml(athletes[idx]?.name || 'this athlete')}?`)) return;
+    athletes.splice(idx, 1);
+    _cache.athletes = athletes;
+    renderAdminAthletes(athletes);
+    sbSaveAthletes(athletes).catch(() => { delete _cache.athletes; renderAdminAthletes(); });
+    toast('Removed');
+  };
+
+  window.athMove = async (idx, dir) => {
+    const athletes = _cache.athletes ? [..._cache.athletes] : await sbLoadAthletes();
+    const to = idx + dir;
+    if (to < 0 || to >= athletes.length) return;
+    [athletes[idx], athletes[to]] = [athletes[to], athletes[idx]];
+    _cache.athletes = athletes;
+    renderAdminAthletes(athletes);
+    sbSaveAthletes(athletes).catch(() => { delete _cache.athletes; renderAdminAthletes(); });
+  };
 
   // ═══════════════════════════════════════════════════════════════════
   //  TICKER

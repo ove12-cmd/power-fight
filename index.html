@@ -1413,8 +1413,8 @@
 <!-- ATHLETES -->
 <section class="athletes" id="athletes">
   <div class="athletes-head reveal">
-    <span class="eyebrow">Real Masters</span>
-    <h2 style="font-family:var(--display);font-weight:600;font-size:clamp(36px,5vw,80px);line-height:0.98;letter-spacing:-0.025em;margin:0">International <em style="font-style:normal;color:var(--lime)">legends</em><br>train with us.</h2>
+    <span class="eyebrow">Highlights</span>
+    <h2 style="font-family:var(--display);font-weight:600;font-size:clamp(36px,5vw,80px);line-height:0.98;letter-spacing:-0.025em;margin:0">World-class <em style="font-style:normal;color:var(--lime)">legends</em><br>at Power Fight.</h2>
   </div>
 
   <div class="af-wrap">
@@ -2198,65 +2198,109 @@
   });
 
   // Athletes slider
-  const afSlides = Array.from(document.querySelectorAll('.af-slide'));
-  const afDots = Array.from(document.querySelectorAll('.af-dot'));
-  let afCurrent = 0;
-  let afTimer = null;
-  let afPaused = false;
+  function _escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  function afGo(idx, manual) {
-    afDots[afCurrent].classList.remove('af-active', 'af-paused', 'af-selected');
-    afSlides[afCurrent].classList.remove('af-active');
-    afCurrent = (idx + afSlides.length) % afSlides.length;
-    afSlides[afCurrent].classList.add('af-active');
-    const dot = afDots[afCurrent];
-    dot.classList.remove('af-active');
-    void dot.offsetWidth;
-    dot.classList.add('af-active');
-    clearInterval(afTimer);
-    if (manual) {
-      afPaused = true;
-      dot.classList.add('af-selected');
-    } else {
-      afTimer = setInterval(() => afGo(afCurrent + 1), 4000);
-    }
+  function _rebuildAfSlider(athletes) {
+    const wrap = document.querySelector('.af-wrap');
+    wrap.innerHTML = athletes.map((a, i) => {
+      const np = (a.name||'').split(/\s(.+)/s);
+      const nh = _escHtml(np[0]) + (np[1] ? '<br>' + _escHtml(np[1]) : '');
+      return `
+      <div class="af-slide${i===0?' af-active':''}">
+        <div class="af-left">
+          <div class="af-tag"${a.tagColor?` style="background:${_escHtml(a.tagColor)};color:#fff"`:''}>` + _escHtml(a.tag) + `</div>
+          <h3 class="af-name">${nh}</h3>
+          <div class="af-role-row"><div class="af-role-line"></div><div class="af-role">` + _escHtml(a.role) + `</div></div>
+          <p class="af-desc">` + _escHtml(a.desc) + `</p>
+          <div class="af-stats">
+            <div class="af-stat"><div class="af-stat-num">` + _escHtml(a.s1n) + `</div><div class="af-stat-label">` + _escHtml(a.s1l) + `</div></div>
+            <div class="af-stat"><div class="af-stat-num">` + _escHtml(a.s2n) + `</div><div class="af-stat-label">` + _escHtml(a.s2l) + `</div></div>
+          </div>
+          <div class="af-ctas">
+            <a class="btn btn-primary" href="contact.html"><span>Train with us <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+            <a class="btn btn-ghost" href="#programs"><span>View Programs</span></a>
+          </div>
+        </div>
+        <div class="af-right">
+          <img src="` + _escHtml(a.photo) + `" alt="` + _escHtml(a.name) + `">
+          <div class="af-right-fade"></div>
+        </div>
+      </div>`;
+    }).join('');
+    // Rebuild dots
+    const nav = document.querySelector('.af-nav');
+    const navBtns = nav.querySelector('.af-nav-btns');
+    nav.innerHTML = '';
+    athletes.forEach((_, i) => {
+      const b = document.createElement('button');
+      b.className = 'af-dot' + (i===0?' af-active':'');
+      b.dataset.idx = i;
+      nav.appendChild(b);
+    });
+    nav.appendChild(navBtns);
   }
 
-  const afPlayPauseBtn = document.getElementById('afPlayPause');
-  const afPauseIcon = document.getElementById('afPauseIcon');
-  const afPlayIcon = document.getElementById('afPlayIcon');
+  function _afInit() {
+    const afSlides = Array.from(document.querySelectorAll('.af-slide'));
+    const afDots   = Array.from(document.querySelectorAll('.af-dot'));
+    let afCurrent = 0;
+    let afTimer = null;
+    let afPaused = false;
 
-  function afSetPaused(paused) {
-    afPaused = paused;
-    afPauseIcon.style.display = paused ? 'none' : '';
-    afPlayIcon.style.display = paused ? '' : 'none';
-    afPlayPauseBtn.setAttribute('aria-label', paused ? 'Play' : 'Pause');
-    const dot = afDots[afCurrent];
-    if (paused) {
-      dot.classList.add('af-paused');
-      clearInterval(afTimer);
-    } else {
-      dot.classList.remove('af-paused', 'af-selected');
+    function afGo(idx, manual) {
+      afDots[afCurrent].classList.remove('af-active','af-paused','af-selected');
+      afSlides[afCurrent].classList.remove('af-active');
+      afCurrent = (idx + afSlides.length) % afSlides.length;
+      afSlides[afCurrent].classList.add('af-active');
+      const dot = afDots[afCurrent];
       dot.classList.remove('af-active');
       void dot.offsetWidth;
       dot.classList.add('af-active');
-      afTimer = setInterval(() => afGo(afCurrent + 1), 4000);
+      clearInterval(afTimer);
+      if (manual) { afPaused = true; dot.classList.add('af-selected'); }
+      else { afTimer = setInterval(() => afGo(afCurrent + 1), 4000); }
     }
+
+    const afPlayPauseBtn = document.getElementById('afPlayPause');
+    const afPauseIcon    = document.getElementById('afPauseIcon');
+    const afPlayIcon     = document.getElementById('afPlayIcon');
+
+    function afSetPaused(paused) {
+      afPaused = paused;
+      afPauseIcon.style.display = paused ? 'none' : '';
+      afPlayIcon.style.display  = paused ? '' : 'none';
+      afPlayPauseBtn.setAttribute('aria-label', paused ? 'Play' : 'Pause');
+      const dot = afDots[afCurrent];
+      if (paused) { dot.classList.add('af-paused'); clearInterval(afTimer); }
+      else {
+        dot.classList.remove('af-paused','af-selected','af-active');
+        void dot.offsetWidth;
+        dot.classList.add('af-active');
+        afTimer = setInterval(() => afGo(afCurrent + 1), 4000);
+      }
+    }
+
+    afPlayPauseBtn.addEventListener('click', () => afSetPaused(!afPaused));
+    afDots.forEach(d => d.addEventListener('click', () => afGo(+d.dataset.idx)));
+    document.getElementById('afPrev').addEventListener('click', () => afGo(afCurrent - 1, true));
+    document.getElementById('afNext').addEventListener('click', () => afGo(afCurrent + 1, true));
+    afTimer = setInterval(() => afGo(afCurrent + 1), 4000);
+    new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting && afPaused) afSetPaused(false);
+    }, { threshold: 0 }).observe(document.querySelector('.athletes'));
   }
 
-  afPlayPauseBtn.addEventListener('click', () => afSetPaused(!afPaused));
-
-  afDots.forEach(d => d.addEventListener('click', () => afGo(+d.dataset.idx)));
-  document.getElementById('afPrev').addEventListener('click', () => afGo(afCurrent - 1, true));
-  document.getElementById('afNext').addEventListener('click', () => afGo(afCurrent + 1, true));
-
-  // Start auto-rotate
-  afTimer = setInterval(() => afGo(afCurrent + 1), 4000);
-
-  // Resume autoplay when user scrolls away from the slider
-  new IntersectionObserver(entries => {
-    if (!entries[0].isIntersecting && afPaused) afSetPaused(false);
-  }, { threshold: 0 }).observe(document.querySelector('.athletes'));
+  // Load athletes from Supabase; rebuild slides if admin has saved data
+  (async () => {
+    try {
+      const { data } = await _sb.from('settings').select('value').eq('key','pf_athletes').maybeSingle();
+      if (data?.value) {
+        const athletes = JSON.parse(data.value);
+        if (athletes && athletes.length) _rebuildAfSlider(athletes);
+      }
+    } catch(e) {}
+    _afInit();
+  })();
 
   // Size wrap to tallest slide (measure off-screen, no layout shift)
   function afFitHeight() {
