@@ -2046,12 +2046,7 @@
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
   // Hero "Watch Us Train" button → open lightbox with training video
-  const heroWatchBtn = document.getElementById('heroWatchBtn');
-  if (heroWatchBtn) {
-    heroWatchBtn.addEventListener('click', () => {
-      openLightbox('https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/66abca0cb7c841dff2b28cd7_2.mp4', true);
-    });
-  }
+
 
   // Testimonials INFINITE slider
   const track = document.getElementById('tTrack');
@@ -2174,6 +2169,7 @@
   }
 
   function closeLightbox() {
+    if (window._lbCloseHook) { window._lbCloseHook(); window._lbCloseHook = null; }
     certLightbox.classList.remove('open');
     certLightboxVideo.pause();
     certLightboxVideo.src = '';
@@ -2295,10 +2291,46 @@
     }
   }, { passive: true });
 
-  // ── Hero "Watch Us Train" video lightbox ────────────────────────────
-  const HERO_VIDEO = 'https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/66aa1828046576decbccbef2_4761426-Uhd%204096%202160%2025F777ps.mp4';
+  // ── Hero "Watch Us Train" video lightbox (URL loaded from Supabase) ──
+  const HERO_VIDEO_DEFAULT = 'https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/66abca0cb7c841dff2b28cd7_2.mp4';
+  let _heroVideoUrl = HERO_VIDEO_DEFAULT;
+  (async () => {
+    try {
+      const { data } = await _sb.from('settings').select('value').eq('key','hero_video_url').maybeSingle();
+      if (data?.value) _heroVideoUrl = data.value;
+    } catch(e) {}
+  })();
   document.getElementById('heroWatchBtn').addEventListener('click', () => {
-    openLightbox(HERO_VIDEO, true);
+    const url = _heroVideoUrl || HERO_VIDEO_DEFAULT;
+    // Detect YouTube / Vimeo for iframe embed, else direct video
+    if (/youtu\.?be|youtube\.com|vimeo\.com/.test(url)) {
+      let embed = url;
+      const ytM = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{11})/);
+      if (ytM) embed = `https://www.youtube.com/embed/${ytM[1]}?autoplay=1`;
+      const vm = url.match(/vimeo\.com\/(\d+)/);
+      if (vm) embed = `https://player.vimeo.com/video/${vm[1]}?autoplay=1`;
+      // Open in iframe lightbox
+      const lb = document.getElementById('certLightbox');
+      const vid = document.getElementById('certLightboxVideo');
+      const img = document.getElementById('certLightboxImg');
+      let ifrEl = document.getElementById('heroVideoIframe');
+      if (!ifrEl) {
+        ifrEl = document.createElement('iframe');
+        ifrEl.id = 'heroVideoIframe';
+        ifrEl.style.cssText = 'width:min(90vw,1100px);aspect-ratio:16/9;border:none;display:none;transform:scale(0.94);transition:transform .4s cubic-bezier(0.22,1,0.36,1)';
+        ifrEl.allow = 'autoplay; fullscreen';
+        lb.insertBefore(ifrEl, lb.firstChild);
+      }
+      vid.style.display = 'none'; img.style.display = 'none'; ifrEl.style.display = 'block';
+      ifrEl.src = embed;
+      lb.classList.add('open');
+      requestAnimationFrame(() => ifrEl.style.transform = 'scale(1)');
+      // close clears iframe src
+      const origClose = window._lbCloseHook;
+      window._lbCloseHook = () => { ifrEl.style.display = 'none'; ifrEl.src = ''; ifrEl.style.transform = 'scale(0.94)'; if (origClose) origClose(); };
+    } else {
+      openLightbox(url, true);
+    }
   });
 
   // ── Schedule modal ──────────────────────────────────────────────────
