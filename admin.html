@@ -196,6 +196,18 @@
   .btn-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(255,77,109,.3);padding:7px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:6px}
   .btn-red:hover{background:rgba(255,77,109,.18);border-color:var(--red)}
   .btn-red svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+  /* ── Top progress bar ──────────────────────────────────────────────── */
+  #pgWrap{
+    position:fixed;top:0;left:0;right:0;z-index:99999;height:3px;
+    opacity:0;transition:opacity .25s ease;pointer-events:none;
+    background:rgba(255,255,255,.04);
+  }
+  #pgBar{
+    height:100%;width:0%;
+    background:var(--lime);
+    box-shadow:0 0 10px var(--lime-glow),0 0 24px rgba(199,255,63,.25);
+    transition:width .28s cubic-bezier(.4,0,.2,1);
+  }
   .cat-chip{
     display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 12px;
     font-size:11px;letter-spacing:.08em;text-transform:uppercase;
@@ -369,6 +381,8 @@
 <body>
 
 <!-- ── LOGIN SCREEN ──────────────────────────────────────────────── -->
+<div id="pgWrap"><div id="pgBar"></div></div>
+
 <div id="loginScreen">
   <div class="login-box" id="loginBox">
     <img class="login-logo" src="logo2.png" alt="Power Fight">
@@ -819,6 +833,45 @@
   // ── CONFIG ────────────────────────────────────────────────────────
   const PASSWORD = 'PF-trainfightwin';   // ← change this to your preferred password
 
+  // ── Progress bar ─────────────────────────────────────────────────────
+  const Progress = (() => {
+    let total = 0, done = 0, hideTimer = null;
+    const bar  = () => document.getElementById('pgBar');
+    const wrap = () => document.getElementById('pgWrap');
+    return {
+      start(n) {
+        clearTimeout(hideTimer);
+        total = n; done = 0;
+        const w = wrap(); const b = bar();
+        w.style.opacity = '1';
+        b.style.transition = 'none';
+        b.style.width = '4%';
+        requestAnimationFrame(() => { b.style.transition = 'width .28s cubic-bezier(.4,0,.2,1)'; });
+      },
+      tick() {
+        done = Math.min(done + 1, total);
+        const pct = total > 0 ? Math.round(8 + (done / total) * 88) : 96;
+        bar().style.width = pct + '%';
+      },
+      done() {
+        bar().style.width = '100%';
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => {
+          wrap().style.opacity = '0';
+          hideTimer = setTimeout(() => {
+            const b = bar(); b.style.transition = 'none'; b.style.width = '0%';
+          }, 300);
+        }, 260);
+      }
+    };
+  })();
+
+  // Single-step convenience wrapper
+  async function withProg(fn) {
+    Progress.start(1);
+    try { await fn(); } finally { Progress.tick(); Progress.done(); }
+  }
+
   const _sb = supabase.createClient(
     'https://nzfqsgdzbainfijbhwag.supabase.co',
     'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al'
@@ -1018,8 +1071,18 @@
 
   // ── RENDER ALL ────────────────────────────────────────────────────
   async function renderAll() {
-    await Promise.all([renderTicker(), renderGallery(), renderEvents(), renderSchedule(), renderTestimonials(), renderInstagram()]);
+    Progress.start(7); // 6 renders + badges
+    await Promise.all([
+      renderTicker()      .then(() => Progress.tick()),
+      renderGallery()     .then(() => Progress.tick()),
+      renderEvents()      .then(() => Progress.tick()),
+      renderSchedule()    .then(() => Progress.tick()),
+      renderTestimonials().then(() => Progress.tick()),
+      renderInstagram()   .then(() => Progress.tick()),
+    ]);
     await updateBadges();
+    Progress.tick();
+    Progress.done();
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1048,52 +1111,52 @@
     });
   }
 
-  document.getElementById('addTickerBtn').addEventListener('click', async () => {
+  document.getElementById('addTickerBtn').addEventListener('click', () => {
     const text = document.getElementById('tText').value.trim();
     if (!text) { document.getElementById('tText').focus(); return; }
-    const medal = document.getElementById('tMedal').value;
-    const items = await sbLoadTicker();
-    items.push({ id: uid(), medal, text });
-    await sbSaveTicker(items);
-    document.getElementById('tText').value = '';
-    await renderTicker();
-    toast('Added to ticker ✓');
+    withProg(async () => {
+      const medal = document.getElementById('tMedal').value;
+      const items = await sbLoadTicker();
+      items.push({ id: uid(), medal, text });
+      await sbSaveTicker(items);
+      document.getElementById('tText').value = '';
+      await renderTicker();
+      toast('Added to ticker ✓');
+    });
   });
 
   document.getElementById('tText').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('addTickerBtn').click(); });
 
   document.getElementById('clearTickerBtn').addEventListener('click', async () => {
     if (!confirm('Clear all ticker items?')) return;
-    await sbSaveTicker([]);
-    await renderTicker();
-    toast('Ticker cleared');
+    withProg(async () => { await sbSaveTicker([]); await renderTicker(); toast('Ticker cleared'); });
   });
 
-  window.tickerDelete = async function(idx) {
+  window.tickerDelete = idx => withProg(async () => {
     const items = await sbLoadTicker();
     items.splice(idx, 1);
     await sbSaveTicker(items);
     await renderTicker();
     toast('Removed');
-  };
+  });
 
-  window.tickerMove = async function(idx, dir) {
+  window.tickerMove = (idx, dir) => withProg(async () => {
     const items = await sbLoadTicker();
     const to = idx + dir;
     if (to < 0 || to >= items.length) return;
     [items[idx], items[to]] = [items[to], items[idx]];
     await sbSaveTicker(items);
     await renderTicker();
-  };
+  });
 
   // ── Ticker visibility toggle ───────────────────────────────────────
   (async function() {
     const chk = document.getElementById('tickerEnabled');
     chk.checked = (await sbGetSetting('ticker_enabled', '1')) !== '0';
-    chk.addEventListener('change', async () => {
+    chk.addEventListener('change', () => withProg(async () => {
       await sbSetSetting('ticker_enabled', chk.checked ? '1' : '0');
       toast(chk.checked ? 'Ticker is now live ✓' : 'Ticker hidden from site');
-    });
+    }));
   })();
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1147,18 +1210,20 @@
 
   document.getElementById('confirmUploadBtn').addEventListener('click', async () => {
     if (!pendingFiles.length) return;
-    const cat = document.getElementById('uploadCat').value;
-    const date = document.getElementById('uploadDate').value;
-    const gallery = await sbLoadGallery();
-    pendingFiles.forEach(f => {
-      gallery.push({ id: uid(), src: f.dataUrl, name: f.name, cat, date, isVideo: f.isVideo, featured: false });
+    withProg(async () => {
+      const cat = document.getElementById('uploadCat').value;
+      const date = document.getElementById('uploadDate').value;
+      const gallery = await sbLoadGallery();
+      pendingFiles.forEach(f => {
+        gallery.push({ id: uid(), src: f.dataUrl, name: f.name, cat, date, isVideo: f.isVideo, featured: false });
+      });
+      await sbSaveGallery(gallery);
+      pendingFiles = [];
+      document.getElementById('uploadSettingsCard').style.display = 'none';
+      document.getElementById('uploadPreviews').innerHTML = '';
+      await renderGallery();
+      toast(`${gallery.length} — saved to gallery ✓`);
     });
-    await sbSaveGallery(gallery);
-    pendingFiles = [];
-    document.getElementById('uploadSettingsCard').style.display = 'none';
-    document.getElementById('uploadPreviews').innerHTML = '';
-    await renderGallery();
-    toast(`${gallery.length} — saved to gallery ✓`);
   });
 
   // Add Video URL
@@ -1270,13 +1335,15 @@
 
   window.galleryDelete = async function(id) {
     if (!confirm('Delete this image?')) return;
-    const gallery = (await sbLoadGallery()).filter(i => i.id !== id);
-    await sbSaveGallery(gallery);
-    await renderGallery();
-    toast('Deleted');
+    withProg(async () => {
+      const gallery = (await sbLoadGallery()).filter(i => i.id !== id);
+      await sbSaveGallery(gallery);
+      await renderGallery();
+      toast('Deleted');
+    });
   };
 
-  window.galleryToggleFeatured = async function(id) {
+  window.galleryToggleFeatured = id => withProg(async () => {
     const items = await sbLoadGallery();
     const item = items.find(i => i.id === id);
     if (!item) return;
@@ -1284,9 +1351,9 @@
     await sbSaveGallery(items);
     await renderGallery();
     toast(item.featured ? 'Pinned to homepage ✓' : 'Removed from homepage');
-  };
+  });
 
-  window.deleteCat = async function(slug) {
+  window.deleteCat = slug => withProg(async () => {
     const cats = await sbLoadCategories();
     const idx = cats.indexOf(slug);
     if (idx < 0) return;
@@ -1294,7 +1361,7 @@
     await sbSaveCategories(cats);
     await renderGallery();
     toast('Category removed');
-  };
+  });
 
   // ── Gallery multi-select ───────────────────────────────────────────
   const selectedGalleryIds = new Set();
@@ -1330,10 +1397,12 @@
     const n = selectedGalleryIds.size;
     if (!confirm(`Delete ${n} item${n > 1 ? 's' : ''}? This cannot be undone.`)) return;
     const ids = new Set(selectedGalleryIds);
-    const items = await sbLoadGallery();
-    await sbSaveGallery(items.filter(i => !ids.has(i.id)));
-    await renderGallery();
-    toast(`${n} item${n > 1 ? 's' : ''} deleted`);
+    withProg(async () => {
+      const items = await sbLoadGallery();
+      await sbSaveGallery(items.filter(i => !ids.has(i.id)));
+      await renderGallery();
+      toast(`${n} item${n > 1 ? 's' : ''} deleted`);
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1371,11 +1440,13 @@
     }
     // Sort by date ascending
     events.sort((a, b) => a.date.localeCompare(b.date));
-    await sbSaveEvents(events);
-    cancelEventEdit();
-    await renderEvents();
-    toast(editingEventId ? 'Event updated ✓' : 'Event added ✓');
-    editingEventId = null;
+    withProg(async () => {
+      await sbSaveEvents(events);
+      cancelEventEdit();
+      await renderEvents();
+      toast(editingEventId ? 'Event updated ✓' : 'Event added ✓');
+      editingEventId = null;
+    });
   }
 
   function cancelEventEdit() {
@@ -1410,10 +1481,12 @@
 
   window.deleteEvent = async function(id) {
     if (!confirm('Delete this event?')) return;
-    const events = (await sbLoadEvents()).filter(e => e.id !== id);
-    await sbSaveEvents(events);
-    await renderEvents();
-    toast('Event deleted');
+    withProg(async () => {
+      const events = (await sbLoadEvents()).filter(e => e.id !== id);
+      await sbSaveEvents(events);
+      await renderEvents();
+      toast('Event deleted');
+    });
   };
 
   async function renderEvents() {
@@ -1519,19 +1592,23 @@
         overrides.push({id, day, dayName, timeStart: ts, timeEnd: te});
       }
     });
-    await sbSaveSchedule(overrides);
-    await renderSchedule();   // re-render so classes appear under their new day immediately
-    const n = overrides.length;
-    toast(n ? `${n} change${n > 1 ? 's' : ''} saved ✓` : 'All defaults restored ✓');
+    withProg(async () => {
+      await sbSaveSchedule(overrides);
+      await renderSchedule();
+      const n = overrides.length;
+      toast(n ? `${n} change${n > 1 ? 's' : ''} saved ✓` : 'All defaults restored ✓');
+    });
   }
 
   document.getElementById('saveScheduleBtn').addEventListener('click', saveSchedule);
 
   document.getElementById('resetScheduleBtn').addEventListener('click', async () => {
     if (!confirm('Reset all days and times to defaults?')) return;
-    await sbSaveSchedule([]);
-    await renderSchedule();
-    toast('Schedule reset to defaults');
+    withProg(async () => {
+      await sbSaveSchedule([]);
+      await renderSchedule();
+      toast('Schedule reset to defaults');
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1575,23 +1652,25 @@
     });
   }
 
-  window.approveReview = async function(id) {
+  window.approveReview = id => withProg(async () => {
     await _sb.from('feedback').update({ approved: true }).eq('id', id);
     await renderTestimonials();
     toast('Review published on site ✓');
-  };
+  });
 
-  window.unapproveReview = async function(id) {
+  window.unapproveReview = id => withProg(async () => {
     await _sb.from('feedback').update({ approved: false }).eq('id', id);
     await renderTestimonials();
     toast('Review unpublished');
-  };
+  });
 
   window.deleteReview = async function(id) {
     if (!confirm('Delete this review permanently?')) return;
-    await _sb.from('feedback').delete().eq('id', id);
-    await renderTestimonials();
-    toast('Deleted');
+    withProg(async () => {
+      await _sb.from('feedback').delete().eq('id', id);
+      await renderTestimonials();
+      toast('Deleted');
+    });
   };
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1644,31 +1723,33 @@
       toast('Paste a full instagram.com URL'); return;
     }
     const url   = normaliseIgUrl(raw);
-    const posts = await sbLoadInstagram();
-    if (posts.includes(url)) { toast('Already added'); return; }
-    posts.unshift(url);  // newest first
-    await sbSaveInstagram(posts);
-    input.value = '';
-    await renderInstagram();
-    toast('Post added ✓');
+    withProg(async () => {
+      const posts = await sbLoadInstagram();
+      if (posts.includes(url)) { toast('Already added'); return; }
+      posts.unshift(url);
+      await sbSaveInstagram(posts);
+      input.value = '';
+      await renderInstagram();
+      toast('Post added ✓');
+    });
   });
 
-  window.igRemove = async function(idx) {
+  window.igRemove = idx => withProg(async () => {
     const posts = await sbLoadInstagram();
     posts.splice(idx, 1);
     await sbSaveInstagram(posts);
     await renderInstagram();
     toast('Removed');
-  };
+  });
 
-  window.igMove = async function(idx, dir) {
+  window.igMove = (idx, dir) => withProg(async () => {
     const posts = await sbLoadInstagram();
     const to = idx + dir;
     if (to < 0 || to >= posts.length) return;
     [posts[idx], posts[to]] = [posts[to], posts[idx]];
     await sbSaveInstagram(posts);
     await renderInstagram();
-  };
+  });
 
   // ── UTILITIES ─────────────────────────────────────────────────────
   function escHtml(str) {
