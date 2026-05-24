@@ -1002,6 +1002,11 @@
                 <input type="url" id="igUrl" placeholder="https://www.instagram.com/p/ABC123xyz/" />
                 <span class="adm-field-hint">Open the post on Instagram → copy the URL from the address bar</span>
               </div>
+              <div class="adm-field">
+                <label>Preview Image URL <span style="color:var(--ink-mute)">(optional)</span></label>
+                <input type="url" id="igImgUrl" placeholder="https://…/photo.jpg">
+                <span class="adm-field-hint">Paste a direct image link — shows as the card background on the homepage</span>
+              </div>
               <div style="display:flex;justify-content:flex-end">
                 <button class="btn-adm btn-lime" id="addIgBtn">
                   <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1150,14 +1155,18 @@
   }
   async function sbLoadInstagram() {
     if (_cache.instagram) return _cache.instagram;
-    const { data } = await _sb.from('instagram_posts').select('*').order('ord');
-    return (_cache.instagram = (data || []).map(r => r.url));
+    const { data } = await _sb.from('settings').select('value').eq('key','pf_instagram_data').maybeSingle();
+    let posts = [];
+    if (data?.value) { try { posts = JSON.parse(data.value); } catch(_) {} }
+    // migrate from old table if settings is empty
+    if (!posts.length) {
+      const { data: td } = await _sb.from('instagram_posts').select('*').order('ord');
+      posts = (td || []).map(r => ({ url: r.url, img: '' }));
+    }
+    return (_cache.instagram = posts);
   }
-  async function sbSaveInstagram(urls) {
-    await _sb.from('instagram_posts').delete().gte('ord', 0);
-    if (urls.length) await _sb.from('instagram_posts').insert(
-      urls.map((url, i) => ({ id: uid(), url, ord: i }))
-    );
+  async function sbSaveInstagram(posts) {
+    await sbSetSetting('pf_instagram_data', JSON.stringify(posts));
   }
   async function sbLoadFeedback() {
     if (_cache.feedback) return _cache.feedback;
@@ -2321,15 +2330,23 @@ Reset button restores removed classes.`)) return;
       'rgba(250,204,21,.08)',   // amber
       'rgba(52,211,153,.08)',   // teal
     ];
-    posts.forEach((url, idx) => {
+    posts.forEach((post, idx) => {
+      const url = typeof post === 'string' ? post : post.url;
+      const img = typeof post === 'object' ? (post.img || '') : '';
       const accent = IG_COLORS[idx % IG_COLORS.length];
       const border  = accent.replace('.10','0.6').replace('.08','0.5');
+      const thumbHtml = img
+        ? `<img src="${escHtml(img)}" style="width:54px;height:54px;object-fit:cover;border-radius:4px;flex-shrink:0;border:1px solid var(--line-2)">`
+        : `<div style="width:54px;height:54px;border-radius:4px;background:var(--layer-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--line-2)">
+             <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--ink-mute);fill:none;stroke-width:1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+           </div>`;
       const row = document.createElement('div');
       row.className = 'review-row';
       row.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 14px';
       row.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;background:${accent};border-left:3px solid ${border};padding:10px 14px;border-radius:0">
           <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);min-width:18px;text-align:center;flex-shrink:0">${idx + 1}</span>
+          ${thumbHtml}
           <a href="${escHtml(url)}" target="_blank" rel="noopener"
              style="flex:1;font-size:13px;color:var(--lime);word-break:break-all;text-decoration:none;min-width:0">
             ${escHtml(url)}
@@ -2352,13 +2369,15 @@ Reset button restores removed classes.`)) return;
       toast('Paste a full instagram.com URL'); return;
     }
     const url = normaliseIgUrl(raw);
+    const img = document.getElementById('igImgUrl').value.trim();
     const posts = await sbLoadInstagram();
-    if (posts.includes(url)) { toast('Already added'); return; }
-    posts.unshift(url);
+    if (posts.some(p => (p.url || p) === url)) { toast('Already added'); return; }
+    posts.unshift({ url, img });
     _cache.instagram = posts;
     renderInstagram(posts);
     sbSaveInstagram(posts).catch(() => { delete _cache.instagram; renderInstagram(); });
     input.value = '';
+    document.getElementById('igImgUrl').value = '';
     toast('Post added ✓');
   });
 

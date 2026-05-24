@@ -707,11 +707,11 @@
 
   /* ---------- TESTIMONIALS ---------- */
   .testimonials{padding:100px 32px}
-  .t-track-wrap{position:relative; overflow:hidden; margin:0 -32px; padding:10px 32px 40px}
-  .t-track-wrap::before,.t-track-wrap::after{display:none}
-  .t-track{display:flex; gap:1px; transition:transform .8s cubic-bezier(.16,.84,.3,1)}
+  .t-track-wrap{position:relative; margin:0 -32px; padding:10px 0 40px}
+  .t-track{display:flex; gap:1px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-behavior:smooth; padding:0 32px}
+  .t-track::-webkit-scrollbar{display:none}
   .t-card{
-    flex:0 0 calc((100% - 2px)/3); min-width:340px;
+    flex:0 0 calc((100% - 2px)/3); min-width:340px; scroll-snap-align:start;
     padding:36px 32px; background:var(--bg-2);
     display:flex; flex-direction:column; gap:24px;
   }
@@ -729,10 +729,8 @@
   .t-controls{display:flex; align-items:center; gap:14px; margin-top:24px}
   .t-dots{display:flex; gap:6px; align-items:center}
   .t-dot{position:relative; width:48px; height:2px; background:rgba(255,255,255,0.12); border:none; padding:0; cursor:pointer; overflow:hidden}
-  .t-dot::after{content:""; position:absolute; inset:0; left:0; top:0; width:0%; background:var(--lime)}
-  .t-dot.t-dot-active::after{animation:tProgress 5s linear forwards}
-  .t-dot.t-dot-selected::after{width:100%; animation:none}
-  @keyframes tProgress{from{width:0%} to{width:100%}}
+  .t-dot::after{content:""; position:absolute; inset:0; left:0; top:0; width:0%; background:var(--lime); transition:width .25s}
+  .t-dot.t-dot-active::after{width:100%}
   @media(max-width:600px){.t-dot{width:28px}}
   .t-btn{
     width:44px; height:44px; border:1px solid var(--line-2); display:grid; place-items:center; cursor:pointer;
@@ -2048,72 +2046,59 @@
   // Hero "Watch Us Train" button → open lightbox with training video
 
 
-  // Testimonials INFINITE slider
+  // Testimonials scroll-snap slider
   const track = document.getElementById('tTrack');
-  const origCards = Array.from(track.querySelectorAll('.t-card'));
-  const total = origCards.length;
-
-  // Build: [clone0..N-1, real0..N-1, clone0..N-1]
-  origCards.forEach(c => track.insertBefore(c.cloneNode(true), origCards[0]));
-  origCards.forEach(c => track.appendChild(c.cloneNode(true)));
-
-  let tCurrent = total; // start at first real card
+  const tDotsWrap = document.getElementById('tDots');
+  let tDots = [];
   let tTimer = null;
   let tPaused = false;
-  let tSnapping = false;
+  let tCurrentIdx = 0;
 
-  function tCardW() { return track.children[0].offsetWidth + 1; }
+  function tCardW() { return (track.children[0]?.offsetWidth || 0) + 1; }
 
-  function tRealIdx() {
-    if (tCurrent < total) return tCurrent;
-    if (tCurrent < total * 2) return tCurrent - total;
-    return tCurrent - total * 2;
+  function tBuildDots() {
+    tDotsWrap.innerHTML = '';
+    tDots = [];
+    Array.from(track.children).forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 't-dot' + (i === 0 ? ' t-dot-active' : '');
+      d.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      d.addEventListener('click', () => tGoTo(i, true));
+      tDotsWrap.appendChild(d);
+      tDots.push(d);
+    });
+    const tot = document.getElementById('tCountTot');
+    if (tot) tot.textContent = tDots.length;
   }
 
-  // Build dots
-  const tDotsWrap = document.getElementById('tDots');
-  const tDots = Array.from({length: total}, (_, i) => {
-    const d = document.createElement('button');
-    d.className = 't-dot' + (i === 0 ? ' t-dot-active' : '');
-    d.setAttribute('aria-label', `Go to slide ${i + 1}`);
-    d.addEventListener('click', () => tSlideTo(total + i, true));
-    tDotsWrap.appendChild(d);
-    return d;
-  });
-
-  function tActivateDot(idx, manual) {
-    tDots.forEach(d => d.classList.remove('t-dot-active', 't-dot-selected'));
-    const dot = tDots[idx];
-    if (!dot) return;
-    dot.classList.remove('t-dot-active');
-    void dot.offsetWidth;
-    dot.classList.add(manual ? 't-dot-active t-dot-selected' : 't-dot-active');
+  function tActivateDot(idx) {
+    if (!tDots.length) return;
+    if (idx < 0) idx = 0;
+    if (idx >= tDots.length) idx = tDots.length - 1;
+    tCurrentIdx = idx;
+    tDots.forEach((d, i) => d.classList.toggle('t-dot-active', i === idx));
+    const cur = document.getElementById('tCountCur');
+    if (cur) cur.textContent = idx + 1;
   }
 
-  function tTranslate(idx, noAnim) {
-    if (noAnim) { tSnapping = true; track.style.transition = 'none'; }
-    track.style.transform = `translateX(-${idx * tCardW()}px)`;
-    if (noAnim) requestAnimationFrame(() => requestAnimationFrame(() => { track.style.transition = ''; tSnapping = false; }));
+  function tGoTo(idx, manual) {
+    const n = track.children.length;
+    if (!n) return;
+    if (idx < 0) idx = n - 1;
+    if (idx >= n) idx = 0;
+    track.scrollTo({ left: idx * tCardW(), behavior: 'smooth' });
+    tActivateDot(idx);
+    if (manual) tSetPaused(true);
   }
 
-  // Position at first real card without animation
-  tTranslate(tCurrent, true);
-
-  function tSlideTo(idx, manual) {
-    if (tSnapping) return;
-    tCurrent = idx;
-    tTranslate(tCurrent, false);
-    tActivateDot(tRealIdx(), manual);
-    clearInterval(tTimer);
-    if (manual) { tSetPaused(true); }
-    else { tTimer = setInterval(() => tSlideTo(tCurrent + 1), 5000); }
-  }
-
-  // Snap back when we drift into clone zones
-  track.addEventListener('transitionend', () => {
-    if (tCurrent >= total * 2) { tCurrent -= total; tTranslate(tCurrent, true); }
-    else if (tCurrent < total) { tCurrent += total; tTranslate(tCurrent, true); }
-  });
+  let _tScrollT;
+  track.addEventListener('scroll', () => {
+    clearTimeout(_tScrollT);
+    _tScrollT = setTimeout(() => {
+      const w = tCardW() || 1;
+      tActivateDot(Math.min(Math.round(track.scrollLeft / w), tDots.length - 1));
+    }, 80);
+  }, { passive: true });
 
   const tPlayPauseBtn = document.getElementById('tPlayPause');
   const tPauseIcon = document.getElementById('tPauseIcon');
@@ -2124,27 +2109,44 @@
     tPauseIcon.style.display = paused ? 'none' : '';
     tPlayIcon.style.display = paused ? '' : 'none';
     tPlayPauseBtn.setAttribute('aria-label', paused ? 'Play' : 'Pause');
-    const dot = tDots[tRealIdx()];
-    if (paused) {
-      clearInterval(tTimer);
-    } else {
-      if (dot) { dot.classList.remove('t-dot-selected', 't-dot-active'); void dot.offsetWidth; dot.classList.add('t-dot-active'); }
-      clearInterval(tTimer);
-      tTimer = setInterval(() => tSlideTo(tCurrent + 1), 5000);
-    }
+    clearInterval(tTimer);
+    if (!paused) tTimer = setInterval(() => tGoTo(tCurrentIdx + 1, false), 5000);
   }
 
   tPlayPauseBtn.addEventListener('click', () => tSetPaused(!tPaused));
-  document.getElementById('tPrev').addEventListener('click', () => tSlideTo(tCurrent - 1, true));
-  document.getElementById('tNext').addEventListener('click', () => tSlideTo(tCurrent + 1, true));
+  document.getElementById('tPrev').addEventListener('click', () => tGoTo(tCurrentIdx - 1, true));
+  document.getElementById('tNext').addEventListener('click', () => tGoTo(tCurrentIdx + 1, true));
+  window.addEventListener('resize', () => track.scrollTo({ left: tCurrentIdx * tCardW(), behavior: 'instant' }));
 
-  window.addEventListener('resize', () => tTranslate(tCurrent, true));
-
-  tTimer = setInterval(() => tSlideTo(tCurrent + 1), 5000);
+  tBuildDots();
+  tTimer = setInterval(() => tGoTo(tCurrentIdx + 1, false), 5000);
 
   new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting && tPaused) tSetPaused(false);
   }, { threshold: 0 }).observe(document.querySelector('.testimonials'));
+
+  // ── Scroll lock (used by lightbox + schedule modal) ──────────────────────
+  let _lockScrollY = 0;
+  function lockScroll() {
+    _lockScrollY = window.scrollY;
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${_lockScrollY}px`;
+    document.body.style.width = '100%';
+  }
+  function unlockScroll() {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, _lockScrollY);
+  }
+
+  // ── bfcache: restart hero video when navigating back ─────────────────────
+  window.addEventListener('pageshow', e => {
+    if (!e.persisted) return;
+    document.querySelector('.hero-video')?.play().catch(() => {});
+  });
 
   // Lightbox (images + videos)
   const certLightbox = document.getElementById('certLightbox');
@@ -2510,14 +2512,16 @@
         <div class="t-avatar">${initials(entry.name)}</div>
         <div><div class="t-name">${entry.name}</div><div class="t-meta">${entry.training}</div></div>
       </div>`;
-    document.getElementById('tTrack').appendChild(card);
+    track.appendChild(card);
     const newIdx = tDots.length;
     const d = document.createElement('button');
     d.className = 't-dot';
     d.setAttribute('aria-label', `Go to slide ${newIdx + 1}`);
-    d.addEventListener('click', () => tSlideTo(newIdx, true));
+    d.addEventListener('click', () => tGoTo(newIdx, true));
     tDotsWrap.appendChild(d);
     tDots.push(d);
+    const tot = document.getElementById('tCountTot');
+    if (tot) tot.textContent = tDots.length;
   }
 
   // Only show admin-approved testimonials (fetched from Supabase)
@@ -2531,24 +2535,40 @@
   // ── Instagram posts (managed from admin, fetched from Supabase) ───────
   (async function () {
     try {
-      const { data } = await _sb.from('instagram_posts').select('*').order('ord');
-      const posts = (data || []).map(r => r.url);
+      // Try new settings-based format first, fall back to old table
+      let posts = [];
+      const { data: sd } = await _sb.from('settings').select('value').eq('key','pf_instagram_data').maybeSingle();
+      if (sd?.value) { try { posts = JSON.parse(sd.value); } catch(_) {} }
+      if (!posts.length) {
+        const { data: td } = await _sb.from('instagram_posts').select('*').order('ord');
+        posts = (td || []).map(r => ({ url: r.url, img: '' }));
+      }
       if (!posts.length) return;
       const section = document.getElementById('instaSection');
       const grid    = document.getElementById('instaGrid');
 
-      // Render link cards first — work everywhere, no API needed
-      posts.forEach(url => {
+      posts.forEach(p => {
+        const url = typeof p === 'string' ? p : p.url;
+        const img = typeof p === 'object' ? (p.img || '') : '';
         const a = document.createElement('a');
         a.className = 'insta-card';
         a.href = url;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.setAttribute('aria-label', 'View Instagram post');
-        a.innerHTML = `
-          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
-          <span class="insta-card-label">View post</span>
-          <span class="insta-card-arrow">↗</span>`;
+        if (img) {
+          a.style.cssText = `background-image:url(${JSON.stringify(img)});background-size:cover;background-position:center`;
+          a.innerHTML = `<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,.1))"></div>
+            <svg viewBox="0 0 24 24" style="position:relative;z-index:1"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+            <span class="insta-card-label" style="position:relative;z-index:1">View post</span>
+            <span class="insta-card-arrow" style="position:relative;z-index:1">↗</span>`;
+          a.style.position = 'relative';
+        } else {
+          a.innerHTML = `
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+            <span class="insta-card-label">View post</span>
+            <span class="insta-card-arrow">↗</span>`;
+        }
         grid.appendChild(a);
       });
 
