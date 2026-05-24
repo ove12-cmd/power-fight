@@ -488,7 +488,9 @@
       <div class="panel-body">
         <div class="adm-card">
           <div class="adm-card-head"><span class="adm-card-title">Hero Video — "Watch Us Train"</span></div>
-          <div class="adm-card-body">
+          <div id="heroVideoList"></div>
+          <div class="adm-card-body" style="border-top:1px solid var(--line-2)">
+            <div style="font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:14px">Change Video</div>
             <div class="adm-form">
               <div class="adm-field">
                 <label>Video URL <span style="color:var(--ink-mute)">(direct .mp4 / .webm, or YouTube / Vimeo link)</span></label>
@@ -1361,12 +1363,64 @@
     });
   }
 
+  function renderHeroVideoList(url) {
+    const el = document.getElementById('heroVideoList');
+    if (!url) {
+      el.innerHTML = '<div style="padding:18px 20px;color:var(--ink-mute);font-size:13px">No video set — add one below.</div>';
+      return;
+    }
+    const isYT  = /youtu\.?be|youtube\.com/.test(url);
+    const isVim = /vimeo\.com/.test(url);
+    const isEmbed = isYT || isVim;
+    const label = isYT ? 'YouTube' : isVim ? 'Vimeo' : 'Direct video';
+    const iconColor = isYT ? '#FF0000' : isVim ? '#1AB7EA' : 'var(--lime)';
+    // extract a short display name
+    let displayUrl = url;
+    try { displayUrl = new URL(url).hostname + new URL(url).pathname; } catch(_){}
+    if (displayUrl.length > 54) displayUrl = displayUrl.slice(0,51) + '…';
+
+    // thumbnail: YouTube has a predictable thumb; others use a video icon
+    let thumbHtml = '';
+    if (isYT) {
+      const m = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+      if (m) thumbHtml = `<img src="https://img.youtube.com/vi/${m[1]}/mqdefault.jpg" style="width:90px;height:56px;object-fit:cover;border-radius:4px;flex-shrink:0">`;
+    }
+    if (!thumbHtml) {
+      thumbHtml = `<div style="width:90px;height:56px;border-radius:4px;background:var(--layer-3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:${iconColor};fill:none;stroke-width:2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </div>`;
+    }
+
+    el.innerHTML = `<div style="padding:12px 16px">
+      <div style="display:flex;align-items:center;gap:12px;background:var(--layer-3);border-radius:8px;padding:10px 14px">
+        ${thumbHtml}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11px;color:${iconColor};font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">${label} · Active</div>
+          <div style="font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayUrl}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn-adm btn-ghost" style="font-size:11px;padding:4px 10px" onclick="document.getElementById('heroVideoUrl').value=${JSON.stringify(url)};document.getElementById('heroVideoUrl').focus()">Edit URL</button>
+          <button class="btn-adm" style="font-size:11px;padding:4px 10px;background:rgba(255,77,109,.12);color:var(--red);border:1px solid rgba(255,77,109,.25)" onclick="heroVideoRemove()">Remove</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  window.heroVideoRemove = async function() {
+    if (!confirm('Remove the current hero video?')) return;
+    await sbSetSetting('hero_video_url', '');
+    document.getElementById('heroVideoUrl').value = '';
+    renderHeroVideoList('');
+    toast('Hero video removed');
+  };
+
   async function renderHome() {
     const [url, athletes] = await Promise.all([
       sbGetSetting('hero_video_url', ''),
       sbLoadAthletes(),
     ]);
-    document.getElementById('heroVideoUrl').value = url;
+    renderHeroVideoList(url);
+    document.getElementById('heroVideoUrl').value = '';
     renderAdminAthletes(athletes);
   }
 
@@ -1375,8 +1429,14 @@
     // pendingHeroVideo wins over the URL field (file upload takes priority)
     const val = _pendingHeroVideo || urlField.value.trim();
     if (!val) { urlField.focus(); toast('Enter a video URL or choose a file', true); return; }
-    urlField.value = val;
     await sbSetSetting('hero_video_url', val);
+    // clear form + file preview, then show in list
+    urlField.value = '';
+    _pendingHeroVideo = null;
+    document.getElementById('heroVideoPreviewEl').src = '';
+    document.getElementById('heroVideoPreview').style.display = 'none';
+    document.getElementById('heroVideoFile').value = '';
+    renderHeroVideoList(val);
     toast('Hero video saved ✓');
   });
 
