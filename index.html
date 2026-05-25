@@ -356,26 +356,55 @@
   .reveal.d1{transition-delay:.08s} .reveal.d2{transition-delay:.16s}
   .reveal.d3{transition-delay:.24s} .reveal.d4{transition-delay:.32s}
 
-  /* ---------- PROGRAMS ---------- */
-  .programs-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--line-2)}
-  .prog-card{
-    padding:28px 22px;
-    background:var(--bg-2);
-    display:flex; flex-direction:column; gap:16px; min-height:260px;
+  /* ---------- DISCIPLINES LIST ---------- */
+  .disciplines-list{margin-top:60px; border-top:1px solid var(--line-2)}
+  .discipline-row{
+    display:grid; grid-template-columns:64px 1fr auto;
+    gap:0 56px; align-items:center;
+    padding:32px 0; border-bottom:1px solid var(--line-2);
+    text-decoration:none; color:inherit; position:relative; cursor:pointer;
   }
-  .prog-num{font-size:11px; letter-spacing:0.2em; color:var(--ink-mute); font-family:var(--sans)}
-  .prog-cat{
+  .discipline-row::after{
+    content:''; position:absolute; bottom:-1px; left:0;
+    width:0%; height:1px; background:var(--lime);
+    transition:width .5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .discipline-row:hover::after{width:100%}
+  .disc-num{
+    font-size:11px; letter-spacing:0.22em; color:var(--ink-mute);
+    font-family:var(--sans); transition:color .25s; align-self:flex-start; padding-top:8px;
+  }
+  .discipline-row:hover .disc-num{color:var(--lime)}
+  .disc-body{display:flex; flex-direction:column; gap:7px; min-width:0}
+  .disc-name{
+    font-family:var(--display); font-size:clamp(22px,2.4vw,38px);
+    font-weight:600; letter-spacing:-0.025em; color:var(--ink); line-height:1;
+    transition:color .25s;
+  }
+  .discipline-row:hover .disc-name{color:var(--lime)}
+  .disc-desc{font-size:13px; color:var(--ink-dim); line-height:1.55; margin:0}
+  .disc-right{display:flex; align-items:center; gap:16px; flex-shrink:0}
+  .disc-tag{
     font-size:9px; letter-spacing:0.18em; text-transform:uppercase; font-weight:700;
-    padding:4px 12px; border-radius:20px; display:inline-block;
-    border:1px solid currentColor;
-    background:color-mix(in srgb, currentColor 14%, transparent);
+    padding:4px 14px; border-radius:20px; border:1px solid currentColor;
+    background:color-mix(in srgb, currentColor 10%, transparent); white-space:nowrap;
   }
-  .prog-title{font-family:var(--display); font-size:22px; font-weight:600; letter-spacing:-0.02em; margin:0; line-height:1.05}
-  .prog-desc{font-size:14px; line-height:1.6; color:var(--ink-dim); margin:0; flex:1}
-  .prog-footer{
-    display:flex; justify-content:space-between; align-items:center;
-    padding-top:16px; border-top:1px solid var(--line-2);
-    font-size:1rem; letter-spacing:0.18em; color:var(--ink); font-weight:500; text-transform:uppercase;
+  .disc-join{
+    display:inline-flex; align-items:center; gap:7px;
+    font-size:10px; letter-spacing:0.2em; text-transform:uppercase; font-weight:600;
+    color:var(--ink-dim); transition:color .25s; white-space:nowrap;
+  }
+  .disc-join svg{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .3s cubic-bezier(0.22,1,0.36,1); flex-shrink:0}
+  .discipline-row:hover .disc-join{color:var(--lime)}
+  .discipline-row:hover .disc-join svg{transform:translateX(4px)}
+  @media(max-width:900px){
+    .discipline-row{grid-template-columns:44px 1fr auto; gap:0 24px; padding:24px 0}
+    .disc-tag{display:none}
+  }
+  @media(max-width:640px){
+    .discipline-row{grid-template-columns:32px 1fr auto; gap:0 14px; padding:18px 0}
+    .disc-desc{display:none}
+    .disc-join-label{display:none}
   }
 
   /* ---------- PHILOSOPHY ---------- */
@@ -926,7 +955,6 @@
     .t-card{flex:0 0 calc(100% / 3)}
     .classes-grid{grid-template-columns:repeat(2,1fr)}
     .sched-grid{grid-template-columns:repeat(2,1fr)}
-    .programs-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width: 640px){
     .hero{padding:80px 20px 2rem}
@@ -1181,157 +1209,117 @@
     </div>
     <p data-i18n="prog.desc">Ten disciplines. One team. Everything from MMA and grappling to kettlebells and kids — all under one roof.</p>
   </div>
-  <div class="programs-grid">
-    <div class="prog-card reveal d1">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">01</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#FF4D6D">MMA</span>
-          <span class="prog-diff prog-diff-all">All Levels</span>
-        </div>
+  <div class="disciplines-list">
+    <a class="discipline-row reveal" href="contact.html?t=MMA">
+      <span class="disc-num">01</span>
+      <div class="disc-body">
+        <span class="disc-name">Mixed Martial Arts</span>
+        <p class="disc-desc">Strike, grapple, cage work and transitions — all disciplines combined into one complete fighting game.</p>
       </div>
-      <h3 class="prog-title">MMA</h3>
-      <p class="prog-desc">Strike, grapple, cage work and transitions — all disciplines combined into one complete fighting game.</p>
-      <div class="prog-footer">
-        <span>3× per week</span>
-        <a class="btn btn-primary" href="contact.html?t=MMA"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#FF4D6D">MMA</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d2">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">02</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#5BE0FF">Grappling</span>
-          <span class="prog-diff prog-diff-int">Intermediate</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Grappling">
+      <span class="disc-num">02</span>
+      <div class="disc-body">
+        <span class="disc-name">Grappling</span>
+        <p class="disc-desc">Clinch work, takedowns, submissions and mat control. Build your ground game from the bottom up.</p>
       </div>
-      <h3 class="prog-title">Grappling</h3>
-      <p class="prog-desc">Clinch work, takedowns, submissions and mat control. Build your ground game from the bottom up.</p>
-      <div class="prog-footer">
-        <span>2× per week</span>
-        <a class="btn btn-primary" href="contact.html?t=Grappling"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#5BE0FF">Grappling</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d3">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">03</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:var(--lime)">Striking</span>
-          <span class="prog-diff prog-diff-all">All Levels</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Striking">
+      <span class="disc-num">03</span>
+      <div class="disc-body">
+        <span class="disc-name">Striking</span>
+        <p class="disc-desc">Punches, kicks, elbows and footwork. Develop the stand-up game of a complete martial artist.</p>
       </div>
-      <h3 class="prog-title">Striking</h3>
-      <p class="prog-desc">Punches, kicks, elbows and footwork. Develop the stand-up game of a complete martial artist.</p>
-      <div class="prog-footer">
-        <span>3× per week</span>
-        <a class="btn btn-primary" href="contact.html?t=Striking"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:var(--lime)">Striking</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d1">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">04</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#FACC15">Wrestling</span>
-          <span class="prog-diff prog-diff-int">Intermediate</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Wrestling">
+      <span class="disc-num">04</span>
+      <div class="disc-body">
+        <span class="disc-name">Wrestling</span>
+        <p class="disc-desc">Takedowns, scrambles and dominant positions. The backbone of every great MMA game plan.</p>
       </div>
-      <h3 class="prog-title">Wrestling</h3>
-      <p class="prog-desc">Takedowns, scrambles and dominant positions. The backbone of every great MMA game plan.</p>
-      <div class="prog-footer">
-        <span>2× per week</span>
-        <a class="btn btn-primary" href="contact.html?t=Wrestling"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#FACC15">Wrestling</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d2">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">05</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#FF8C42">Fitness</span>
-          <span class="prog-diff prog-diff-all">All Levels</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Les+Mills+Bodycombat">
+      <span class="disc-num">05</span>
+      <div class="disc-body">
+        <span class="disc-name">Les Mills Bodycombat</span>
+        <p class="disc-desc">High-energy martial arts-inspired fitness. Full-body conditioning built on striking patterns — no contact, all intensity.</p>
       </div>
-      <h3 class="prog-title">Les Mills Bodycombat</h3>
-      <p class="prog-desc">High-energy martial arts-inspired fitness. Full-body conditioning built on striking patterns — no contact, all intensity.</p>
-      <div class="prog-footer">
-        <span>All levels</span>
-        <a class="btn btn-primary" href="contact.html?t=Les+Mills+Bodycombat"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#FF8C42">Fitness</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d3">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">06</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#A78BFA">S&amp;C</span>
-          <span class="prog-diff prog-diff-all">All Levels</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Strength+and+Conditioning">
+      <span class="disc-num">06</span>
+      <div class="disc-body">
+        <span class="disc-name">Strength &amp; Conditioning</span>
+        <p class="disc-desc">Build the engine behind your fight game. Sport-specific strength, power and endurance for martial artists.</p>
       </div>
-      <h3 class="prog-title">Strength &amp; Conditioning</h3>
-      <p class="prog-desc">Build the engine behind your fight game. Sport-specific strength, power and endurance for martial artists.</p>
-      <div class="prog-footer">
-        <span>2× per week</span>
-        <a class="btn btn-primary" href="contact.html?t=Strength+and+Conditioning"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#A78BFA">S&amp;C</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d1">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">07</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#FF4D6D">Pro</span>
-          <span class="prog-diff prog-diff-adv">Advanced</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Performance+Training">
+      <span class="disc-num">07</span>
+      <div class="disc-body">
+        <span class="disc-name">Performance Training</span>
+        <p class="disc-desc">Elite-level preparation for competitive fighters. High-intensity sessions with competition-focused game plans.</p>
       </div>
-      <h3 class="prog-title">Performance Training</h3>
-      <p class="prog-desc">Elite-level preparation for competitive fighters. High-intensity sessions with competition-focused game plans.</p>
-      <div class="prog-footer">
-        <span>By assessment</span>
-        <a class="btn btn-primary" href="contact.html?t=Performance+Training"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#FF4D6D">Pro</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d2">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">08</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#5BE0FF">Personal</span>
-          <span class="prog-diff prog-diff-all">All Levels</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Personal+Training">
+      <span class="disc-num">08</span>
+      <div class="disc-body">
+        <span class="disc-name">Personal Training</span>
+        <p class="disc-desc">1-on-1 coaching tailored to your goals. Faster progress, direct feedback and a programme built around you.</p>
       </div>
-      <h3 class="prog-title">Personal Training</h3>
-      <p class="prog-desc">1-on-1 coaching tailored to your goals. Faster progress, direct feedback and a programme built around you.</p>
-      <div class="prog-footer">
-        <span>Flexible</span>
-        <a class="btn btn-primary" href="contact.html?t=Personal+Training"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#5BE0FF">Personal</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d3">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">09</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#FACC15">Fitness</span>
-          <span class="prog-diff prog-diff-all">All Levels</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Kettlebell+Training">
+      <span class="disc-num">09</span>
+      <div class="disc-body">
+        <span class="disc-name">Kettlebell Training</span>
+        <p class="disc-desc">Functional strength and conditioning with kettlebells. Raw power, grip and endurance for sport and life.</p>
       </div>
-      <h3 class="prog-title">Kettlebell Training</h3>
-      <p class="prog-desc">Functional strength and conditioning with kettlebells. Raw power, grip and endurance for sport and life.</p>
-      <div class="prog-footer">
-        <span>Weekly</span>
-        <a class="btn btn-primary" href="contact.html?t=Kettlebell+Training"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#FACC15">Fitness</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
-    <div class="prog-card reveal d1">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="prog-num">10</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span class="prog-cat" style="color:#FF8C42">Kids</span>
-          <span class="prog-diff prog-diff-kids">Ages 5–14</span>
-        </div>
+    </a>
+    <a class="discipline-row reveal" href="contact.html?t=Kids+Training">
+      <span class="disc-num">10</span>
+      <div class="disc-body">
+        <span class="disc-name">Kids Training</span>
+        <p class="disc-desc">Martial arts for ages 5–14. Discipline, confidence and technique in a safe, coached environment.</p>
       </div>
-      <h3 class="prog-title">Kids Training</h3>
-      <p class="prog-desc">Martial arts for ages 5–14. Discipline, confidence and technique in a safe, coached environment.</p>
-      <div class="prog-footer">
-        <span>Ages 5–14</span>
-        <a class="btn btn-primary" href="contact.html?t=Kids+Training"><span>Join</span></a>
+      <div class="disc-right">
+        <span class="disc-tag" style="color:#FF8C42">Kids</span>
+        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
       </div>
-    </div>
+    </a>
   </div>
 </section>
 
