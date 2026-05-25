@@ -2027,8 +2027,8 @@
   let tCurrentPage = 0;
 
   function tGetPerPage() { return window.innerWidth >= 641 ? 3 : 1; }
-  // Per-card sliding: positions = slides − visible + 1 (no empty-space overflow)
-  function tTotalPages() { return Math.max(1, tSlides.length - tGetPerPage() + 1); }
+  // 1 dot per slide; translate clamps so last slide never overflows into empty space
+  function tTotalPages() { return Math.max(1, tSlides.length); }
 
   function tBuildDots() {
     tSlides = Array.from(tTrack.querySelectorAll('.t-card'));
@@ -2048,9 +2048,10 @@
   }
 
   function tApplyTranslate(posIdx) {
-    const pp = tGetPerPage();
-    // Each card is 1/pp of the track's own CSS width; advance 1 card per step
-    tTrack.style.transform = posIdx > 0 ? `translateX(-${posIdx / pp * 100}%)` : '';
+    const n = tSlides.length, pp = tGetPerPage();
+    // Clamp so last slide is never followed by empty space
+    const clamped = Math.min(posIdx, Math.max(0, n - pp));
+    tTrack.style.transform = clamped > 0 ? `translateX(-${clamped / pp * 100}%)` : '';
   }
 
   function tGoTo(pageIdx, manual) {
