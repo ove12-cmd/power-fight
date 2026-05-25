@@ -437,9 +437,14 @@
         <span>Gallery</span>
         <span class="sb-badge" id="badgeGallery">0</span>
       </button>
+      <button class="sb-link" data-tab="highlights">
+        <svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+        <span>Highlights</span>
+        <span class="sb-badge" id="badgeHighlights">0</span>
+      </button>
       <button class="sb-link" data-tab="events">
         <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="1"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <span>Highlights</span>
+        <span>Events</span>
         <span class="sb-badge" id="badgeEvents">0</span>
       </button>
       <button class="sb-link" data-tab="schedule">
@@ -523,6 +528,17 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ── HIGHLIGHTS TAB ───────────────────────────────────────── -->
+    <div class="tab-panel" id="tabHighlights" style="display:none">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Highlights</div>
+          <div class="panel-subtitle">Manage the athlete / guest legend slider shown in the Highlights section</div>
+        </div>
+      </div>
+      <div class="panel-body">
 
         <!-- Athletes / Guest Legends -->
         <div class="adm-card">
@@ -1277,7 +1293,7 @@
 
   // ── TABS ──────────────────────────────────────────────────────────
   const tabBtns = document.querySelectorAll('.sb-link[data-tab]');
-  const tabPanels = { home: 'tabHome', ticker: 'tabTicker', gallery: 'tabGallery', events: 'tabEvents', schedule: 'tabSchedule', testimonials: 'tabTestimonials', instagram: 'tabInstagram' };
+  const tabPanels = { home: 'tabHome', ticker: 'tabTicker', gallery: 'tabGallery', highlights: 'tabHighlights', events: 'tabEvents', schedule: 'tabSchedule', testimonials: 'tabTestimonials', instagram: 'tabInstagram' };
 
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1290,9 +1306,10 @@
 
   // ── BADGES ────────────────────────────────────────────────────────
   async function updateBadges() {
-    const [ticker, gallery, events, schedule, reviews, instagram] = await Promise.all([
+    const [ticker, gallery, highlights, events, schedule, reviews, instagram] = await Promise.all([
       sbLoadTicker(),
       sbLoadGallery(),
+      sbLoadAthletes(),
       sbLoadEvents(),
       sbLoadSchedule(),
       sbLoadFeedback(),
@@ -1300,6 +1317,7 @@
     ]);
     document.getElementById('badgeTicker').textContent = ticker.length;
     document.getElementById('badgeGallery').textContent = gallery.length;
+    document.getElementById('badgeHighlights').textContent = highlights.length;
     document.getElementById('badgeEvents').textContent = events.length;
     const schedChanges = schedule.length;
     document.getElementById('badgeSchedule').textContent = schedChanges ? schedChanges + ' edited' : '—';
@@ -1313,10 +1331,11 @@
   // ── RENDER ALL ────────────────────────────────────────────────────
   async function renderAll() {
     Object.keys(_cache).forEach(k => delete _cache[k]); // fresh on every full reload
-    Progress.start(8); // 7 renders + 1 badges
+    Progress.start(9); // 8 renders + 1 badges
     try {
       await Promise.all([
         renderHome()        .then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderHighlights()  .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderTicker()      .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderGallery()     .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderEvents()      .then(() => Progress.tick()).catch(() => Progress.tick()),
@@ -1435,12 +1454,13 @@
   };
 
   async function renderHome() {
-    const [url, athletes] = await Promise.all([
-      sbGetSetting('hero_video_url', ''),
-      sbLoadAthletes(),
-    ]);
+    const url = await sbGetSetting('hero_video_url', '');
     renderHeroVideoList(url);
     document.getElementById('heroVideoUrl').value = '';
+  }
+
+  async function renderHighlights() {
+    const athletes = await sbLoadAthletes();
     renderAdminAthletes(athletes);
   }
 
@@ -1575,7 +1595,7 @@
     document.getElementById('athFormTitle').textContent = 'Edit Athlete';
     document.getElementById('saveAthLabel').textContent = 'Save Changes';
     document.getElementById('cancelAthBtn').style.display = '';
-    document.getElementById('tabHome').scrollTo({ top: 9999, behavior: 'smooth' });
+    document.getElementById('tabHighlights').scrollTo({ top: 9999, behavior: 'smooth' });
   };
 
   window.athDelete = async idx => {

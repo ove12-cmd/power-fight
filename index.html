@@ -1768,6 +1768,10 @@
                        timeStart: o.timeStart ?? s.defStart, timeEnd: o.timeEnd ?? s.defEnd}
                  : {...s, timeStart: s.defStart, timeEnd: s.defEnd};
       });
+      // Safety: if every class was removed via admin, fall back to full defaults
+      if (!window._pfSlots.length) {
+        window._pfSlots = FIXED_SCHEDULE_SITE.map(s => ({...s, timeStart: s.defStart, timeEnd: s.defEnd}));
+      }
 
       // Group by effective day, sort by start time within each day
       const byDay = {}, dayNames = {};
