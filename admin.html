@@ -1043,16 +1043,20 @@
     if (_cache.instagram) return _cache.instagram;
     const { data } = await _sb.from('settings').select('value').eq('key','pf_instagram_data').maybeSingle();
     let posts = [];
-    if (data?.value) { try { posts = JSON.parse(data.value); } catch(_) {} }
-    // migrate from old table if settings is empty
-    if (!posts.length) {
+    if (data !== null && data !== undefined) {
+      // Settings row exists — always trust it, even if the list is now empty
+      try { posts = JSON.parse(data.value || '[]'); } catch(_) {}
+    } else {
+      // Settings row doesn't exist yet — one-time migration from legacy table
       const { data: td } = await _sb.from('instagram_posts').select('*').order('ord');
       posts = (td || []).map(r => ({ url: r.url, img: '' }));
     }
     return (_cache.instagram = posts);
   }
   async function sbSaveInstagram(posts) {
+    // Save then immediately write-through the cache so re-reads see the new data
     await sbSetSetting('pf_instagram_data', JSON.stringify(posts));
+    _cache.instagram = posts;
   }
   async function sbLoadFeedback() {
     if (_cache.feedback) return _cache.feedback;
@@ -1064,7 +1068,8 @@
     return data?.value ?? def;
   }
   async function sbSetSetting(key, value) {
-    await _sb.from('settings').upsert({ key, value });
+    // onConflict:'key' ensures upsert updates the existing row instead of inserting a duplicate
+    await _sb.from('settings').upsert({ key, value }, { onConflict: 'key' });
   }
 
   // ── SCHEDULE DATA (declared early so renderSchedule() works on first renderAll) ──
@@ -2097,9 +2102,15 @@ Reset button restores removed classes.`)) return;
       'rgba(250,204,21,.08)',
       'rgba(52,211,153,.08)',
     ];
+    // Hash the URL so the colour is tied to the item, not its position
+    function igColorIdx(url) {
+      let h = 0;
+      for (let i = 0; i < url.length; i++) h = (Math.imul(31, h) + url.charCodeAt(i)) | 0;
+      return Math.abs(h) % IG_COLORS.length;
+    }
     posts.forEach((post, idx) => {
       const url    = typeof post === 'string' ? post : post.url;
-      const accent = IG_COLORS[idx % IG_COLORS.length];
+      const accent = IG_COLORS[igColorIdx(url)];
       const border = accent.replace('.10','0.6').replace('.08','0.5');
       const row = document.createElement('div');
       row.className = 'review-row';
