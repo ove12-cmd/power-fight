@@ -1162,40 +1162,46 @@
   .insta-btn:hover{border-color:rgba(199,255,63,.35);color:var(--ink);background:rgba(199,255,63,.05)}
   .insta-btn svg{width:15px;height:15px;flex-shrink:0}
   .insta-grid{
-    display:flex;gap:16px;
-    overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-    scrollbar-width:none;padding-bottom:4px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:4px;
   }
-  .insta-grid::-webkit-scrollbar{display:none}
-  /* Link-card fallback (shown always; embed.js replaces with iframe on live domains) */
+  /* Link-card fallback */
   .insta-card{
-    flex:0 0 300px;height:300px;scroll-snap-align:start;
+    aspect-ratio:1/1;
     background:var(--bg-2);border:1px solid var(--line-2);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:14px;text-decoration:none;color:var(--ink-dim);
-    transition:border-color .2s,color .2s;position:relative;overflow:hidden;
+    transition:border-color .3s,color .3s;
+    position:relative;overflow:hidden;
   }
   .insta-card::before{
     content:'';position:absolute;inset:0;
     background:radial-gradient(circle at 50% 110%,rgba(199,255,63,.06),transparent 65%);
-    pointer-events:none;
+    pointer-events:none;z-index:0;
   }
   .insta-card:hover{border-color:rgba(199,255,63,.4);color:var(--lime)}
-  .insta-card svg{width:36px;height:36px;stroke:currentColor;fill:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
-  .insta-card-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
-  .insta-card-arrow{font-size:18px;position:absolute;bottom:20px;right:20px;opacity:.4}
-  /* embed.js overrides */
-  .insta-grid .instagram-media{
-    flex:0 0 320px!important;scroll-snap-align:start;
-    min-width:0!important;max-width:320px!important;
-    border-radius:4px!important;border:1px solid var(--line-2)!important;
-    box-shadow:none!important;margin:0!important;
+  .insta-card:hover .insta-card-img{transform:scale(1.05)}
+  .insta-card-img{
+    position:absolute;inset:0;
+    background-size:cover;background-position:center;
+    transition:transform .55s cubic-bezier(.22,1,.36,1);
   }
-  @media(max-width:700px){
+  .insta-card-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.05) 100%);
+    transition:opacity .3s;
+  }
+  .insta-card:hover .insta-card-overlay{opacity:.85}
+  .insta-card svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:.55;position:relative;z-index:1}
+  .insta-card-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;position:relative;z-index:1}
+  .insta-card-arrow{
+    font-size:15px;position:absolute;bottom:14px;right:16px;z-index:1;
+    opacity:0;transition:opacity .2s,transform .25s;transform:translate(-5px,5px);
+  }
+  .insta-card:hover .insta-card-arrow{opacity:.9;transform:translate(0,0)}
+  @media(max-width:600px){
     .insta-inner{padding:0 20px}
     .insta-feed{padding:60px 0}
-    .insta-card{flex:0 0 260px;height:260px}
-    .insta-grid .instagram-media{flex:0 0 280px!important;max-width:280px!important}
+    .insta-grid{grid-template-columns:repeat(2,1fr);gap:3px}
   }
 
   /* ── Schedule "add to calendar" button ───────────────────────────── */
@@ -2830,16 +2836,15 @@
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.setAttribute('aria-label', 'View Instagram post');
+        const igIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>`;
         if (img) {
-          a.style.cssText = `background-image:url(${JSON.stringify(img)});background-size:cover;background-position:center`;
-          a.innerHTML = `<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,.1))"></div>
-            <svg viewBox="0 0 24 24" style="position:relative;z-index:1"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
-            <span class="insta-card-label" style="position:relative;z-index:1">View post</span>
-            <span class="insta-card-arrow" style="position:relative;z-index:1">↗</span>`;
-          a.style.position = 'relative';
+          a.innerHTML = `<div class="insta-card-img" style="background-image:url(${JSON.stringify(img)})"></div>
+            <div class="insta-card-overlay"></div>
+            ${igIcon}
+            <span class="insta-card-label">View post</span>
+            <span class="insta-card-arrow">↗</span>`;
         } else {
-          a.innerHTML = `
-            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+          a.innerHTML = `${igIcon}
             <span class="insta-card-label">View post</span>
             <span class="insta-card-arrow">↗</span>`;
         }
