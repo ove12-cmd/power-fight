@@ -309,27 +309,6 @@
   .adm-upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
   .adm-upload-note{font-size:11px;color:var(--ink-mute);margin-top:10px}
 
-  /* ── EVENTS LIST ─────────────────────────────────────────────── */
-  .event-list{display:flex;flex-direction:column}
-  .event-row{
-    display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
-    padding:16px 20px;border-bottom:1px solid var(--line-2);
-    transition:background .15s;
-  }
-  .event-row:last-child{border-bottom:none}
-  .event-row:hover{background:var(--bg-3)}
-  .event-date-block{
-    text-align:center;min-width:48px;
-    background:var(--lime-bg);border:1px solid rgba(199,255,63,.15);
-    padding:8px 10px;
-  }
-  .event-date-day{font-family:var(--display);font-size:22px;font-weight:700;color:var(--lime);line-height:1}
-  .event-date-mon{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:2px}
-  .event-info{min-width:0}
-  .event-title{font-size:15px;font-family:var(--display);font-weight:700;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .event-meta{font-size:12px;color:var(--ink-dim)}
-  .event-actions{display:flex;gap:6px;flex-shrink:0}
-
   /* ── TOAST ───────────────────────────────────────────────────── */
   #toast{
     position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -441,11 +420,6 @@
         <svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
         <span>Highlights</span>
         <span class="sb-badge" id="badgeHighlights">0</span>
-      </button>
-      <button class="sb-link" data-tab="events">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="1"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <span>Events</span>
-        <span class="sb-badge" id="badgeEvents">0</span>
       </button>
       <button class="sb-link" data-tab="schedule">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
@@ -814,103 +788,6 @@
 </div>
     </div>
 
-    <!-- ── EVENTS TAB ─────────────────────────────────────────────── -->
-    <div class="tab-panel" id="tabEvents" style="display:none">
-      <div class="panel-head">
-        <div>
-          <div class="panel-title">Highlights</div>
-          <div class="panel-subtitle">Seminars, competitions, open mats, and other highlights</div>
-        </div>
-      </div>
-      <div class="panel-body">
-
-        <!-- Add / edit form -->
-        <div class="adm-card" id="eventFormCard">
-          <div class="adm-card-head">
-            <span class="adm-card-title" id="eventFormTitle">Add Event</span>
-          </div>
-          <div class="adm-card-body">
-            <div class="adm-form">
-              <div class="adm-form-row cols3">
-                <div class="adm-field" style="grid-column:span 2">
-                  <label>Event Title</label>
-                  <input type="text" id="evTitle" placeholder="e.g. Open Mat Saturday">
-                </div>
-                <div class="adm-field">
-                  <label>Type / Tag</label>
-                  <select id="evType">
-                    <option value="Open Mat">Open Mat</option>
-                    <option value="Seminar">Seminar</option>
-                    <option value="Competition">Competition</option>
-                    <option value="Kids Event">Kids Event</option>
-                    <option value="Special Guest">Special Guest</option>
-                    <option value="Other">Other…</option>
-                  </select>
-                  <input type="text" id="evTypeCustom" placeholder="Type custom tag…" style="display:none;margin-top:8px">
-                </div>
-              </div>
-              <div class="adm-field">
-                <label>Cover Image <span style="color:var(--ink-mute)">(optional)</span></label>
-                <input type="url" id="evImg" placeholder="https://… (paste image URL)">
-                <div style="display:flex;align-items:center;gap:8px;margin:6px 0;color:var(--ink-mute);font-size:11px">
-                  <div style="flex:1;height:1px;background:var(--line-2)"></div>
-                  <span>or upload from device</span>
-                  <div style="flex:1;height:1px;background:var(--line-2)"></div>
-                </div>
-                <label class="btn-adm btn-ghost" style="cursor:pointer;text-align:center;display:block">
-                  Choose Image File
-                  <input type="file" id="evImgFile" accept="image/*" style="display:none">
-                </label>
-                <div id="evImgPreview" style="display:none;margin-top:8px;position:relative">
-                  <img id="evImgPreviewImg" src="" style="width:100%;max-height:160px;object-fit:cover;display:block">
-                  <button type="button" id="evImgClear" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);border:none;color:#fff;cursor:pointer;padding:2px 7px;font-size:12px">✕</button>
-                </div>
-                <span class="adm-field-hint">Paste a URL or pick a file from your device</span>
-              </div>
-              <div class="adm-form-row">
-                <div class="adm-field">
-                  <label>Date</label>
-                  <input type="date" id="evDate">
-                </div>
-                <div class="adm-field">
-                  <label>Time</label>
-                  <input type="time" id="evTime" placeholder="10:00">
-                </div>
-              </div>
-              <div class="adm-field">
-                <label>Location</label>
-                <input type="text" id="evLocation" placeholder="Power Fight Gym — Pfeffingerring 201, Aesch">
-              </div>
-              <div class="adm-field">
-                <label>Description</label>
-                <textarea id="evDesc" placeholder="What's happening, who it's for, any requirements…"></textarea>
-              </div>
-              <div style="display:flex;justify-content:flex-end;gap:10px">
-                <button class="btn-adm btn-ghost" id="cancelEventBtn" style="display:none">Cancel</button>
-                <button class="btn-adm btn-lime" id="saveEventBtn">
-                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  <span id="saveEventLabel">Add Event</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Event list -->
-        <div class="adm-card">
-          <div class="adm-card-head"><span class="adm-card-title">Upcoming Highlights</span></div>
-          <div id="eventListWrap">
-            <div class="empty-state" id="eventEmpty">
-              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="1"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-              <p>No events yet — add your first event above</p>
-            </div>
-            <div class="event-list" id="eventList"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <!-- ── SCHEDULE TAB ──────────────────────────────────────────────── -->
     <div class="tab-panel" id="tabSchedule" style="display:none">
       <div class="panel-head">
@@ -1155,17 +1032,6 @@
   async function sbSaveCategories(cats) {
     await sbSetSetting('gallery_categories', JSON.stringify(cats));
   }
-  async function sbLoadEvents() {
-    if (_cache.events) return _cache.events;
-    const { data } = await _sb.from('events').select('*').order('ord');
-    return (_cache.events = (data || []).map(r => ({ id: r.id, title: r.title, date: r.ev_date, time: r.ev_time, location: r.location, desc: r.description, img: r.img, type: r.type })));
-  }
-  async function sbSaveEvents(items) {
-    await _sb.from('events').delete().gte('ord', 0);
-    if (items.length) await _sb.from('events').insert(
-      items.map((it, i) => ({ id: it.id, title: it.title, ev_date: it.date || '', ev_time: it.time || '', location: it.location || '', description: it.desc || '', img: it.img || '', type: it.type || 'competition', ord: i }))
-    );
-  }
   async function sbLoadSchedule() {
     if (_cache.schedule) return _cache.schedule;
     const { data } = await _sb.from('schedule_overrides').select('*');
@@ -1232,9 +1098,7 @@
   // ── MUTABLE STATE (declared early so renderAll() can access them safely) ──
   let toastTimer;
   let pendingFiles = [];   // gallery upload queue
-  let pendingEvImg  = null; // event cover image data-url
   let galleryFilter = 'all';
-  let editingEventId = null;
 
   // ── TOAST ─────────────────────────────────────────────────────────
   function toast(msg, isErr) {
@@ -1293,7 +1157,7 @@
 
   // ── TABS ──────────────────────────────────────────────────────────
   const tabBtns = document.querySelectorAll('.sb-link[data-tab]');
-  const tabPanels = { home: 'tabHome', ticker: 'tabTicker', gallery: 'tabGallery', highlights: 'tabHighlights', events: 'tabEvents', schedule: 'tabSchedule', testimonials: 'tabTestimonials', instagram: 'tabInstagram' };
+  const tabPanels = { home: 'tabHome', ticker: 'tabTicker', gallery: 'tabGallery', highlights: 'tabHighlights', schedule: 'tabSchedule', testimonials: 'tabTestimonials', instagram: 'tabInstagram' };
 
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1306,11 +1170,10 @@
 
   // ── BADGES ────────────────────────────────────────────────────────
   async function updateBadges() {
-    const [ticker, gallery, highlights, events, schedule, reviews, instagram] = await Promise.all([
+    const [ticker, gallery, highlights, schedule, reviews, instagram] = await Promise.all([
       sbLoadTicker(),
       sbLoadGallery(),
       sbLoadAthletes(),
-      sbLoadEvents(),
       sbLoadSchedule(),
       sbLoadFeedback(),
       sbLoadInstagram(),
@@ -1318,7 +1181,6 @@
     document.getElementById('badgeTicker').textContent = ticker.length;
     document.getElementById('badgeGallery').textContent = gallery.length;
     document.getElementById('badgeHighlights').textContent = highlights.length;
-    document.getElementById('badgeEvents').textContent = events.length;
     const schedChanges = schedule.length;
     document.getElementById('badgeSchedule').textContent = schedChanges ? schedChanges + ' edited' : '—';
     const pending = reviews.filter(r => !r.approved).length;
@@ -1331,14 +1193,13 @@
   // ── RENDER ALL ────────────────────────────────────────────────────
   async function renderAll() {
     Object.keys(_cache).forEach(k => delete _cache[k]); // fresh on every full reload
-    Progress.start(9); // 8 renders + 1 badges
+    Progress.start(8); // 7 renders + 1 badges
     try {
       await Promise.all([
         renderHome()        .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderHighlights()  .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderTicker()      .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderGallery()     .then(() => Progress.tick()).catch(() => Progress.tick()),
-        renderEvents()      .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderSchedule()    .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderTestimonials().then(() => Progress.tick()).catch(() => Progress.tick()),
         renderInstagram()   .then(() => Progress.tick()).catch(() => Progress.tick()),
@@ -1952,170 +1813,6 @@
     sbSaveGallery(newItems).catch(() => { delete _cache.gallery; renderGallery(); });
     toast(`${n} item${n > 1 ? 's' : ''} deleted`);
   });
-
-  // ═══════════════════════════════════════════════════════════════════
-  //  EVENTS
-  // ═══════════════════════════════════════════════════════════════════
-  // (editingEventId is declared at top of script)
-
-  document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
-  document.getElementById('evType').addEventListener('change', function() {
-    const customEl = document.getElementById('evTypeCustom');
-    const isOther = this.value === 'Other';
-    customEl.style.display = isOther ? '' : 'none';
-    if (!isOther) customEl.value = '';
-    if (isOther) customEl.focus();
-  });
-  document.getElementById('cancelEventBtn').addEventListener('click', cancelEventEdit);
-
-  document.getElementById('evImgFile').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      pendingEvImg = e.target.result;
-      document.getElementById('evImg').value = '';
-      document.getElementById('evImgPreviewImg').src = pendingEvImg;
-      document.getElementById('evImgPreview').style.display = '';
-    };
-    reader.readAsDataURL(file);
-    this.value = '';
-  });
-
-  document.getElementById('evImgClear').addEventListener('click', () => {
-    pendingEvImg = null;
-    document.getElementById('evImgPreviewImg').src = '';
-    document.getElementById('evImgPreview').style.display = 'none';
-    document.getElementById('evImgFile').value = '';
-  });
-
-  async function saveEvent() {
-    const title = document.getElementById('evTitle').value.trim();
-    const date  = document.getElementById('evDate').value;
-    if (!title || !date) {
-      if (!title) document.getElementById('evTitle').focus();
-      else document.getElementById('evDate').focus();
-      return;
-    }
-    const events = await sbLoadEvents();
-    const payload = {
-      id:       editingEventId || uid(),
-      title,
-      type:     document.getElementById('evType').value === 'Other'
-                  ? (document.getElementById('evTypeCustom').value.trim() || 'Other')
-                  : document.getElementById('evType').value,
-      date,
-      time:     document.getElementById('evTime').value,
-      location: document.getElementById('evLocation').value.trim(),
-      desc:     document.getElementById('evDesc').value.trim(),
-      img:      pendingEvImg || document.getElementById('evImg').value.trim(),
-    };
-    if (editingEventId) {
-      const idx = events.findIndex(e => e.id === editingEventId);
-      if (idx !== -1) events[idx] = payload;
-    } else {
-      events.push(payload);
-    }
-    // Sort by date ascending
-    events.sort((a, b) => a.date.localeCompare(b.date));
-    const _wasEditing = editingEventId;
-    _cache.events = events;
-    cancelEventEdit();
-    renderEvents(events);
-    sbSaveEvents(events).catch(() => { delete _cache.events; renderEvents(); toast('Save failed'); });
-    toast(_wasEditing ? 'Event updated ✓' : 'Event added ✓');
-    editingEventId = null;
-  }
-
-  function cancelEventEdit() {
-    editingEventId = null;
-    pendingEvImg = null;
-    ['evTitle','evTime','evLocation','evDesc','evImg'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('evDate').value = '';
-    document.getElementById('evType').value = 'Open Mat';
-    document.getElementById('evTypeCustom').style.display = 'none';
-    document.getElementById('evTypeCustom').value = '';
-    document.getElementById('eventFormTitle').textContent = 'Add Event';
-    document.getElementById('saveEventLabel').textContent = 'Add Event';
-    document.getElementById('cancelEventBtn').style.display = 'none';
-    document.getElementById('saveEventBtn').querySelector('svg').style.display = '';
-    document.getElementById('evImgPreview').style.display = 'none';
-    document.getElementById('evImgPreviewImg').src = '';
-    document.getElementById('evImgFile').value = '';
-  }
-
-  window.editEvent = async function(id) {
-    const ev = (await sbLoadEvents()).find(e => e.id === id);
-    if (!ev) return;
-    editingEventId = id;
-    document.getElementById('evTitle').value    = ev.title;
-    const _knownEvTypes = ['Open Mat','Seminar','Competition','Kids Event','Special Guest'];
-    if (_knownEvTypes.includes(ev.type)) {
-      document.getElementById('evType').value = ev.type;
-      document.getElementById('evTypeCustom').style.display = 'none';
-      document.getElementById('evTypeCustom').value = '';
-    } else {
-      document.getElementById('evType').value = 'Other';
-      document.getElementById('evTypeCustom').style.display = '';
-      document.getElementById('evTypeCustom').value = ev.type || '';
-    }
-    document.getElementById('evDate').value     = ev.date;
-    document.getElementById('evTime').value     = ev.time || '';
-    document.getElementById('evLocation').value = ev.location || '';
-    document.getElementById('evDesc').value     = ev.desc || '';
-    document.getElementById('evImg').value      = ev.img && !ev.img.startsWith('data:') ? ev.img : '';
-    pendingEvImg = ev.img && ev.img.startsWith('data:') ? ev.img : null;
-    if (ev.img) {
-      document.getElementById('evImgPreviewImg').src = ev.img;
-      document.getElementById('evImgPreview').style.display = '';
-    }
-    document.getElementById('eventFormTitle').textContent = 'Edit Event';
-    document.getElementById('saveEventLabel').textContent = 'Save Changes';
-    document.getElementById('cancelEventBtn').style.display = '';
-    document.getElementById('saveEventBtn').querySelector('svg').style.display = 'none';
-    document.getElementById('tabEvents').scrollTo({ top: 0, behavior: 'smooth' });
-    document.getElementById('evTitle').focus();
-  };
-
-  window.deleteEvent = async function(id) {
-    if (!confirm('Delete this event?')) return;
-    const events = (await sbLoadEvents()).filter(e => e.id !== id);
-    _cache.events = events;
-    renderEvents(events);
-    sbSaveEvents(events).catch(() => { delete _cache.events; renderEvents(); });
-    toast('Event deleted');
-  };
-
-  async function renderEvents(events) {
-    if (!events) events = await sbLoadEvents();
-    const list  = document.getElementById('eventList');
-    const empty = document.getElementById('eventEmpty');
-    list.innerHTML = '';
-    empty.style.display = events.length ? 'none' : '';
-    list.style.display  = events.length ? '' : 'none';
-
-    events.forEach(ev => {
-      const d = ev.date ? new Date(ev.date + 'T00:00:00') : null;
-      const day = d ? d.getDate() : '?';
-      const mon = d ? d.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase() : '';
-      const row = document.createElement('div');
-      row.className = 'event-row';
-      row.innerHTML = `
-        <div class="event-date-block">
-          <div class="event-date-day">${day}</div>
-          <div class="event-date-mon">${mon}</div>
-        </div>
-        <div class="event-info">
-          <div class="event-title">${escHtml(ev.title)}</div>
-          <div class="event-meta">${escHtml(ev.type)}${ev.time ? ' · ' + ev.time : ''}${ev.location ? ' · ' + ev.location : ''}</div>
-        </div>
-        <div class="event-actions">
-          <button class="btn-adm btn-ghost" onclick="editEvent('${ev.id}')" style="padding:7px 12px;font-size:10px">Edit</button>
-          <button class="btn-icon" onclick="deleteEvent('${ev.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
-        </div>`;
-      list.appendChild(row);
-    });
-  }
 
   // ═══════════════════════════════════════════════════════════════════
   //  SCHEDULE  (day + time editor — class names are fixed)

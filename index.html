@@ -1008,55 +1008,6 @@
   .prog-diff-adv{background:rgba(255,77,109,0.09);color:#FF4D6D;border:1px solid rgba(255,77,109,0.2)}
   .prog-diff-kids{background:rgba(255,140,66,0.1);color:#FF8C42;border:1px solid rgba(255,140,66,0.22)}
 
-  /* ── Club Highlights / Events ───────────────────────────────────── */
-  .highlights{padding:80px 0;background:var(--bg-2);overflow:hidden}
-  .highlights[hidden]{display:none!important}
-  .highlights-inner{max-width:1240px;margin:0 auto;padding:0 32px}
-  .highlights-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:48px}
-  .highlights-top h2{font-family:var(--display);font-weight:600;font-size:clamp(32px,4.5vw,64px);line-height:0.98;letter-spacing:-0.025em;margin:0}
-  .highlights-scroll{display:flex;gap:1px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;background:var(--line);scrollbar-width:none}
-  .highlights-scroll::-webkit-scrollbar{display:none}
-  .hl-card{
-    flex:0 0 300px;background:var(--bg-2);padding:28px;display:flex;flex-direction:column;gap:14px;
-    scroll-snap-align:start;position:relative;overflow:hidden;transition:background .2s;min-height:220px;
-  }
-  .hl-card:hover{background:color-mix(in srgb,var(--bg-2) 85%,var(--lime) 15%)}
-  .hl-card-bg{
-    position:absolute;inset:0;background-size:cover;background-position:center;
-    opacity:.18;transition:opacity .3s;pointer-events:none;
-  }
-  .hl-card:hover .hl-card-bg{opacity:.26}
-  .hl-card>*{position:relative;z-index:1}
-  .hl-type{
-    display:inline-flex;align-items:center;gap:5px;
-    font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
-    padding:3px 8px;border:1px solid;border-radius:2px;width:fit-content;
-  }
-  .hl-type-openmat    {color:var(--lime);border-color:rgba(199,255,63,.3)}
-  .hl-type-seminar    {color:#7EC8E3;border-color:rgba(126,200,227,.3)}
-  .hl-type-competition{color:#FF6B6B;border-color:rgba(255,107,107,.3)}
-  .hl-type-kidsevent  {color:#FFD93D;border-color:rgba(255,217,61,.3)}
-  .hl-type-specialguest{color:#C77DFF;border-color:rgba(199,125,255,.3)}
-  .hl-type-other      {color:var(--ink-dim);border-color:var(--line-2)}
-  .hl-date-row{display:flex;align-items:center;gap:14px}
-  .hl-cal{
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    width:42px;min-width:42px;height:42px;border:1px solid var(--line-2);border-radius:4px;
-    background:rgba(255,255,255,.03);
-  }
-  .hl-cal-day{font-family:var(--display);font-weight:700;font-size:18px;line-height:1;color:var(--lime)}
-  .hl-cal-mon{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-top:1px}
-  .hl-meta{display:flex;flex-direction:column;gap:3px}
-  .hl-time{font-size:12px;color:var(--ink-dim)}
-  .hl-loc{font-size:11px;color:var(--ink-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
-  .hl-title{font-family:var(--display);font-weight:600;font-size:clamp(17px,2vw,22px);line-height:1.1;letter-spacing:-0.01em;margin:0}
-  .hl-desc{font-size:12px;color:var(--ink-dim);line-height:1.65;margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex-grow:1}
-  @media(max-width:700px){
-    .highlights-inner{padding:0 20px}
-    .highlights{padding:60px 0}
-    .hl-card{flex:0 0 260px}
-  }
-
   /* ── Instagram feed ─────────────────────────────────────────────── */
   .insta-feed{padding:80px 0;background:var(--bg);border-top:1px solid var(--line)}
   .insta-inner{max-width:1240px;margin:0 auto;padding:0 32px}
@@ -1542,19 +1493,6 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </span>
     </a>
-  </div>
-</section>
-
-<!-- HIGHLIGHTS -->
-<section class="highlights" id="highlights" hidden>
-  <div class="highlights-inner">
-    <div class="highlights-top reveal">
-      <div>
-        <span class="eyebrow">Club Highlights</span>
-        <h2>Upcoming <em style="font-style:normal;color:var(--lime)">events</em></h2>
-      </div>
-    </div>
-    <div class="highlights-scroll" id="hlScroll"></div>
   </div>
 </section>
 
@@ -2583,46 +2521,6 @@
     } catch(e) { console.warn('Instagram:', e); }
   })();
 
-  // ── Club Highlights / Events (fetched from Supabase) ─────────────
-  (async function () {
-    try {
-      const { data } = await _sb.from('events').select('*').order('ord');
-      const events = (data || []).map(r => ({ id: r.id, title: r.title, date: r.ev_date, time: r.ev_time, location: r.location, desc: r.description, img: r.img, type: r.type }));
-      if (!events.length) return;
-      const section = document.getElementById('highlights');
-      const scroll  = document.getElementById('hlScroll');
-      const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const typeSlug = t => t.toLowerCase().replace(/[^a-z]/g,'');
-      events.forEach(ev => {
-        const d   = ev.date ? new Date(ev.date + 'T00:00:00') : null;
-        const day = d ? d.getDate() : '';
-        const mon = d ? MONTHS[d.getMonth()] : '';
-        const card = document.createElement('div');
-        card.className = 'hl-card';
-        if (ev.img) {
-          const bg = document.createElement('div');
-          bg.className = 'hl-card-bg';
-          bg.style.backgroundImage = `url('${ev.img}')`;
-          card.appendChild(bg);
-        }
-        const slug = typeSlug(ev.type || 'other');
-        const typeClass = ['openmat','seminar','competition','kidsevent','specialguest'].includes(slug) ? `hl-type-${slug}` : 'hl-type-other';
-        card.innerHTML += `
-          <span class="hl-type ${typeClass}">${ev.type || 'Event'}</span>
-          <div class="hl-date-row">
-            <div class="hl-cal"><div class="hl-cal-day">${day}</div><div class="hl-cal-mon">${mon}</div></div>
-            <div class="hl-meta">
-              ${ev.time ? `<div class="hl-time">${ev.time}</div>` : ''}
-              ${ev.location ? `<div class="hl-loc">${ev.location}</div>` : ''}
-            </div>
-          </div>
-          <h3 class="hl-title">${ev.title}</h3>
-          ${ev.desc ? `<p class="hl-desc">${ev.desc}</p>` : ''}`;
-        scroll.appendChild(card);
-      });
-      section.removeAttribute('hidden');
-    } catch(e) { console.warn('Highlights:', e); }
-  })();
 
 </script>
 </body>
