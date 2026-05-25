@@ -706,40 +706,41 @@
   }
 
   /* ---------- TESTIMONIALS ---------- */
-  .testimonials{padding:100px 32px}
-  .t-track-wrap{position:relative; margin:0 -32px; padding:10px 0 40px}
-  .t-track{display:flex; gap:1px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-behavior:smooth; padding:0 32px}
-  .t-track::-webkit-scrollbar{display:none}
+  .testimonials{padding:100px 32px 0}
+  .t-track-wrap{margin:0 -32px; overflow:hidden; background:var(--bg-2)}
+  .t-track{display:grid}
   .t-card{
-    flex:0 0 calc((100% - 2px)/3); min-width:340px; scroll-snap-align:start;
-    padding:36px 32px; background:var(--bg-2);
-    display:flex; flex-direction:column; gap:24px;
+    grid-area:1/1;
+    padding:60px 60px 52px; background:var(--bg-2);
+    display:flex; flex-direction:column; gap:0;
+    opacity:0; pointer-events:none;
+    transition:opacity .55s cubic-bezier(0.22,1,0.36,1);
   }
-  .t-quote{font-family:var(--display); font-size:20px; line-height:1.4; font-weight:500; color:var(--ink); margin:0; flex:1}
-  .t-quote::before{content:"\201C"; font-size:52px; color:var(--lime); line-height:0; display:block; margin-bottom:16px; height:22px}
-  .t-foot{display:flex; align-items:center; gap:14px; padding-top:18px; border-top:1px solid var(--line-2)}
+  .t-card.t-active{opacity:1; pointer-events:all}
+  .t-quote{font-family:var(--display); font-size:clamp(22px,2.8vw,34px); line-height:1.32; font-weight:500; color:var(--ink); margin:0 0 32px; max-width:820px}
+  .t-quote::before{content:"\201C"; font-size:72px; color:var(--lime); line-height:0; display:block; margin-bottom:20px; height:28px}
+  .t-foot{display:flex; align-items:center; gap:14px; padding-top:20px; border-top:1px solid var(--line-2); max-width:820px}
   .t-avatar{
-    width:40px; height:40px; border-radius:50%; flex:none;
+    width:44px; height:44px; border-radius:50%; flex:none;
     background:linear-gradient(135deg, #1a1b1b, #060707);
     border:1px solid var(--line); display:grid; place-items:center;
     font-size:11px; color:var(--lime); letter-spacing:0.1em;
   }
   .t-name{font-family:var(--display); font-size:14px; font-weight:600; letter-spacing:0.04em}
   .t-meta{font-size:10px; letter-spacing:0.2em; color:var(--ink-dim); text-transform:uppercase; margin-top:2px}
-  .t-controls{display:flex; align-items:center; gap:14px; margin-top:24px}
-  .t-dots{display:flex; gap:6px; align-items:center}
-  .t-dot{position:relative; width:48px; height:2px; background:rgba(255,255,255,0.12); border:none; padding:0; cursor:pointer; overflow:hidden}
-  .t-dot::after{content:""; position:absolute; inset:0; left:0; top:0; width:0%; background:var(--lime); transition:width .25s}
-  .t-dot.t-dot-active::after{width:100%}
-  @media(max-width:600px){.t-dot{width:28px}}
-  .t-btn{
-    width:44px; height:44px; border:1px solid var(--line-2); display:grid; place-items:center; cursor:pointer;
-    background:var(--bg-2); transition:border-color .3s, color .3s;
+  .t-controls{display:flex; align-items:center; gap:8px; padding:20px 32px; border-top:1px solid var(--line-2); background:var(--bg-2); margin:0 -32px}
+  .t-dots{display:flex; gap:8px; align-items:center}
+  .t-dot{
+    width:48px; height:2px; border-radius:0;
+    background:var(--line-2); cursor:pointer;
+    border:none; padding:0; position:relative; overflow:hidden;
   }
-  .t-btn:hover{border-color:var(--lime); color:var(--lime)}
-  .t-btn svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.4}
-  .t-count{font-size:11px; letter-spacing:0.2em; color:var(--ink-dim); margin-left:auto}
-  .t-count b{color:var(--ink)}
+  .t-dot::after{content:""; position:absolute; inset:0; left:0; top:0; width:0%; height:100%; background:var(--lime); transition:none}
+  .t-dot.t-dot-active::after{animation:tProgress 5s linear forwards}
+  .t-dot.t-dot-paused::after{animation-play-state:paused}
+  .t-dot.t-dot-selected::after{width:100%; animation:none}
+  @keyframes tProgress{from{width:0%}to{width:100%}}
+  @media(max-width:640px){.t-dot{width:28px}.t-card{padding:40px 24px 36px}}
 
   /* ---------- INFO POPUP ---------- */
   .info-popup-overlay{
@@ -1568,7 +1569,7 @@
   </div>
   <div class="t-track-wrap">
     <div class="t-track" id="tTrack">
-      <div class="t-card">
+      <div class="t-card t-active">
         <p class="t-quote" data-i18n="testi.q1">I've trained at five different gyms over the years. Power Fight is the first place where I actually felt like the coaching was tailored to me personally, not just the group.</p>
         <div class="t-foot"><div class="t-avatar">JL</div><div><div class="t-name">Jonas Lie</div><div class="t-meta" data-i18n="testi.q1.meta">MMA · 2 years</div></div></div>
       </div>
@@ -2050,20 +2051,20 @@
   // Hero "Watch Us Train" button → open lightbox with training video
 
 
-  // Testimonials scroll-snap slider
-  const track = document.getElementById('tTrack');
+  // Testimonials slider — same fade/class-toggle approach as Athletes/Highlights
+  const tTrack = document.getElementById('tTrack');
   const tDotsWrap = document.getElementById('tDots');
   let tDots = [];
+  let tSlides = [];
   let tTimer = null;
   let tPaused = false;
   let tCurrentIdx = 0;
 
-  function tCardW() { return (track.children[0]?.offsetWidth || 0) + 1; }
-
   function tBuildDots() {
+    tSlides = Array.from(tTrack.querySelectorAll('.t-card'));
     tDotsWrap.innerHTML = '';
     tDots = [];
-    Array.from(track.children).forEach((_, i) => {
+    tSlides.forEach((_, i) => {
       const d = document.createElement('button');
       d.className = 't-dot' + (i === 0 ? ' t-dot-active' : '');
       d.setAttribute('aria-label', `Go to slide ${i + 1}`);
@@ -2071,56 +2072,61 @@
       tDotsWrap.appendChild(d);
       tDots.push(d);
     });
-    const tot = document.getElementById('tCountTot');
-    if (tot) tot.textContent = tDots.length;
-  }
-
-  function tActivateDot(idx) {
-    if (!tDots.length) return;
-    if (idx < 0) idx = 0;
-    if (idx >= tDots.length) idx = tDots.length - 1;
-    tCurrentIdx = idx;
-    tDots.forEach((d, i) => d.classList.toggle('t-dot-active', i === idx));
-    const cur = document.getElementById('tCountCur');
-    if (cur) cur.textContent = idx + 1;
   }
 
   function tGoTo(idx, manual) {
-    const n = track.children.length;
+    const n = tSlides.length;
     if (!n) return;
     if (idx < 0) idx = n - 1;
     if (idx >= n) idx = 0;
-    track.scrollTo({ left: idx * tCardW(), behavior: 'smooth' });
-    tActivateDot(idx);
-    if (manual) tSetPaused(true);
+    tDots[tCurrentIdx]?.classList.remove('t-dot-active', 't-dot-paused', 't-dot-selected');
+    tSlides[tCurrentIdx]?.classList.remove('t-active');
+    tCurrentIdx = idx;
+    tSlides[tCurrentIdx].classList.add('t-active');
+    const dot = tDots[tCurrentIdx];
+    if (dot) {
+      dot.classList.remove('t-dot-active');
+      void dot.offsetWidth; // restart animation
+      dot.classList.add('t-dot-active');
+    }
+    clearInterval(tTimer);
+    if (manual) {
+      tPaused = true;
+      dot?.classList.add('t-dot-selected');
+      tSetPausedUI(true);
+    } else {
+      tTimer = setInterval(() => tGoTo(tCurrentIdx + 1, false), 5000);
+    }
   }
-
-  let _tScrollT;
-  track.addEventListener('scroll', () => {
-    clearTimeout(_tScrollT);
-    _tScrollT = setTimeout(() => {
-      const w = tCardW() || 1;
-      tActivateDot(Math.min(Math.round(track.scrollLeft / w), tDots.length - 1));
-    }, 80);
-  }, { passive: true });
 
   const tPlayPauseBtn = document.getElementById('tPlayPause');
   const tPauseIcon = document.getElementById('tPauseIcon');
   const tPlayIcon = document.getElementById('tPlayIcon');
 
-  function tSetPaused(paused) {
-    tPaused = paused;
+  function tSetPausedUI(paused) {
     tPauseIcon.style.display = paused ? 'none' : '';
     tPlayIcon.style.display = paused ? '' : 'none';
     tPlayPauseBtn.setAttribute('aria-label', paused ? 'Play' : 'Pause');
-    clearInterval(tTimer);
-    if (!paused) tTimer = setInterval(() => tGoTo(tCurrentIdx + 1, false), 5000);
+  }
+
+  function tSetPaused(paused) {
+    tPaused = paused;
+    tSetPausedUI(paused);
+    const dot = tDots[tCurrentIdx];
+    if (paused) {
+      dot?.classList.add('t-dot-paused');
+      clearInterval(tTimer);
+    } else {
+      dot?.classList.remove('t-dot-paused', 't-dot-selected', 't-dot-active');
+      void dot?.offsetWidth;
+      dot?.classList.add('t-dot-active');
+      tTimer = setInterval(() => tGoTo(tCurrentIdx + 1, false), 5000);
+    }
   }
 
   tPlayPauseBtn.addEventListener('click', () => tSetPaused(!tPaused));
   document.getElementById('tPrev').addEventListener('click', () => tGoTo(tCurrentIdx - 1, true));
   document.getElementById('tNext').addEventListener('click', () => tGoTo(tCurrentIdx + 1, true));
-  window.addEventListener('resize', () => track.scrollTo({ left: tCurrentIdx * tCardW(), behavior: 'instant' }));
 
   tBuildDots();
   tTimer = setInterval(() => tGoTo(tCurrentIdx + 1, false), 5000);
@@ -2516,16 +2522,9 @@
         <div class="t-avatar">${initials(entry.name)}</div>
         <div><div class="t-name">${entry.name}</div><div class="t-meta">${entry.training}</div></div>
       </div>`;
-    track.appendChild(card);
-    const newIdx = tDots.length;
-    const d = document.createElement('button');
-    d.className = 't-dot';
-    d.setAttribute('aria-label', `Go to slide ${newIdx + 1}`);
-    d.addEventListener('click', () => tGoTo(newIdx, true));
-    tDotsWrap.appendChild(d);
-    tDots.push(d);
-    const tot = document.getElementById('tCountTot');
-    if (tot) tot.textContent = tDots.length;
+    tTrack.appendChild(card);
+    // Rebuild slides + dots to include new card
+    tBuildDots();
   }
 
   // Only show admin-approved testimonials (fetched from Supabase)
