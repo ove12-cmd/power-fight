@@ -2730,34 +2730,34 @@
 
   // ── Discipline modal ─────────────────────────────────────────────────
   const DISC_INFO = {
-    mma:         { title:'Mixed Martial Arts',       color:'#FF4D6D', tag:'MMA',       freq:'3× per week',   level:'All Levels',
+    mma:         { title:'Mixed Martial Arts',       color:'#FF4D6D', tag:'MMA',       level:'All Levels',
       desc:'Mixed Martial Arts is the ultimate test of a complete fighter. At Power Fight we train all ranges — striking on the feet, clinch work, takedowns and the ground game. Sessions cover fight-specific conditioning, sparring rounds and tactical game-plan work. Whether you\'re a beginner stepping onto the mat for the first time or preparing for competition, our MMA classes build you into a complete martial artist.',
       filter: s => s.name.toLowerCase().includes('mma') && !s.name.toLowerCase().includes('kids') },
-    grappling:   { title:'Grappling',                color:'#5BE0FF', tag:'Grappling', freq:'2× per week',   level:'All Levels',
+    grappling:   { title:'Grappling',                color:'#5BE0FF', tag:'Grappling', level:'All Levels',
       desc:'Grappling at Power Fight covers the full ground game — BJJ fundamentals, submission wrestling and positional training. Classes focus on takedowns into dominant positions, escapes and submission chains. Drilling, positional sparring and live rolling are all part of each session. Suitable for beginners building a solid base as well as experienced grapplers looking to sharpen their game.',
       filter: s => s.name.toLowerCase().includes('grappling') },
-    striking:    { title:'Striking',                 color:'#C7FF3F', tag:'Striking',  freq:'3× per week',   level:'All Levels',
+    striking:    { title:'Striking',                 color:'#C7FF3F', tag:'Striking',  level:'All Levels',
       desc:'Our striking classes cover the full stand-up toolkit — punches, kicks, elbows, knees and footwork. Coaches focus on technical precision, combination flow and ring intelligence. Pad work, bag work and partner drilling are rotated each session. Open to all levels, with clear progressions so beginners and experienced strikers train together safely and productively.',
       filter: s => s.nameClass === 'scard-strike' || s.name.toLowerCase().includes('striking') },
-    wrestling:   { title:'Wrestling',                color:'#FACC15', tag:'Wrestling', freq:'2× per week',   level:'Intermediate',
+    wrestling:   { title:'Wrestling',                color:'#FACC15', tag:'Wrestling', level:'Intermediate',
       desc:'Wrestling is the backbone of any complete MMA game. Sessions cover shot technique, chain wrestling, cage control, scrambles and top pressure. Strong wrestling makes your striking safer, your grappling deeper and your MMA game complete. Includes drilling, situational sparring and conditioning built around wrestling-specific movement patterns.',
       filter: s => s.name.toLowerCase().includes('wrestling') },
-    bodycombat:  { title:'Les Mills Bodycombat',     color:'#FF8C42', tag:'Fitness',   freq:'Weekly',        level:'All Levels',
+    bodycombat:  { title:'Les Mills Bodycombat',     color:'#FF8C42', tag:'Fitness',   level:'All Levels',
       desc:'Les Mills Bodycombat is a high-energy, non-contact cardio workout inspired by martial arts. Combining movements from boxing, karate, taekwondo and muay thai, each session pushes your cardiovascular fitness and full-body coordination. No experience or equipment needed — just the drive to move. Perfect as a standalone class or cross-training alongside your martial arts sessions.',
       filter: s => s.name.toLowerCase().includes('bodycombat') || s.name.toLowerCase().includes('les mills') },
-    sc:          { title:'Strength & Conditioning',  color:'#A78BFA', tag:'S&C',       freq:'2× per week',   level:'All Levels',
+    sc:          { title:'Strength & Conditioning',  color:'#A78BFA', tag:'S&C',       level:'All Levels',
       desc:'Sport-specific strength and conditioning designed for martial artists. Sessions target the energy systems and movement patterns used in MMA — explosive power, hip drive, core strength and anaerobic capacity. Programming cycles through strength blocks and conditioning phases. All levels welcome; scaling is built into every session.',
       filter: s => s.nameClass === 'scard-sc' || s.name.toLowerCase().includes('s&c') || s.name.toLowerCase().includes('conditioning') },
-    performance: { title:'Performance Training',     color:'#FF4D6D', tag:'Pro',        freq:'By assessment', level:'Advanced',
+    performance: { title:'Performance Training',     color:'#FF4D6D', tag:'Pro',        level:'Advanced',
       desc:'Performance training is reserved for competitive fighters and serious amateurs preparing for bouts. Small-group sessions allow for individual attention, video analysis and competition-specific game planning. Load and intensity are periodised around fight camp timelines. Entry is by assessment — coaches ensure the group stays at the right level for every member.',
       filter: s => s.nameClass === 'scard-sparring' || s.name.toLowerCase().includes('sparring') || s.name.toLowerCase().includes('performance') },
-    personal:    { title:'Personal Training',        color:'#5BE0FF', tag:'Personal',  freq:'Flexible',      level:'All Levels',
+    personal:    { title:'Personal Training',        color:'#5BE0FF', tag:'Personal',  level:'All Levels',
       desc:'One-on-one sessions with one of our coaches, built entirely around your goals and timeline. Whether you want to accelerate your martial arts development, improve fitness or prepare for a specific event, personal training gives you direct coach attention with no distractions. Sessions are flexible and can combine technical work with conditioning.',
       filter: s => s.name.toLowerCase().includes('personal') },
-    kettlebell:  { title:'Kettlebell Training',      color:'#FACC15', tag:'Fitness',   freq:'Weekly',        level:'All Levels',
+    kettlebell:  { title:'Kettlebell Training',      color:'#FACC15', tag:'Fitness',   level:'All Levels',
       desc:'Kettlebell training builds functional strength and grip that carries over directly to martial arts. Classes cover the foundational movements — swing, clean, press, snatch and Turkish get-up — progressing methodically so technique is solid before loads increase. The format combines skill practice with conditioning circuits, suitable for all levels.',
       filter: s => s.name.toLowerCase().includes('kettlebell') },
-    kids:        { title:'Kids Training',            color:'#FF8C42', tag:'Kids',      freq:'Ages 5–14',     level:'Ages 5–14',
+    kids:        { title:'Kids Training',            color:'#FF8C42', tag:'Kids',      level:'Ages 5–14',
       desc:'Martial arts training for children aged 5–14. Classes focus on discipline, respect, coordination and confidence alongside age-appropriate technique from MMA and wrestling. Our coaches create a safe, structured and fun environment where kids develop real skills. Training builds the physical literacy and mental resilience that benefits children in sport and everyday life.',
       filter: s => s.hlClass === 'hl-kids' || s.name.toLowerCase().includes('kids') }
   };
@@ -2774,11 +2774,20 @@
     document.getElementById('discModalTag').style.color   = info.color;
     document.getElementById('discModalTitle').textContent = info.title;
     document.getElementById('discModalDesc').textContent  = info.desc;
-    document.getElementById('discModalFreq').textContent  = info.freq;
     document.getElementById('discModalLevel').textContent = info.level;
     document.getElementById('discModalJoin').href = 'contact.html?t=' + encodeURIComponent(info.title);
+
+    // Filter live slots first — used for both Frequency and "When we train"
     const slots = (window._pfSlots || []).filter(info.filter)
       .slice().sort((a,b) => a.day - b.day || (a.timeStart||'').localeCompare(b.timeStart||''));
+
+    // Frequency: count unique days that have this discipline scheduled
+    const uniqueDays = [...new Set(slots.map(s => s.day))];
+    document.getElementById('discModalFreq').textContent =
+      uniqueDays.length === 0 ? 'By arrangement'
+      : uniqueDays.length === 1 ? '1× per week'
+      : `${uniqueDays.length}× per week`;
+
     document.getElementById('discModalSlots').innerHTML = slots.length
       ? slots.map(s => `<div class="disc-slot">
           <span class="disc-slot-day">${_DAY_SHORT[s.day] || s.dayName || ''}</span>
