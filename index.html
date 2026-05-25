@@ -1162,9 +1162,9 @@
   .insta-btn:hover{border-color:rgba(199,255,63,.35);color:var(--ink);background:rgba(199,255,63,.05)}
   .insta-btn svg{width:15px;height:15px;flex-shrink:0}
   .insta-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:4px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:4px;align-items:start;
   }
-  /* Link-card fallback */
+  /* ── Image-preview card (used when admin has set an img URL) ── */
   .insta-card{
     aspect-ratio:1/1;
     background:var(--bg-2);border:1px solid var(--line-2);
@@ -1198,6 +1198,13 @@
     opacity:0;transition:opacity .2s,transform .25s;transform:translate(-5px,5px);
   }
   .insta-card:hover .insta-card-arrow{opacity:.9;transform:translate(0,0)}
+  /* ── Instagram blockquote embed wrapper ── */
+  .insta-embed-wrap{width:100%;overflow:hidden;background:var(--bg-2);border:1px solid var(--line-2)}
+  .insta-embed-wrap .instagram-media{
+    margin:0!important;max-width:100%!important;min-width:0!important;
+    width:calc(100% - 2px)!important;border-radius:0!important;
+    border:none!important;box-shadow:none!important;
+  }
   @media(max-width:600px){
     .insta-inner{padding:0 20px}
     .insta-feed{padding:60px 0}
@@ -2827,29 +2834,54 @@
       const section = document.getElementById('instaSection');
       const grid    = document.getElementById('instaGrid');
 
+      let needsEmbedJS = false;
+
       posts.forEach(p => {
         const url = typeof p === 'string' ? p : p.url;
         const img = typeof p === 'object' ? (p.img || '') : '';
-        const a = document.createElement('a');
-        a.className = 'insta-card';
-        a.href = url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.setAttribute('aria-label', 'View Instagram post');
         const igIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>`;
+
         if (img) {
+          /* ── Image-preview card (admin has uploaded a photo) ── */
+          const a = document.createElement('a');
+          a.className = 'insta-card';
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.setAttribute('aria-label', 'View Instagram post');
           a.innerHTML = `<div class="insta-card-img" style="background-image:url(${JSON.stringify(img)})"></div>
             <div class="insta-card-overlay"></div>
             ${igIcon}
             <span class="insta-card-label">View post</span>
             <span class="insta-card-arrow">↗</span>`;
+          grid.appendChild(a);
         } else {
-          a.innerHTML = `${igIcon}
-            <span class="insta-card-label">View post</span>
-            <span class="insta-card-arrow">↗</span>`;
+          /* ── Instagram embed (no preview image — show the real post) ── */
+          const wrap = document.createElement('div');
+          wrap.className = 'insta-embed-wrap';
+          // Normalise URL: ensure it ends with / for embed.js
+          const postUrl = url.replace(/\/?$/, '/');
+          wrap.innerHTML = `<blockquote class="instagram-media"
+            data-instgrm-permalink="${postUrl}"
+            data-instgrm-version="14"
+            style="background:var(--bg-2);border:0;margin:0;max-width:100%;width:100%;min-width:0;padding:0;">
+          </blockquote>`;
+          grid.appendChild(wrap);
+          needsEmbedJS = true;
         }
-        grid.appendChild(a);
       });
+
+      /* Load or trigger Instagram embed.js once, after all blockquotes are in the DOM */
+      if (needsEmbedJS) {
+        if (window.instgrm) {
+          window.instgrm.Embeds.process();
+        } else {
+          const s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.instagram.com/embed.js';
+          document.head.appendChild(s);
+        }
+      }
 
       section.removeAttribute('hidden');
     } catch(e) { console.warn('Instagram:', e); }
