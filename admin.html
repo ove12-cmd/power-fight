@@ -813,10 +813,23 @@
       <div class="panel-head">
         <div>
           <div class="panel-title">Reviews</div>
-          <div class="panel-subtitle">Approve or delete submitted feedback — only approved reviews appear on the site</div>
+          <div class="panel-subtitle">Manage reviews shown in the Fighter Voices slider — pinned Google reviews are always visible; additional reviews below are stored in the database</div>
         </div>
       </div>
       <div class="panel-body">
+
+        <!-- Pinned Google reviews (static, hardcoded in index.html) -->
+        <div class="adm-card">
+          <div class="adm-card-head">
+            <span class="adm-card-title">Pinned Google Reviews</span>
+            <span style="font-size:10px;color:var(--ink-dim);letter-spacing:.08em">Always shown · edit in index.html</span>
+          </div>
+          <div class="adm-card-body" style="padding:0">
+            <div id="pinnedReviewList"></div>
+          </div>
+        </div>
+
+        <!-- Add dynamic review -->
         <div class="adm-card">
           <div class="adm-card-head"><span class="adm-card-title">Add Review</span></div>
           <div class="adm-card-body">
@@ -839,15 +852,9 @@
               </div>
               <div class="adm-form-row">
                 <div class="adm-field">
-                  <label>Training</label>
-                  <select id="rvTraining">
-                    <option value="MMA">MMA</option>
-                    <option value="Striking">Striking</option>
-                    <option value="Grappling">Grappling</option>
-                    <option value="Kids MMA">Kids MMA</option>
-                    <option value="Fight S&amp;C">Fight S&amp;C</option>
-                    <option value="">— (leave blank)</option>
-                  </select>
+                  <label>Training <span style="color:var(--ink-dim);font-size:9px;letter-spacing:.05em">or Google URL</span></label>
+                  <input type="text" id="rvTraining" placeholder="MMA / Striking / https://g.page/…">
+                  <div style="font-size:9px;color:var(--ink-mute);margin-top:4px;letter-spacing:.04em">Paste a Google review link to add "View on Google" to the card</div>
                 </div>
                 <div class="adm-field" style="grid-column:span 2">
                   <label>Review Text</label>
@@ -865,11 +872,11 @@
         </div>
 
         <div class="adm-card">
-          <div class="adm-card-head"><span class="adm-card-title">Submitted Reviews</span></div>
+          <div class="adm-card-head"><span class="adm-card-title">Additional Reviews</span></div>
           <div id="reviewListWrap">
             <div class="empty-state" id="reviewEmpty">
               <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              <p>No reviews submitted yet</p>
+              <p>No additional reviews yet</p>
             </div>
             <div id="reviewList"></div>
           </div>
@@ -1969,6 +1976,30 @@ Reset button restores removed classes.`)) return;
   // ═══════════════════════════════════════════════════════════════════
   //  TESTIMONIALS / REVIEWS
   // ═══════════════════════════════════════════════════════════════════
+
+  // Pinned Google reviews (hardcoded in index.html — shown read-only here)
+  const PINNED_REVIEWS = [
+    { name: 'Christopher Frank (Chris)', meta: '3 months ago', text: 'Very good trainer and motivator, his experience will help you to achieve your goals, I recommend strongly.' },
+    { name: 'Pirgit Agafonov',           meta: '6 months ago', text: 'Germo is very smart and highly motivating. Very experienced in traditionally thaiboxing and personal training.' },
+    { name: 'Michael Schüpbach',         meta: '7 months ago', text: 'Germo is a motivator, great friend and a trainer who will always inspire you to reach higher. Highly recommended as personal trainer and motivator.' },
+    { name: 'Ehitus Support 24 OÜ',      meta: '6 months ago', text: 'Very experienced. Scientifical approach and always listens to what I say or feel. Followed my progress.' },
+    { name: 'marjan tinitski',           meta: '7 months ago', text: 'Best trainer and motivator for sports and spirit.' },
+  ];
+  (function renderPinnedReviews() {
+    const list = document.getElementById('pinnedReviewList');
+    if (!list) return;
+    list.innerHTML = PINNED_REVIEWS.map(r => `
+      <div class="review-row" style="opacity:.75">
+        <div class="review-head">
+          <span class="review-name">${escHtml(r.name)}</span>
+          <span class="review-stars">★★★★★</span>
+          <span class="review-approved" style="background:rgba(199,255,63,.08);color:var(--lime-dim,#8fb82b)">📌 Pinned</span>
+        </div>
+        <div class="review-text">"${escHtml(r.text)}"</div>
+        <div class="review-date">${escHtml(r.meta)} · Google review</div>
+      </div>`).join('');
+  })();
+
   async function renderTestimonials(all) {
     if (!all) all = await sbLoadFeedback();
     const list  = document.getElementById('reviewList');

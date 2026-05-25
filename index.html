@@ -710,15 +710,24 @@
   .t-track-wrap{margin:0 -32px; overflow:hidden; background:var(--bg-2)}
   .t-track{display:flex; transition:transform .55s cubic-bezier(0.22,1,0.36,1)}
   .t-card{
-    flex:0 0 25%; min-width:0;
+    flex:0 0 calc(100% / 3); min-width:0;
     padding:52px 36px 44px; background:var(--bg-2);
     display:flex; flex-direction:column; gap:0;
     border-right:1px solid var(--line-2);
   }
   .t-card:last-child{border-right:none}
-  .t-quote{font-family:var(--display); font-size:clamp(16px,1.5vw,22px); line-height:1.38; font-weight:500; color:var(--ink); margin:0 0 28px}
-  .t-quote::before{content:"\201C"; font-size:56px; color:var(--lime); line-height:0; display:block; margin-bottom:20px; height:24px}
-  .t-foot{display:flex; align-items:center; gap:14px; padding-top:16px; border-top:1px solid var(--line-2)}
+  .t-stars{color:#C7FF3F; font-size:20px; letter-spacing:2px; margin-bottom:14px; display:flex; align-items:center; gap:8px; line-height:1; flex:none}
+  .t-rating{font-size:11px; font-weight:700; color:var(--ink-dim); letter-spacing:0.08em}
+  .t-google-link{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; letter-spacing:0.05em; color:var(--ink-dim);
+    text-decoration:none; margin-top:auto; padding-top:16px; margin-bottom:20px;
+    transition:opacity .2s; flex:none;
+  }
+  .t-google-link:hover{opacity:0.75}
+  .t-gword{font-size:16px; font-weight:500; letter-spacing:0; line-height:1}
+  .t-quote{font-family:var(--display); font-size:clamp(15px,1.3vw,20px); line-height:1.42; font-weight:500; color:var(--ink); margin:0; flex:1}
+  .t-foot{display:flex; align-items:center; gap:14px; padding-top:16px; border-top:1px solid var(--line-2); flex:none}
   .t-avatar{
     width:40px; height:40px; border-radius:50%; flex:none;
     background:linear-gradient(135deg, #1a1b1b, #060707);
@@ -741,7 +750,7 @@
   @keyframes tProgress{from{width:0%}to{width:100%}}
   @media(max-width:640px){
     .t-dot{width:28px}
-    .t-card{flex:0 0 100%; padding:40px 24px 36px; border-right:none}
+    .t-card{flex:0 0 100%; padding:40px 24px 36px; border-right:none; border-bottom:1px solid var(--line-2)}
   }
 
   /* ---------- INFO POPUP ---------- */
@@ -914,7 +923,7 @@
     .coaches-grid{grid-template-columns:repeat(2,1fr)}
     .principles{grid-template-columns:repeat(2,1fr)}
     .foot-top{grid-template-columns:1fr 1fr; gap:40px}
-    .t-card{flex:0 0 25%}
+    .t-card{flex:0 0 calc(100% / 3)}
     .classes-grid{grid-template-columns:repeat(2,1fr)}
     .sched-grid{grid-template-columns:repeat(2,1fr)}
   }
@@ -946,7 +955,7 @@
     .foot-top{grid-template-columns:1fr; gap:32px}
     .foot-bottom{flex-direction:column; gap:16px; text-align:center}
     .foot-bottom .right{gap:20px}
-    .t-card{flex:0 0 85vw; min-width:0}
+    .t-card{flex:0 0 100%; min-width:0}
     .final-ctas{flex-direction:column; align-items:center}
     .final-ctas .btn{width:100%; justify-content:center; max-width:320px}
     .sched-modal-inner{width:95vw}
@@ -1509,25 +1518,35 @@
   </div>
   <div class="t-track-wrap">
     <div class="t-track" id="tTrack">
-      <div class="t-card t-active">
-        <p class="t-quote" data-i18n="testi.q1">I've trained at five different gyms over the years. Power Fight is the first place where I actually felt like the coaching was tailored to me personally, not just the group.</p>
-        <div class="t-foot"><div class="t-avatar">JL</div><div><div class="t-name">Jonas Lie</div><div class="t-meta" data-i18n="testi.q1.meta">MMA · 2 years</div></div></div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★ <span class="t-rating">5/5</span></div>
+        <p class="t-quote">Very good trainer and motivator, his experience will help you to achieve your goals, I recommend strongly.</p>
+        <a class="t-google-link" href="https://www.google.com/search?q=Power+Fight+MMA+reviews" target="_blank" rel="noopener">View on <span class="t-gword"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span></a>
+        <div class="t-foot"><div class="t-avatar">CF</div><div><div class="t-name">Christopher Frank (Chris)</div><div class="t-meta">3 months ago</div></div></div>
       </div>
       <div class="t-card">
-        <p class="t-quote" data-i18n="testi.q2">The progression here is real. I came in with zero grappling background. Eight months later I'm rolling with guys who've trained for years and holding my own. The system works.</p>
-        <div class="t-foot"><div class="t-avatar">KV</div><div><div class="t-name">Karoline Vold</div><div class="t-meta" data-i18n="testi.q2.meta">Grappling · 8 months</div></div></div>
+        <div class="t-stars">★★★★★ <span class="t-rating">5/5</span></div>
+        <p class="t-quote">Germo is very smart and highly motivating. Very experienced in traditionally thaiboxing and personal training.</p>
+        <a class="t-google-link" href="https://www.google.com/search?q=Power+Fight+MMA+reviews" target="_blank" rel="noopener">View on <span class="t-gword"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span></a>
+        <div class="t-foot"><div class="t-avatar">PA</div><div><div class="t-name">Pirgit Agafonov</div><div class="t-meta">6 months ago</div></div></div>
       </div>
       <div class="t-card">
-        <p class="t-quote" data-i18n="testi.q3">The 1-to-1 ratio isn't marketing. Every session someone is watching your technique and correcting it. I've fixed movement patterns I didn't even know were wrong.</p>
-        <div class="t-foot"><div class="t-avatar">TR</div><div><div class="t-name">Tobias Rein</div><div class="t-meta" data-i18n="testi.q3.meta">Striking · 1.5 years</div></div></div>
+        <div class="t-stars">★★★★★ <span class="t-rating">5/5</span></div>
+        <p class="t-quote">Germo is a motivator, great friend and a trainer who will always inspire you to reach higher. Highly recommended as personal trainer and motivator.</p>
+        <a class="t-google-link" href="https://www.google.com/search?q=Power+Fight+MMA+reviews" target="_blank" rel="noopener">View on <span class="t-gword"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span></a>
+        <div class="t-foot"><div class="t-avatar">MS</div><div><div class="t-name">Michael Schüpbach</div><div class="t-meta">7 months ago</div></div></div>
       </div>
       <div class="t-card">
-        <p class="t-quote" data-i18n="testi.q4">I trained for a year before I found Power Fight. The difference in how fast I improved after joining was honestly embarrassing. The coaching level here is different.</p>
-        <div class="t-foot"><div class="t-avatar">AM</div><div><div class="t-name">Amara Mbeki</div><div class="t-meta" data-i18n="testi.q4.meta">MMA · 3 years</div></div></div>
+        <div class="t-stars">★★★★★ <span class="t-rating">5/5</span></div>
+        <p class="t-quote">Very experienced. Scientifical approach and always listens to what I say or feel. Followed my progress.</p>
+        <a class="t-google-link" href="https://www.google.com/search?q=Power+Fight+MMA+reviews" target="_blank" rel="noopener">View on <span class="t-gword"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span></a>
+        <div class="t-foot"><div class="t-avatar">ES</div><div><div class="t-name">Ehitus Support 24 OÜ</div><div class="t-meta">6 months ago</div></div></div>
       </div>
       <div class="t-card">
-        <p class="t-quote" data-i18n="testi.q5">The sparring sessions are the best I've experienced. Coached, intentional, and safe — but with real pressure. It's the closest thing to competition prep I've found outside of fight camp.</p>
-        <div class="t-foot"><div class="t-avatar">PH</div><div><div class="t-name">Petter Haugen</div><div class="t-meta" data-i18n="testi.q5.meta">Sparring · 1 year</div></div></div>
+        <div class="t-stars">★★★★★ <span class="t-rating">5/5</span></div>
+        <p class="t-quote">Best trainer and motivator for sports and spirit.</p>
+        <a class="t-google-link" href="https://www.google.com/search?q=Power+Fight+MMA+reviews" target="_blank" rel="noopener">View on <span class="t-gword"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span></a>
+        <div class="t-foot"><div class="t-avatar">MT</div><div><div class="t-name">marjan tinitski</div><div class="t-meta">7 months ago</div></div></div>
       </div>
     </div>
   </div>
@@ -2007,8 +2026,9 @@
   let tPaused = false;
   let tCurrentPage = 0;
 
-  function tGetPerPage() { return window.innerWidth >= 641 ? 4 : 1; }
-  function tTotalPages() { return Math.max(1, Math.ceil(tSlides.length / tGetPerPage())); }
+  function tGetPerPage() { return window.innerWidth >= 641 ? 3 : 1; }
+  // Individual-card sliding: positions = n - pp + 1  (each step advances 1 card)
+  function tTotalPages() { return Math.max(1, tSlides.length - tGetPerPage() + 1); }
 
   function tBuildDots() {
     tSlides = Array.from(tTrack.querySelectorAll('.t-card'));
@@ -2027,10 +2047,10 @@
     }
   }
 
-  function tApplyTranslate(pageIdx) {
+  function tApplyTranslate(posIdx) {
     const n = tSlides.length;
-    const pp = tGetPerPage();
-    tTrack.style.transform = n > 0 ? `translateX(-${pageIdx * pp / n * 100}%)` : '';
+    // Each card is 1/n of the track; advance by posIdx cards
+    tTrack.style.transform = n > 0 ? `translateX(-${posIdx / n * 100}%)` : '';
   }
 
   function tGoTo(pageIdx, manual) {
@@ -2483,14 +2503,25 @@
   // ── Feedback → testimonials hook ──────────────────────────────────────
   function initials(name) { return name.trim().split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase(); }
 
+  const _gWord = `<span class="t-gword"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></span>`;
   function addToTestimonials(entry) {
     const card = document.createElement('div');
     card.className = 't-card';
+    const stars = '★'.repeat(entry.rating || 5);
+    const rating = entry.rating || 5;
+    // training field doubles as source URL for Google reviews
+    const isUrl = entry.training && entry.training.startsWith('http');
+    const googleLink = isUrl
+      ? `<a class="t-google-link" href="${entry.training}" target="_blank" rel="noopener">View on ${_gWord}</a>`
+      : '';
+    const metaText = isUrl ? '' : (entry.training || '');
     card.innerHTML = `
+      <div class="t-stars">${stars} <span class="t-rating">${rating}/5</span></div>
       <p class="t-quote">${entry.text}</p>
+      ${googleLink}
       <div class="t-foot">
         <div class="t-avatar">${initials(entry.name)}</div>
-        <div><div class="t-name">${entry.name}</div><div class="t-meta">${entry.training}</div></div>
+        <div><div class="t-name">${entry.name}</div><div class="t-meta">${metaText}</div></div>
       </div>`;
     tTrack.appendChild(card);
     tBuildDots();
