@@ -1162,22 +1162,35 @@
   .insta-btn:hover{border-color:rgba(199,255,63,.35);color:var(--ink);background:rgba(199,255,63,.05)}
   .insta-btn svg{width:15px;height:15px;flex-shrink:0}
   .insta-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:4px;align-items:start;
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:20px;align-items:start;
   }
   /* ── Instagram embed wrapper ── */
-  .insta-embed-wrap{width:100%;overflow:hidden}
+  .insta-embed-wrap{
+    width:100%;overflow:hidden;
+    border-radius:16px;
+    box-shadow:0 4px 24px rgba(0,0,0,.45);
+    transition:transform .35s cubic-bezier(.22,1,.36,1),
+               box-shadow .35s cubic-bezier(.22,1,.36,1);
+    outline:1px solid rgba(255,255,255,0.06);
+  }
+  .insta-embed-wrap:hover{
+    transform:translateY(-6px);
+    box-shadow:0 12px 40px rgba(0,0,0,.55),
+               0 0 0 1px rgba(199,255,63,.18);
+  }
   .insta-embed-wrap .instagram-media{
     margin:0!important;max-width:100%!important;min-width:0!important;
     width:100%!important;border-radius:0!important;
-    border:1px solid var(--line-2)!important;box-shadow:none!important;
+    border:none!important;box-shadow:none!important;
   }
   @media(max-width:1020px){
-    .insta-grid{grid-template-columns:repeat(2,1fr)}
+    .insta-grid{grid-template-columns:repeat(2,1fr);gap:16px}
   }
   @media(max-width:600px){
     .insta-inner{padding:0 20px}
     .insta-feed{padding:60px 0}
-    .insta-grid{grid-template-columns:1fr}
+    .insta-grid{grid-template-columns:1fr;gap:16px}
   }
 
   /* ── Schedule "add to calendar" button ───────────────────────────── */
