@@ -168,15 +168,23 @@
   .hours-row.today .day{color:var(--lime)}
   .hours-row.today .time{color:var(--lime)}
 
-  /* FREE SESSION BANNER */
-  .free-banner{background:var(--lime);padding:60px 32px;display:grid;place-items:center;text-align:center}
-  .free-banner h3{font-family:var(--display);font-size:clamp(32px,5vw,64px);font-weight:600;letter-spacing:-0.025em;color:#080808;margin:0 0 12px;line-height:0.95}
-  .free-banner p{font-size:15px;color:rgba(8,8,8,0.65);max-width:440px;margin:0 0 32px;line-height:1.6}
-  .free-banner .btn{background:#080808;color:var(--lime);border-color:#080808}
-  .free-banner .btn span{color:var(--lime)}
-  .free-banner .btn::before{background:var(--ink)}
-  .free-banner .btn:hover span{color:#080808}
-  @media(max-width:640px){.free-banner{padding:50px 20px}}
+  /* NEXT STEPS */
+  .next-steps{padding:80px 32px;background:var(--bg-2);border-top:1px solid var(--line-2)}
+  .next-steps-inner{max-width:860px;margin:0 auto}
+  .next-steps-head{margin-bottom:52px}
+  .next-steps-eyebrow{font-size:11px;letter-spacing:.28em;color:var(--lime);text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;font-family:var(--sans)}
+  .next-steps-eyebrow::before{content:"";width:20px;height:1px;background:var(--lime)}
+  .next-steps-head h2{font-family:var(--display);font-size:clamp(28px,4vw,52px);font-weight:600;letter-spacing:-0.025em;line-height:0.95;margin:0;color:var(--ink)}
+  .next-steps-head h2 em{font-style:normal;color:var(--lime)}
+  .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-2)}
+  .step{background:var(--bg);padding:36px 28px}
+  .step-num{font-family:var(--display);font-size:48px;font-weight:700;color:var(--line-2);letter-spacing:-0.04em;line-height:1;margin-bottom:20px}
+  .step-title{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);margin-bottom:8px}
+  .step-desc{font-size:13px;color:var(--ink-dim);line-height:1.65}
+  @media(max-width:720px){
+    .steps-grid{grid-template-columns:1fr}
+    .next-steps{padding:60px 20px}
+  }
 
   /* FOOTER */
   footer{border-top:1px solid var(--line);padding:60px 32px 40px;position:relative;z-index:2}
@@ -436,11 +444,31 @@
 </div>
 </div>
 
-<!-- FREE SESSION BANNER -->
-<div class="free-banner">
-  <h3>First training is free.</h3>
-  <p>No sign-up fee. No commitment. Come in, train with the team, and decide after.</p>
-  <a class="btn" href="mailto:Nurmsoog@gmail.com?subject=Free Trial Session"><span>Book Free Session</span></a>
+<!-- NEXT STEPS -->
+<div class="next-steps">
+  <div class="next-steps-inner">
+    <div class="next-steps-head reveal">
+      <div class="next-steps-eyebrow">After you reach out</div>
+      <h2>What happens <em>next.</em></h2>
+    </div>
+    <div class="steps-grid reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">We get back to you</div>
+        <div class="step-desc">A coach or team member will reply within 24 hours to answer any questions and confirm your visit.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Come in for a free session</div>
+        <div class="step-desc">Your first training is on us. No gear needed — just show up and we'll handle the rest.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Decide with no pressure</div>
+        <div class="step-desc">Train with the team and decide after. No sign-up fee, no commitment, no sales pitch.</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="footer-root"></div>

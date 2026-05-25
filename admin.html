@@ -1307,19 +1307,22 @@
   // ── RENDER ALL ────────────────────────────────────────────────────
   async function renderAll() {
     Object.keys(_cache).forEach(k => delete _cache[k]); // fresh on every full reload
-    Progress.start(8); // 7 renders + badges
-    await Promise.all([
-      renderHome()        .then(() => Progress.tick()),
-      renderTicker()      .then(() => Progress.tick()),
-      renderGallery()     .then(() => Progress.tick()),
-      renderEvents()      .then(() => Progress.tick()),
-      renderSchedule()    .then(() => Progress.tick()),
-      renderTestimonials().then(() => Progress.tick()),
-      renderInstagram()   .then(() => Progress.tick()),
-    ]);
-    await updateBadges();
-    Progress.tick();
-    Progress.done();
+    Progress.start(8); // 7 renders + 1 badges
+    try {
+      await Promise.all([
+        renderHome()        .then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderTicker()      .then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderGallery()     .then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderEvents()      .then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderSchedule()    .then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderTestimonials().then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderInstagram()   .then(() => Progress.tick()).catch(() => Progress.tick()),
+      ]);
+      await updateBadges().catch(() => {});
+    } finally {
+      Progress.tick(); // badges step
+      Progress.done();
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════
