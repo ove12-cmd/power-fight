@@ -1632,7 +1632,7 @@
     </div>
   </div>
   <div class="final-right">
-    <img class="final-img" src="cta2.png" alt="">
+    <img class="final-img" src="cta.png" alt="">
     <div class="ph"></div>
     <div class="final-badge" style="z-index:5">
       <img src="logo2.png" alt="Power Fight">
@@ -2316,7 +2316,7 @@
     probe.style.cssText = `position:fixed;visibility:hidden;pointer-events:none;width:${wrap.offsetWidth}px;left:-9999px;top:0;overflow:hidden`;
     document.body.appendChild(probe);
     let maxH = 0;
-    afSlides.forEach(slide => {
+    document.querySelectorAll('.af-slide').forEach(slide => {
       const clone = slide.cloneNode(true);
       clone.style.cssText = 'position:relative!important;height:auto!important;opacity:1!important';
       probe.appendChild(clone);
