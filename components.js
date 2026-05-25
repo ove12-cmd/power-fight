@@ -3,9 +3,9 @@
 
   const isHome = !location.pathname.match(/\/(contact|gallery|register|faq)\.html/);
 
-  const sh   = isHome ? '#system'   : 'index.html#system';
-  const pr   = isHome ? '#programs' : 'index.html#programs';
-  const home = 'index.html';
+  const sh   = isHome ? '#system'   : '/#system';
+  const pr   = isHome ? '#programs' : '/#programs';
+  const home = '/';
 
   /* ── NAV ───────────────────────────────────────────────────────── */
   const NAV_HTML = `
@@ -99,11 +99,11 @@
     <div class="foot-col">
       <h5>Schedule</h5>
       <ul style="gap:14px">
-        <li><a href="index.html#system" class="foot-sched-row"><span>Monday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></a></li>
-        <li><a href="index.html#system" class="foot-sched-row"><span>Tuesday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span></span></a></li>
-        <li><a href="index.html#system" class="foot-sched-row"><span>Wednesday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></a></li>
-        <li><a href="index.html#system" class="foot-sched-row"><span>Thursday</span><span class="foot-pills"><span class="foot-pill fp-kids">Kids</span><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-sc">S&amp;C</span></span></a></li>
-        <li><a href="index.html#system" class="foot-sched-row"><span>Friday</span><span class="foot-pills"><span class="foot-pill fp-sparring">Sparring</span></span></a></li>
+        <li><a href="/#system" class="foot-sched-row"><span>Monday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></a></li>
+        <li><a href="/#system" class="foot-sched-row"><span>Tuesday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span></span></a></li>
+        <li><a href="/#system" class="foot-sched-row"><span>Wednesday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></a></li>
+        <li><a href="/#system" class="foot-sched-row"><span>Thursday</span><span class="foot-pills"><span class="foot-pill fp-kids">Kids</span><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-sc">S&amp;C</span></span></a></li>
+        <li><a href="/#system" class="foot-sched-row"><span>Friday</span><span class="foot-pills"><span class="foot-pill fp-sparring">Sparring</span></span></a></li>
         <li><span class="foot-sched-row" style="opacity:0.4"><span>Saturday</span><span style="font-size:10px;letter-spacing:0.14em;color:var(--ink-mute)">Closed</span></span></li>
         <li><span class="foot-sched-row" style="opacity:0.4"><span>Sunday</span><span style="font-size:10px;letter-spacing:0.14em;color:var(--ink-mute)">Closed</span></span></li>
       </ul>
@@ -111,11 +111,11 @@
     <div class="foot-col">
       <h5>Trainings</h5>
       <ul>
-        <li><a href="index.html#programs">MMA Striking</a></li>
-        <li><a href="index.html#programs">MMA Grappling</a></li>
-        <li><a href="index.html#programs">Les Mills Bodycombat</a></li>
-        <li><a href="index.html#programs">Kids MMA</a></li>
-        <li><a href="index.html#programs">Professional</a></li>
+        <li><a href="/#programs">MMA Striking</a></li>
+        <li><a href="/#programs">MMA Grappling</a></li>
+        <li><a href="/#programs">Les Mills Bodycombat</a></li>
+        <li><a href="/#programs">Kids MMA</a></li>
+        <li><a href="/#programs">Professional</a></li>
         <li><a href="booking.html" style="color:var(--lime)">Private Bookings →</a></li>
       </ul>
     </div>
