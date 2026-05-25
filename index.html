@@ -2048,9 +2048,9 @@
   }
 
   function tApplyTranslate(posIdx) {
-    const n = tSlides.length;
-    // Each card is 1/n of the track; advance by posIdx cards
-    tTrack.style.transform = n > 0 ? `translateX(-${posIdx / n * 100}%)` : '';
+    const pp = tGetPerPage();
+    // Each card is 1/pp of the track's CSS width → 33.33% per step with 3 visible
+    tTrack.style.transform = posIdx > 0 ? `translateX(-${posIdx / pp * 100}%)` : '';
   }
 
   function tGoTo(pageIdx, manual) {
