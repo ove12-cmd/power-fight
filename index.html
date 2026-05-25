@@ -357,11 +357,16 @@
   .reveal.d3{transition-delay:.24s} .reveal.d4{transition-delay:.32s}
 
   /* ---------- DISCIPLINES LIST ---------- */
-  .disciplines-list{margin-top:60px; border-top:1px solid var(--line-2)}
+  .disciplines-list{
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:0 1px; background:var(--line-2);
+    margin-top:60px; border-top:1px solid var(--line-2);
+  }
   .discipline-row{
-    display:grid; grid-template-columns:64px 1fr auto;
-    gap:0 56px; align-items:center;
-    padding:32px 0; border-bottom:1px solid var(--line-2);
+    display:grid; grid-template-columns:52px 1fr auto;
+    gap:0 28px; align-items:center;
+    padding:28px 36px; border-bottom:1px solid var(--line-2);
+    background:var(--bg);
     text-decoration:none; color:inherit; position:relative; cursor:pointer;
   }
   .discipline-row::after{
@@ -398,11 +403,12 @@
   .discipline-row:hover .disc-join{color:var(--lime)}
   .discipline-row:hover .disc-join svg{transform:translateX(4px)}
   @media(max-width:900px){
-    .discipline-row{grid-template-columns:44px 1fr auto; gap:0 24px; padding:24px 0}
+    .discipline-row{gap:0 20px; padding:24px 24px}
     .disc-tag{display:none}
   }
   @media(max-width:640px){
-    .discipline-row{grid-template-columns:32px 1fr auto; gap:0 14px; padding:18px 0}
+    .disciplines-list{grid-template-columns:1fr; background:none}
+    .discipline-row{grid-template-columns:32px 1fr auto; gap:0 14px; padding:18px 0; background:transparent}
     .disc-desc{display:none}
     .disc-join-label{display:none}
   }
