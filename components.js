@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const isHome = !location.pathname.match(/\/(contact|gallery|register|faq)\.html/);
+  const isHome = !location.pathname.match(/\/(contact|gallery|register|faq)(\.html)?$/);
 
   const sh   = isHome ? '#system'   : '/#system';
   const pr   = isHome ? '#programs' : '/#programs';
@@ -25,8 +25,8 @@
     <div class="nav-links">
       <a href="${sh}">Schedules</a>
       <a href="${pr}">Trainings</a>
-      <a href="contact.html" data-nav-contact>Contact</a>
-      <a href="faq.html" data-nav-faq>FAQ</a>
+      <a href="/contact" data-nav-contact>Contact</a>
+      <a href="/faq" data-nav-faq>FAQ</a>
     </div>
     <div class="lang-switch">
       <button class="lang-btn active" data-lang="en">EN</button>
@@ -55,13 +55,13 @@
   <nav>
     <a href="${sh}" class="mob-link">Schedules</a>
     <a href="${pr}" class="mob-link">Trainings</a>
-    <a href="contact.html" class="mob-link">Contact</a>
-    <a href="faq.html" class="mob-link">FAQ</a>
+    <a href="/contact" class="mob-link">Contact</a>
+    <a href="/faq" class="mob-link">FAQ</a>
     <a href="#voices" class="mob-link">Info</a>
   </nav>
   <div class="mob-cta">
     <a class="btn btn-primary" href="${sh}"><span>See Schedules</span></a>
-    <a class="btn btn-ghost" href="contact.html"><span>Contact</span></a>
+    <a class="btn btn-ghost" href="/contact"><span>Contact</span></a>
   </div>
   <div class="lang-switch mob-lang">
     <button class="lang-btn active" data-lang="en">EN</button>
@@ -116,7 +116,7 @@
         <li><a href="/#programs">Les Mills Bodycombat</a></li>
         <li><a href="/#programs">Kids MMA</a></li>
         <li><a href="/#programs">Professional</a></li>
-        <li><a href="booking.html" style="color:var(--lime)">Private Bookings →</a></li>
+        <li><a href="/booking" style="color:var(--lime)">Private Bookings →</a></li>
       </ul>
     </div>
     <div class="foot-col">
@@ -127,14 +127,14 @@
         <li><a href="https://www.youtube.com/@germoofficial-experienceta1157" target="_blank" rel="noopener">YouTube</a></li>
       </ul>
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
-        <a class="btn btn-ghost" href="contact.html" style="font-size:10px;padding:11px 18px"><span>Contact Us</span></a>
+        <a class="btn btn-ghost" href="/contact" style="font-size:10px;padding:11px 18px"><span>Contact Us</span></a>
         <button onclick="openFeedbackModal()" style="background:none;border:none;padding:0;text-align:left;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .2s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'">Leave Feedback →</button>
       </div>
     </div>
   </div>
   <div class="foot-bottom" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
     <span>&copy; 2026 Power Fight Team</span>
-    <a href="admin.html" style="display:inline-flex;align-items:center;justify-content:center;padding:7px 16px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);border:1px solid var(--line-2);background:transparent;transition:color .2s,border-color .2s" onmouseover="this.style.color='var(--ink)';this.style.borderColor='rgba(255,255,255,0.18)'" onmouseout="this.style.color='var(--ink-dim)';this.style.borderColor='var(--line-2)'">Admin</a>
+    <a href="/admin" style="display:inline-flex;align-items:center;justify-content:center;padding:7px 16px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);border:1px solid var(--line-2);background:transparent;transition:color .2s,border-color .2s" onmouseover="this.style.color='var(--ink)';this.style.borderColor='rgba(255,255,255,0.18)'" onmouseout="this.style.color='var(--ink-dim)';this.style.borderColor='var(--line-2)'">Admin</a>
   </div>
 </footer>`;
 
@@ -190,6 +190,9 @@
     </div>
   </div>
 </div>`;
+
+  // ── bfcache: reload on back-navigation to prevent black screen ──────
+  window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 
   /* ── PUBLIC API ──────────────────────────────────────────────────── */
   window.initComponents = function (pageId) {
