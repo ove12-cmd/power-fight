@@ -1,6 +1,103 @@
 (function () {
   'use strict';
 
+  /* ── Schedule baseline (mirrors FIXED_SCHEDULE_SITE in index.html) ── */
+  const _PF_FIXED = [
+    {id:'1-17',day:1,name:'MMA Striking',         start:'17:00',end:'18:00'},
+    {id:'1-18',day:1,name:'Striking / Grappling', start:'18:00',end:'19:00'},
+    {id:'1-19',day:1,name:'MMA Grappling',         start:'19:00',end:'20:30'},
+    {id:'2-17',day:2,name:'MMA Striking',          start:'17:00',end:'18:00'},
+    {id:'2-18',day:2,name:'MMA Striking',          start:'18:00',end:'19:00'},
+    {id:'2-19',day:2,name:'MMA Striking',          start:'19:00',end:'20:30'},
+    {id:'3-17',day:3,name:'MMA Striking',          start:'17:00',end:'18:00'},
+    {id:'3-18',day:3,name:'MMA Striking',          start:'18:00',end:'19:00'},
+    {id:'3-19',day:3,name:'MMA Grappling',         start:'19:00',end:'20:30'},
+    {id:'4-16',day:4,name:'Kids MMA',              start:'16:00',end:'17:00'},
+    {id:'4-17',day:4,name:'MMA Striking',          start:'17:00',end:'18:00'},
+    {id:'4-18',day:4,name:'Fight S&C',             start:'18:00',end:'19:00'},
+    {id:'4-19',day:4,name:'MMA Striking',          start:'19:00',end:'20:30'},
+    {id:'5-18',day:5,name:'MMA Striking Sparring', start:'18:00',end:'19:00'},
+    {id:'5-19',day:5,name:'MMA Sparring',          start:'19:00',end:'20:30'},
+  ];
+
+  /* Pill colour from class name */
+  function _pillCol(name) {
+    const n = name.toLowerCase();
+    if (n.includes('kids'))    return ['rgba(255,140,66,.14)','#FF8C42'];
+    if (n.includes('grappling') || n.includes('wrestling')) return ['rgba(91,224,255,.12)','#5BE0FF'];
+    if (n.includes('s&c') || n.includes('conditioning') || n.includes('kettlebell')) return ['rgba(167,139,250,.15)','#A78BFA'];
+    if (n.includes('sparring') || n.includes('performance')) return ['rgba(250,204,21,.12)','#FACC15'];
+    if (n.includes('bodycombat') || n.includes('personal')) return ['rgba(192,132,252,.14)','#C084FC'];
+    return ['rgba(255,100,50,.13)','#FF8C42']; // Striking / MMA default
+  }
+
+  /* Render fetched slots into the popup hours grid */
+  function _renderInfoHours(slots) {
+    const grid = document.getElementById('infoHoursGrid');
+    if (!grid) return;
+    const DAY = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+    const active = (slots || []).filter(s => !s.hidden && !s.archived);
+    if (!active.length) {
+      grid.innerHTML = '<div class="info-hour-row" style="font-size:12px;color:var(--ink-dim)">See full schedule →</div>';
+      return;
+    }
+    // Group by day, deduplicate session names per day
+    const byDay = {};
+    active.forEach(s => { (byDay[s.day] = byDay[s.day] || []).push(s); });
+    grid.innerHTML = Object.keys(byDay).map(Number).sort((a,b)=>a-b).map(d => {
+      const seen = new Set();
+      const pills = byDay[d]
+        .filter(s => { const k = s.name||s.dayName||''; if (seen.has(k)) return false; seen.add(k); return true; })
+        .map(s => {
+          const label = s.name || s.dayName || '';
+          const [bg, col] = _pillCol(label);
+          return `<span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:2px 8px;background:${bg};color:${col};white-space:nowrap">${label}</span>`;
+        }).join('');
+      return `<div class="info-hour-row"><span class="info-hour-day">${DAY[d]||d}</span><span class="info-hour-pills">${pills}</span></div>`;
+    }).join('');
+  }
+
+  /* Load schedule: prefer window._pfSlots, fall back to Supabase REST */
+  const SB_URL = 'https://nzfqsgdzbainfijbhwag.supabase.co';
+  const SB_KEY = 'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al';
+  let _infoHoursReady = false;
+
+  async function _loadInfoHours() {
+    if (_infoHoursReady) return;
+    _infoHoursReady = true;
+
+    // Homepage already has merged live data ready
+    if (window._pfSlots && window._pfSlots.length) {
+      _renderInfoHours(window._pfSlots);
+      return;
+    }
+
+    // Other pages: fetch overrides from Supabase and merge with baseline
+    try {
+      const resp = await fetch(`${SB_URL}/rest/v1/schedule_overrides?select=*`, {
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+      });
+      if (!resp.ok) throw new Error(resp.status);
+      const rows = await resp.json();
+      const hiddenIds = new Set((rows||[]).filter(r => r.hidden || r.archived).map(r => r.id));
+      const ov = {};
+      (rows||[]).forEach(r => { if (!r.hidden && !r.archived) ov[r.id] = r; });
+      const merged = _PF_FIXED
+        .filter(s => !hiddenIds.has(s.id))
+        .map(s => {
+          const o = ov[s.id];
+          return { day: s.day, name: s.name,
+            timeStart: o?.time_start ?? s.start,
+            timeEnd:   o?.time_end   ?? s.end,
+            hidden: false, archived: false };
+        });
+      _renderInfoHours(merged.length ? merged : _PF_FIXED.map(s => ({...s, timeStart: s.start, hidden: false, archived: false})));
+    } catch(_) {
+      // Network error – show fixed fallback
+      _renderInfoHours(_PF_FIXED.map(s => ({...s, timeStart: s.start, hidden: false, archived: false})));
+    }
+  }
+
   const isHome = !location.pathname.match(/\/(contact|gallery|register|faq)(\.html)?$/);
 
   const sh   = isHome ? '#system'   : '/#system';
@@ -175,12 +272,8 @@
         <div class="info-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
         <div style="flex:1">
           <div class="info-label">Training Hours</div>
-          <div class="info-hours-grid">
-            <div class="info-hour-row"><span class="info-hour-day">Mon</span><span class="info-hour-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></div>
-            <div class="info-hour-row"><span class="info-hour-day">Tue</span><span class="info-hour-pills"><span class="foot-pill fp-strike">Striking</span></span></div>
-            <div class="info-hour-row"><span class="info-hour-day">Wed</span><span class="info-hour-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></div>
-            <div class="info-hour-row"><span class="info-hour-day">Thu</span><span class="info-hour-pills"><span class="foot-pill fp-kids">Kids</span><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-sc">S&amp;C</span></span></div>
-            <div class="info-hour-row"><span class="info-hour-day">Fri</span><span class="info-hour-pills"><span class="foot-pill fp-sparring">Sparring</span></span></div>
+          <div class="info-hours-grid" id="infoHoursGrid">
+            <div class="info-hour-row" style="opacity:.4;font-size:12px;color:var(--ink-dim)">Loading schedule…</div>
           </div>
         </div>
       </div>
@@ -272,6 +365,7 @@
     window.openInfoPopup = function () {
       const popup = document.getElementById('infoPopup');
       if (popup) { popup.classList.add('open'); window.lockScroll(); }
+      _loadInfoHours(); // fetch & render live schedule data
     };
 
     window.closeInfoPopup = function () {
