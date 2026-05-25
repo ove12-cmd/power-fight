@@ -1164,51 +1164,20 @@
   .insta-grid{
     display:grid;grid-template-columns:repeat(3,1fr);gap:4px;align-items:start;
   }
-  /* ── Image-preview card (used when admin has set an img URL) ── */
-  .insta-card{
-    aspect-ratio:1/1;
-    background:var(--bg-2);border:1px solid var(--line-2);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:14px;text-decoration:none;color:var(--ink-dim);
-    transition:border-color .3s,color .3s;
-    position:relative;overflow:hidden;
-  }
-  .insta-card::before{
-    content:'';position:absolute;inset:0;
-    background:radial-gradient(circle at 50% 110%,rgba(199,255,63,.06),transparent 65%);
-    pointer-events:none;z-index:0;
-  }
-  .insta-card:hover{border-color:rgba(199,255,63,.4);color:var(--lime)}
-  .insta-card:hover .insta-card-img{transform:scale(1.05)}
-  .insta-card-img{
-    position:absolute;inset:0;
-    background-size:cover;background-position:center;
-    transition:transform .55s cubic-bezier(.22,1,.36,1);
-  }
-  .insta-card-overlay{
-    position:absolute;inset:0;
-    background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.05) 100%);
-    transition:opacity .3s;
-  }
-  .insta-card:hover .insta-card-overlay{opacity:.85}
-  .insta-card svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:.55;position:relative;z-index:1}
-  .insta-card-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;position:relative;z-index:1}
-  .insta-card-arrow{
-    font-size:15px;position:absolute;bottom:14px;right:16px;z-index:1;
-    opacity:0;transition:opacity .2s,transform .25s;transform:translate(-5px,5px);
-  }
-  .insta-card:hover .insta-card-arrow{opacity:.9;transform:translate(0,0)}
-  /* ── Instagram blockquote embed wrapper ── */
-  .insta-embed-wrap{width:100%;overflow:hidden;background:var(--bg-2);border:1px solid var(--line-2)}
+  /* ── Instagram embed wrapper ── */
+  .insta-embed-wrap{width:100%;overflow:hidden}
   .insta-embed-wrap .instagram-media{
     margin:0!important;max-width:100%!important;min-width:0!important;
-    width:calc(100% - 2px)!important;border-radius:0!important;
-    border:none!important;box-shadow:none!important;
+    width:100%!important;border-radius:0!important;
+    border:1px solid var(--line-2)!important;box-shadow:none!important;
+  }
+  @media(max-width:1020px){
+    .insta-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media(max-width:600px){
     .insta-inner{padding:0 20px}
     .insta-feed{padding:60px 0}
-    .insta-grid{grid-template-columns:repeat(2,1fr);gap:3px}
+    .insta-grid{grid-template-columns:1fr}
   }
 
   /* ── Schedule "add to calendar" button ───────────────────────────── */
@@ -2834,53 +2803,28 @@
       const section = document.getElementById('instaSection');
       const grid    = document.getElementById('instaGrid');
 
-      let needsEmbedJS = false;
-
       posts.forEach(p => {
-        const url = typeof p === 'string' ? p : p.url;
-        const img = typeof p === 'object' ? (p.img || '') : '';
-        const igIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>`;
-
-        if (img) {
-          /* ── Image-preview card (admin has uploaded a photo) ── */
-          const a = document.createElement('a');
-          a.className = 'insta-card';
-          a.href = url;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          a.setAttribute('aria-label', 'View Instagram post');
-          a.innerHTML = `<div class="insta-card-img" style="background-image:url(${JSON.stringify(img)})"></div>
-            <div class="insta-card-overlay"></div>
-            ${igIcon}
-            <span class="insta-card-label">View post</span>
-            <span class="insta-card-arrow">↗</span>`;
-          grid.appendChild(a);
-        } else {
-          /* ── Instagram embed (no preview image — show the real post) ── */
-          const wrap = document.createElement('div');
-          wrap.className = 'insta-embed-wrap';
-          // Normalise URL: ensure it ends with / for embed.js
-          const postUrl = url.replace(/\/?$/, '/');
-          wrap.innerHTML = `<blockquote class="instagram-media"
-            data-instgrm-permalink="${postUrl}"
-            data-instgrm-version="14"
-            style="background:var(--bg-2);border:0;margin:0;max-width:100%;width:100%;min-width:0;padding:0;">
-          </blockquote>`;
-          grid.appendChild(wrap);
-          needsEmbedJS = true;
-        }
+        const url     = typeof p === 'string' ? p : p.url;
+        const postUrl = url.replace(/\/?$/, '/');   // ensure trailing slash
+        const wrap = document.createElement('div');
+        wrap.className = 'insta-embed-wrap';
+        wrap.innerHTML = `<blockquote class="instagram-media"
+          data-instgrm-captioned
+          data-instgrm-permalink="${postUrl}"
+          data-instgrm-version="14"
+          style="background:#FFF;border:0;margin:0;max-width:100%;width:100%;min-width:0;padding:0;">
+        </blockquote>`;
+        grid.appendChild(wrap);
       });
 
-      /* Load or trigger Instagram embed.js once, after all blockquotes are in the DOM */
-      if (needsEmbedJS) {
-        if (window.instgrm) {
-          window.instgrm.Embeds.process();
-        } else {
-          const s = document.createElement('script');
-          s.async = true;
-          s.src = 'https://www.instagram.com/embed.js';
-          document.head.appendChild(s);
-        }
+      /* Load embed.js once — it auto-processes all blockquotes on the page */
+      if (window.instgrm) {
+        window.instgrm.Embeds.process();
+      } else {
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.instagram.com/embed.js';
+        document.head.appendChild(s);
       }
 
       section.removeAttribute('hidden');
