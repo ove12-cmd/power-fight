@@ -709,13 +709,13 @@
   .testimonials{padding:100px 32px 0}
   .t-track-wrap{margin:0 -32px; overflow:hidden; background:var(--bg-2)}
   .t-track{display:flex; transition:transform .55s cubic-bezier(0.22,1,0.36,1)}
+  /* 1 card per view — content centered up to 720px via padding trick */
   .t-card{
-    flex:0 0 calc(100% / 3); min-width:0;
-    padding:52px 36px 44px; background:var(--bg-2);
+    flex:0 0 100%; min-width:0;
+    padding:52px max(32px, calc((100% - 720px) / 2)) 44px;
+    background:var(--bg-2);
     display:flex; flex-direction:column; gap:0;
-    border-right:1px solid var(--line-2);
   }
-  .t-card:last-child{border-right:none}
   .t-stars{color:#C7FF3F; font-size:20px; letter-spacing:2px; margin-bottom:14px; display:flex; align-items:center; gap:8px; line-height:1; flex:none}
   .t-rating{font-size:11px; font-weight:700; color:var(--ink-dim); letter-spacing:0.08em}
   .t-google-link{
@@ -750,7 +750,7 @@
   @keyframes tProgress{from{width:0%}to{width:100%}}
   @media(max-width:640px){
     .t-dot{width:28px}
-    .t-card{flex:0 0 100%; padding:40px 24px 36px; border-right:none}
+    .t-card{padding:40px 24px 36px}
   }
 
   /* ---------- INFO POPUP ---------- */
@@ -923,7 +923,7 @@
     .coaches-grid{grid-template-columns:repeat(2,1fr)}
     .principles{grid-template-columns:repeat(2,1fr)}
     .foot-top{grid-template-columns:1fr 1fr; gap:40px}
-    /* t-card: base already sets calc(100%/3); 640px block handles mobile override */
+    /* t-card: inherits flex:0 0 100% from base */
     .classes-grid{grid-template-columns:repeat(2,1fr)}
     .sched-grid{grid-template-columns:repeat(2,1fr)}
   }
@@ -955,7 +955,7 @@
     .foot-top{grid-template-columns:1fr; gap:32px}
     .foot-bottom{flex-direction:column; gap:16px; text-align:center}
     .foot-bottom .right{gap:20px}
-    /* t-card mobile: uses 100% from the 640px block above */
+    /* t-card: inherits 100% from base */
     .final-ctas{flex-direction:column; align-items:center}
     .final-ctas .btn{width:100%; justify-content:center; max-width:320px}
     .sched-modal-inner{width:95vw}
@@ -2026,8 +2026,8 @@
   let tPaused = false;
   let tCurrentPage = 0;
 
-  function tGetPerPage() { return window.innerWidth >= 641 ? 3 : 1; }
-  // 1 dot per slide; translate clamps so last slide never overflows into empty space
+  function tGetPerPage() { return 1; }
+  // 1 card per view → 1 dot per slide, N slides = N dots
   function tTotalPages() { return Math.max(1, tSlides.length); }
 
   function tBuildDots() {
@@ -2048,10 +2048,9 @@
   }
 
   function tApplyTranslate(posIdx) {
-    const n = tSlides.length, pp = tGetPerPage();
-    // Clamp so last slide is never followed by empty space
-    const clamped = Math.min(posIdx, Math.max(0, n - pp));
-    tTrack.style.transform = clamped > 0 ? `translateX(-${clamped / pp * 100}%)` : '';
+    const n = tSlides.length;
+    // Each card is 1/n of the track; advance by posIdx cards
+    tTrack.style.transform = n > 0 ? `translateX(-${posIdx / n * 100}%)` : '';
   }
 
   function tGoTo(pageIdx, manual) {
@@ -2111,17 +2110,7 @@
   tApplyTranslate(0);
   tTimer = setInterval(() => tGoTo(tCurrentPage + 1, false), 5000);
 
-  // Rebuild dots when viewport crosses the desktop/mobile breakpoint
-  let _tPrevPP = tGetPerPage();
-  window.addEventListener('resize', () => {
-    const pp = tGetPerPage();
-    if (pp !== _tPrevPP) {
-      _tPrevPP = pp;
-      tCurrentPage = 0;
-      tBuildDots();
-      tApplyTranslate(0);
-    }
-  });
+  // No breakpoint rebuild needed (pp is always 1)
 
   new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting && tPaused) tSetPaused(false);
