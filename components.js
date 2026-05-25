@@ -57,28 +57,24 @@
     }).join('');
   }
 
-  /* Load schedule: prefer window._pfSlots, fall back to Supabase REST */
+  /* ── Shared schedule data (one fetch, reused by popup + footer) ──── */
   const SB_URL = 'https://nzfqsgdzbainfijbhwag.supabase.co';
   const SB_KEY = 'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al';
-  let _infoHoursReady = false;
+  const _FIXED_SLOTS = _PF_FIXED.map(s => ({...s, timeStart: s.start, timeEnd: s.end, hidden: false, archived: false}));
+  let _slotsPromise = null;
 
-  async function _loadInfoHours() {
-    if (_infoHoursReady) return;
-    _infoHoursReady = true;
-
-    // Homepage already has merged live data ready
+  function _getScheduleSlots() {
+    if (_slotsPromise) return _slotsPromise;
+    // Homepage: _pfSlots already merged & ready — wrap in a resolved promise
     if (window._pfSlots && window._pfSlots.length) {
-      _renderInfoHours(window._pfSlots);
-      return;
+      return (_slotsPromise = Promise.resolve(window._pfSlots));
     }
-
-    // Other pages: fetch overrides from Supabase and merge with baseline
-    try {
-      const resp = await fetch(`${SB_URL}/rest/v1/schedule_overrides?select=*`, {
-        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
-      });
-      if (!resp.ok) throw new Error(resp.status);
-      const rows = await resp.json();
+    // Other pages: fetch overrides from Supabase, merge with baseline
+    _slotsPromise = fetch(`${SB_URL}/rest/v1/schedule_overrides?select=*`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+    })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(rows => {
       const hiddenIds = new Set((rows||[]).filter(r => r.hidden || r.archived).map(r => r.id));
       const ov = {};
       (rows||[]).forEach(r => { if (!r.hidden && !r.archived) ov[r.id] = r; });
@@ -91,11 +87,45 @@
             timeEnd:   o?.time_end   ?? s.end,
             hidden: false, archived: false };
         });
-      _renderInfoHours(merged.length ? merged : _PF_FIXED.map(s => ({...s, timeStart: s.start, hidden: false, archived: false})));
-    } catch(_) {
-      // Network error – show fixed fallback
-      _renderInfoHours(_PF_FIXED.map(s => ({...s, timeStart: s.start, hidden: false, archived: false})));
-    }
+      return merged.length ? merged : _FIXED_SLOTS;
+    })
+    .catch(() => _FIXED_SLOTS);
+    return _slotsPromise;
+  }
+
+  /* Render slots → Info popup hours grid */
+  async function _loadInfoHours() {
+    const slots = await _getScheduleSlots();
+    _renderInfoHours(slots);
+  }
+
+  /* Render slots → footer schedule list */
+  async function _loadFooterSchedule() {
+    const list = document.getElementById('footSchedList');
+    if (!list) return;
+    const slots = await _getScheduleSlots();
+    const active = slots.filter(s => !s.hidden && !s.archived);
+    const byDay = {};
+    active.forEach(s => { (byDay[s.day] = byDay[s.day] || []).push(s); });
+    const DAY_FULL = {1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Saturday',7:'Sunday'};
+    // Days that have sessions, plus always show Sat+Sun as closed if absent
+    const allDays = [...new Set([...Object.keys(byDay).map(Number), 6, 7])].sort((a,b)=>a-b);
+    list.innerHTML = allDays.map(d => {
+      const sessions = byDay[d];
+      if (!sessions) {
+        // Day with no sessions → Closed
+        return `<li><span class="foot-sched-row" style="opacity:0.4"><span>${DAY_FULL[d]||d}</span><span style="font-size:10px;letter-spacing:0.14em;color:var(--ink-mute)">Closed</span></span></li>`;
+      }
+      const seen = new Set();
+      const pills = sessions
+        .filter(s => { const k = s.name||''; if (seen.has(k)) return false; seen.add(k); return true; })
+        .map(s => {
+          const label = s.name || '';
+          const [bg, col] = _pillCol(label);
+          return `<span class="foot-pill" style="background:${bg};color:${col}">${label}</span>`;
+        }).join('');
+      return `<li><a href="${typeof sh !== 'undefined' ? sh : '/#system'}" class="foot-sched-row"><span>${DAY_FULL[d]||d}</span><span class="foot-pills">${pills}</span></a></li>`;
+    }).join('');
   }
 
   const isHome = !location.pathname.match(/\/(contact|gallery|register|faq)(\.html)?$/);
@@ -195,14 +225,8 @@
     </div>
     <div class="foot-col">
       <h5>Schedule</h5>
-      <ul style="gap:14px">
-        <li><a href="/#system" class="foot-sched-row"><span>Monday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></a></li>
-        <li><a href="/#system" class="foot-sched-row"><span>Tuesday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span></span></a></li>
-        <li><a href="/#system" class="foot-sched-row"><span>Wednesday</span><span class="foot-pills"><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-grapple">Grappling</span></span></a></li>
-        <li><a href="/#system" class="foot-sched-row"><span>Thursday</span><span class="foot-pills"><span class="foot-pill fp-kids">Kids</span><span class="foot-pill fp-strike">Striking</span><span class="foot-pill fp-sc">S&amp;C</span></span></a></li>
-        <li><a href="/#system" class="foot-sched-row"><span>Friday</span><span class="foot-pills"><span class="foot-pill fp-sparring">Sparring</span></span></a></li>
-        <li><span class="foot-sched-row" style="opacity:0.4"><span>Saturday</span><span style="font-size:10px;letter-spacing:0.14em;color:var(--ink-mute)">Closed</span></span></li>
-        <li><span class="foot-sched-row" style="opacity:0.4"><span>Sunday</span><span style="font-size:10px;letter-spacing:0.14em;color:var(--ink-mute)">Closed</span></span></li>
+      <ul id="footSchedList" style="gap:14px">
+        <li><span class="foot-sched-row" style="opacity:0.35;font-size:12px;color:var(--ink-mute)">Loading…</span></li>
       </ul>
     </div>
     <div class="foot-col">
@@ -301,6 +325,7 @@
     if (footRoot) {
       footRoot.insertAdjacentHTML('beforebegin', FOOTER_HTML + POPUP_HTML);
       footRoot.remove();
+      _loadFooterSchedule(); // populate schedule pills from live admin data
     }
 
     // Mark active nav link
