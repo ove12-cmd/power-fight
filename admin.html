@@ -416,8 +416,9 @@
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="sb-logo">
+    <div class="sb-logo" style="display:flex;align-items:center;gap:10px">
       <img src="logo2.png" alt="Power Fight">
+      <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:rgba(199,255,63,.14);color:var(--lime);font-weight:700;padding:2px 8px;border-radius:3px;border:1px solid rgba(199,255,63,.28);white-space:nowrap">Admin</span>
     </div>
 
     <div class="sb-label">Content</div>
@@ -827,8 +828,9 @@
                     <option value="Competition">Competition</option>
                     <option value="Kids Event">Kids Event</option>
                     <option value="Special Guest">Special Guest</option>
-                    <option value="Other">Other</option>
+                    <option value="Other">Other…</option>
                   </select>
+                  <input type="text" id="evTypeCustom" placeholder="Type custom tag…" style="display:none;margin-top:8px">
                 </div>
               </div>
               <div class="adm-field">
@@ -1928,6 +1930,13 @@
   // (editingEventId is declared at top of script)
 
   document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+  document.getElementById('evType').addEventListener('change', function() {
+    const customEl = document.getElementById('evTypeCustom');
+    const isOther = this.value === 'Other';
+    customEl.style.display = isOther ? '' : 'none';
+    if (!isOther) customEl.value = '';
+    if (isOther) customEl.focus();
+  });
   document.getElementById('cancelEventBtn').addEventListener('click', cancelEventEdit);
 
   document.getElementById('evImgFile').addEventListener('change', function() {
@@ -1963,7 +1972,9 @@
     const payload = {
       id:       editingEventId || uid(),
       title,
-      type:     document.getElementById('evType').value,
+      type:     document.getElementById('evType').value === 'Other'
+                  ? (document.getElementById('evTypeCustom').value.trim() || 'Other')
+                  : document.getElementById('evType').value,
       date,
       time:     document.getElementById('evTime').value,
       location: document.getElementById('evLocation').value.trim(),
@@ -1993,6 +2004,8 @@
     ['evTitle','evTime','evLocation','evDesc','evImg'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('evDate').value = '';
     document.getElementById('evType').value = 'Open Mat';
+    document.getElementById('evTypeCustom').style.display = 'none';
+    document.getElementById('evTypeCustom').value = '';
     document.getElementById('eventFormTitle').textContent = 'Add Event';
     document.getElementById('saveEventLabel').textContent = 'Add Event';
     document.getElementById('cancelEventBtn').style.display = 'none';
@@ -2007,7 +2020,16 @@
     if (!ev) return;
     editingEventId = id;
     document.getElementById('evTitle').value    = ev.title;
-    document.getElementById('evType').value     = ev.type;
+    const _knownEvTypes = ['Open Mat','Seminar','Competition','Kids Event','Special Guest'];
+    if (_knownEvTypes.includes(ev.type)) {
+      document.getElementById('evType').value = ev.type;
+      document.getElementById('evTypeCustom').style.display = 'none';
+      document.getElementById('evTypeCustom').value = '';
+    } else {
+      document.getElementById('evType').value = 'Other';
+      document.getElementById('evTypeCustom').style.display = '';
+      document.getElementById('evTypeCustom').value = ev.type || '';
+    }
     document.getElementById('evDate').value     = ev.date;
     document.getElementById('evTime').value     = ev.time || '';
     document.getElementById('evLocation').value = ev.location || '';
