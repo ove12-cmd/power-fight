@@ -1788,6 +1788,40 @@
   </button>
 </div>
 
+<!-- ── Discipline modal ──────────────────────────────────────────────── -->
+<div class="disc-modal-overlay" id="discModal" role="dialog" aria-modal="true" aria-labelledby="discModalTitle">
+  <div class="disc-modal">
+    <div class="disc-modal-head">
+      <div>
+        <span class="disc-modal-tag" id="discModalTag"></span>
+        <h2 class="disc-modal-title" id="discModalTitle"></h2>
+      </div>
+      <button class="disc-modal-close" id="discModalClose" aria-label="Close">
+        <svg viewBox="0 0 14 14"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
+      </button>
+    </div>
+    <div class="disc-modal-body">
+      <p class="disc-modal-desc" id="discModalDesc"></p>
+      <div class="disc-modal-meta-row">
+        <div class="disc-modal-meta-item">
+          <span class="disc-modal-meta-label">Frequency</span>
+          <span class="disc-modal-meta-val" id="discModalFreq"></span>
+        </div>
+        <div class="disc-modal-meta-item">
+          <span class="disc-modal-meta-label">Level</span>
+          <span class="disc-modal-meta-val" id="discModalLevel"></span>
+        </div>
+      </div>
+      <div class="disc-modal-sched-head">When we train</div>
+      <div id="discModalSlots"></div>
+    </div>
+    <div class="disc-modal-footer">
+      <a class="btn btn-primary" id="discModalJoin" href="/contact"><span>Book a session</span></a>
+      <button class="btn" id="discModalCloseBtn"><span>Close</span></button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="components.js"></script>
 <script>
@@ -2733,12 +2767,14 @@
       filter: s => s.hlClass === 'hl-kids' || s.name.toLowerCase().includes('kids') }
   };
 
-  // Modal elements come after </script> in DOM, so all lookups must be lazy
-  const _DAY_SHORT = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+  // Discipline modal — HTML is above the script so getElementById works immediately
+  const _DAY_SHORT   = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+  const _discOverlay = document.getElementById('discModal');
+  const _discClose   = document.getElementById('discModalClose');
+  const _discCloseBtn= document.getElementById('discModalCloseBtn');
 
   function _openDisc(key) {
     const info = DISC_INFO[key]; if (!info) return;
-    const ov = document.getElementById('discModal'); if (!ov) return;
     document.getElementById('discModalTag').textContent   = info.tag;
     document.getElementById('discModalTag').style.color   = info.color;
     document.getElementById('discModalTitle').textContent = info.title;
@@ -2756,26 +2792,15 @@
           <span class="disc-slot-badge">${s.level||''}</span>
         </div>`).join('')
       : '<p class="disc-no-slots">No dedicated session yet — contact us to arrange.</p>';
-    ov.classList.add('open');
+    _discOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
+  function _closeDisc() { _discOverlay.classList.remove('open'); document.body.style.overflow = ''; }
 
-  function _closeDisc() {
-    const ov = document.getElementById('discModal');
-    if (ov) ov.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  // Event delegation — works regardless of modal HTML position in document
-  document.addEventListener('click', e => {
-    const t = e.target;
-    if (t.id === 'discModalClose' || t.closest?.('#discModalClose') ||
-        t.id === 'discModalCloseBtn') _closeDisc();
-    if (t.id === 'discModal') _closeDisc();
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { const ov = document.getElementById('discModal'); if (ov?.classList.contains('open')) _closeDisc(); }
-  });
+  _discClose.addEventListener('click', _closeDisc);
+  _discCloseBtn.addEventListener('click', _closeDisc);
+  _discOverlay.addEventListener('click', e => { if (e.target === _discOverlay) _closeDisc(); });
+  document.addEventListener('keydown', e => { if (e.key==='Escape' && _discOverlay.classList.contains('open')) _closeDisc(); });
 
   document.querySelectorAll('.discipline-row[data-disc]').forEach(row => {
     row.querySelector('.disc-read-more')?.addEventListener('click', () => _openDisc(row.dataset.disc));
@@ -2827,39 +2852,5 @@
 
 
 </script>
-
-<!-- ── Discipline modal ──────────────────────────────────────────────── -->
-<div class="disc-modal-overlay" id="discModal" role="dialog" aria-modal="true" aria-labelledby="discModalTitle">
-  <div class="disc-modal">
-    <div class="disc-modal-head">
-      <div>
-        <span class="disc-modal-tag" id="discModalTag"></span>
-        <h2 class="disc-modal-title" id="discModalTitle"></h2>
-      </div>
-      <button class="disc-modal-close" id="discModalClose" aria-label="Close">
-        <svg viewBox="0 0 14 14"><path d="M1 1l12 12M13 1L1 13"/></svg>
-      </button>
-    </div>
-    <div class="disc-modal-body">
-      <p class="disc-modal-desc" id="discModalDesc"></p>
-      <div class="disc-modal-meta-row">
-        <div class="disc-modal-meta-item">
-          <span class="disc-modal-meta-label">Frequency</span>
-          <span class="disc-modal-meta-val" id="discModalFreq"></span>
-        </div>
-        <div class="disc-modal-meta-item">
-          <span class="disc-modal-meta-label">Level</span>
-          <span class="disc-modal-meta-val" id="discModalLevel"></span>
-        </div>
-      </div>
-      <div class="disc-modal-sched-head">When we train</div>
-      <div id="discModalSlots"></div>
-    </div>
-    <div class="disc-modal-footer">
-      <a class="btn btn-primary" id="discModalJoin" href="/contact"><span>Book a session</span></a>
-      <button class="btn" id="discModalCloseBtn"><span>Close</span></button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
