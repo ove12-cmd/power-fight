@@ -402,6 +402,15 @@
   .disc-join svg{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .3s cubic-bezier(0.22,1,0.36,1); flex-shrink:0}
   .discipline-row:hover .disc-join{color:var(--lime)}
   .discipline-row:hover .disc-join svg{transform:translateX(4px)}
+  .disc-read-more{
+    font-size:9px; letter-spacing:0.18em; text-transform:uppercase; font-weight:700;
+    color:var(--ink-dim); background:none; border:1px solid var(--line-2);
+    padding:7px 15px; cursor:pointer; font-family:var(--sans); white-space:nowrap;
+    transition:color .2s,border-color .2s,background .2s;
+  }
+  .discipline-row:hover .disc-read-more,.disc-read-more:hover{
+    color:var(--lime); border-color:rgba(199,255,63,.35); background:rgba(199,255,63,.04);
+  }
   @media(max-width:900px){
     .discipline-row{gap:0 20px; padding:24px 24px}
     .disc-tag{display:none}
@@ -410,7 +419,76 @@
     .disciplines-list{grid-template-columns:1fr; background:none}
     .discipline-row{grid-template-columns:32px 1fr auto; gap:0 14px; padding:18px 0; background:transparent}
     .disc-desc{display:none}
-    .disc-join-label{display:none}
+    .disc-read-more{font-size:8px; padding:6px 10px}
+  }
+
+  /* ── Discipline modal ───────────────────────────────────────────────── */
+  .disc-modal-overlay{
+    position:fixed; inset:0; z-index:400;
+    background:rgba(4,5,5,.9); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    opacity:0; pointer-events:none;
+    transition:opacity .35s cubic-bezier(.22,1,.36,1);
+  }
+  .disc-modal-overlay.open{opacity:1; pointer-events:all}
+  .disc-modal{
+    background:var(--bg-2); border:1px solid var(--line-2);
+    width:100%; max-width:580px; max-height:88vh; overflow-y:auto;
+    transform:translateY(24px) scale(.97);
+    transition:transform .4s cubic-bezier(.22,1,.36,1);
+    scrollbar-width:none; position:relative;
+  }
+  .disc-modal::-webkit-scrollbar{display:none}
+  .disc-modal-overlay.open .disc-modal{transform:translateY(0) scale(1)}
+  .disc-modal-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    padding:28px 28px 20px; border-bottom:1px solid var(--line-2);
+    position:sticky; top:0; background:var(--bg-2); z-index:2;
+  }
+  .disc-modal-tag{
+    font-size:9px; letter-spacing:.2em; text-transform:uppercase; font-weight:700;
+    padding:3px 10px; border-radius:20px; border:1px solid currentColor;
+    background:color-mix(in srgb,currentColor 10%,transparent);
+    display:inline-block; margin-bottom:10px;
+  }
+  .disc-modal-title{
+    font-family:var(--display); font-size:clamp(22px,3vw,34px); font-weight:600;
+    letter-spacing:-.025em; color:var(--ink); margin:0; line-height:1.05;
+  }
+  .disc-modal-close{
+    width:36px; height:36px; flex-shrink:0; display:grid; place-items:center;
+    border:1px solid var(--line-2); background:none; cursor:pointer;
+    transition:border-color .2s; border-radius:4px;
+  }
+  .disc-modal-close:hover{border-color:var(--lime)}
+  .disc-modal-close svg{width:12px; height:12px; stroke:var(--ink); fill:none; stroke-width:1.4; stroke-linecap:round}
+  .disc-modal-body{padding:24px 28px}
+  .disc-modal-desc{font-size:15px; line-height:1.7; color:var(--ink-dim); margin:0 0 24px}
+  .disc-modal-meta-row{display:flex; border:1px solid var(--line-2); margin-bottom:28px; overflow:hidden}
+  .disc-modal-meta-item{flex:1; padding:14px 18px; background:var(--bg); border-right:1px solid var(--line-2)}
+  .disc-modal-meta-item:last-child{border-right:none}
+  .disc-modal-meta-label{font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-dim); display:block; margin-bottom:5px}
+  .disc-modal-meta-val{font-size:14px; color:var(--ink); font-weight:500}
+  .disc-modal-sched-head{
+    font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--lime);
+    margin-bottom:14px; display:flex; align-items:center; gap:10px;
+  }
+  .disc-modal-sched-head::before{content:''; width:16px; height:1px; background:var(--lime)}
+  .disc-slot{
+    display:grid; grid-template-columns:44px 80px 1fr auto;
+    gap:0 14px; align-items:center;
+    padding:12px 0; border-bottom:1px solid var(--line-2);
+  }
+  .disc-slot:last-child{border-bottom:none}
+  .disc-slot-day{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-dim); font-weight:600}
+  .disc-slot-time{font-size:13px; font-weight:600; color:var(--ink); letter-spacing:.03em}
+  .disc-slot-name{font-size:13px; color:var(--ink)}
+  .disc-slot-badge{font-size:10px; color:var(--ink-dim); text-align:right; letter-spacing:.06em}
+  .disc-no-slots{font-size:14px; color:var(--ink-dim); font-style:italic; padding:6px 0; margin:0}
+  .disc-modal-footer{
+    padding:20px 28px 28px; border-top:1px solid var(--line-2);
+    display:flex; gap:12px; background:var(--bg-2);
+    position:sticky; bottom:0;
   }
 
   /* ---------- PHILOSOPHY ---------- */
@@ -1216,7 +1294,7 @@
     <p data-i18n="prog.desc">Ten disciplines. One team. Everything from MMA and grappling to kettlebells and kids — all under one roof.</p>
   </div>
   <div class="disciplines-list">
-    <a class="discipline-row reveal" href="contact.html?t=MMA">
+    <div class="discipline-row reveal" data-disc="mma">
       <span class="disc-num">01</span>
       <div class="disc-body">
         <span class="disc-name">Mixed Martial Arts</span>
@@ -1224,10 +1302,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF4D6D">MMA</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Grappling">
+    </div>
+    <div class="discipline-row reveal" data-disc="grappling">
       <span class="disc-num">02</span>
       <div class="disc-body">
         <span class="disc-name">Grappling</span>
@@ -1235,10 +1313,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#5BE0FF">Grappling</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Striking">
+    </div>
+    <div class="discipline-row reveal" data-disc="striking">
       <span class="disc-num">03</span>
       <div class="disc-body">
         <span class="disc-name">Striking</span>
@@ -1246,10 +1324,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:var(--lime)">Striking</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Wrestling">
+    </div>
+    <div class="discipline-row reveal" data-disc="wrestling">
       <span class="disc-num">04</span>
       <div class="disc-body">
         <span class="disc-name">Wrestling</span>
@@ -1257,10 +1335,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FACC15">Wrestling</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Les+Mills+Bodycombat">
+    </div>
+    <div class="discipline-row reveal" data-disc="bodycombat">
       <span class="disc-num">05</span>
       <div class="disc-body">
         <span class="disc-name">Les Mills Bodycombat</span>
@@ -1268,10 +1346,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF8C42">Fitness</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Strength+and+Conditioning">
+    </div>
+    <div class="discipline-row reveal" data-disc="sc">
       <span class="disc-num">06</span>
       <div class="disc-body">
         <span class="disc-name">Strength &amp; Conditioning</span>
@@ -1279,10 +1357,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#A78BFA">S&amp;C</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Performance+Training">
+    </div>
+    <div class="discipline-row reveal" data-disc="performance">
       <span class="disc-num">07</span>
       <div class="disc-body">
         <span class="disc-name">Performance Training</span>
@@ -1290,10 +1368,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF4D6D">Pro</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Personal+Training">
+    </div>
+    <div class="discipline-row reveal" data-disc="personal">
       <span class="disc-num">08</span>
       <div class="disc-body">
         <span class="disc-name">Personal Training</span>
@@ -1301,10 +1379,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#5BE0FF">Personal</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Kettlebell+Training">
+    </div>
+    <div class="discipline-row reveal" data-disc="kettlebell">
       <span class="disc-num">09</span>
       <div class="disc-body">
         <span class="disc-name">Kettlebell Training</span>
@@ -1312,10 +1390,10 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FACC15">Fitness</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
-    <a class="discipline-row reveal" href="contact.html?t=Kids+Training">
+    </div>
+    <div class="discipline-row reveal" data-disc="kids">
       <span class="disc-num">10</span>
       <div class="disc-body">
         <span class="disc-name">Kids Training</span>
@@ -1323,9 +1401,9 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF8C42">Kids</span>
-        <span class="disc-join"><span class="disc-join-label">Join</span><svg viewBox="0 0 14 14"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span>
+        <button class="disc-read-more">Read more</button>
       </div>
-    </a>
+    </div>
   </div>
 </section>
 
@@ -2603,6 +2681,80 @@
     } catch(e) { console.warn('Feedback load:', e); }
   })();
 
+  // ── Discipline modal ─────────────────────────────────────────────────
+  const DISC_INFO = {
+    mma:         { title:'Mixed Martial Arts',       color:'#FF4D6D', tag:'MMA',       freq:'3× per week',   level:'All Levels',
+      desc:'Mixed Martial Arts is the ultimate test of a complete fighter. At Power Fight we train all ranges — striking on the feet, clinch work, takedowns and the ground game. Sessions cover fight-specific conditioning, sparring rounds and tactical game-plan work. Whether you\'re a beginner stepping onto the mat for the first time or preparing for competition, our MMA classes build you into a complete martial artist.',
+      filter: s => s.name.toLowerCase().includes('mma') && !s.name.toLowerCase().includes('kids') },
+    grappling:   { title:'Grappling',                color:'#5BE0FF', tag:'Grappling', freq:'2× per week',   level:'All Levels',
+      desc:'Grappling at Power Fight covers the full ground game — BJJ fundamentals, submission wrestling and positional training. Classes focus on takedowns into dominant positions, escapes and submission chains. Drilling, positional sparring and live rolling are all part of each session. Suitable for beginners building a solid base as well as experienced grapplers looking to sharpen their game.',
+      filter: s => s.name.toLowerCase().includes('grappling') },
+    striking:    { title:'Striking',                 color:'#C7FF3F', tag:'Striking',  freq:'3× per week',   level:'All Levels',
+      desc:'Our striking classes cover the full stand-up toolkit — punches, kicks, elbows, knees and footwork. Coaches focus on technical precision, combination flow and ring intelligence. Pad work, bag work and partner drilling are rotated each session. Open to all levels, with clear progressions so beginners and experienced strikers train together safely and productively.',
+      filter: s => s.nameClass === 'scard-strike' || s.name.toLowerCase().includes('striking') },
+    wrestling:   { title:'Wrestling',                color:'#FACC15', tag:'Wrestling', freq:'2× per week',   level:'Intermediate',
+      desc:'Wrestling is the backbone of any complete MMA game. Sessions cover shot technique, chain wrestling, cage control, scrambles and top pressure. Strong wrestling makes your striking safer, your grappling deeper and your MMA game complete. Includes drilling, situational sparring and conditioning built around wrestling-specific movement patterns.',
+      filter: s => s.name.toLowerCase().includes('wrestling') },
+    bodycombat:  { title:'Les Mills Bodycombat',     color:'#FF8C42', tag:'Fitness',   freq:'Weekly',        level:'All Levels',
+      desc:'Les Mills Bodycombat is a high-energy, non-contact cardio workout inspired by martial arts. Combining movements from boxing, karate, taekwondo and muay thai, each session pushes your cardiovascular fitness and full-body coordination. No experience or equipment needed — just the drive to move. Perfect as a standalone class or cross-training alongside your martial arts sessions.',
+      filter: s => s.name.toLowerCase().includes('bodycombat') || s.name.toLowerCase().includes('les mills') },
+    sc:          { title:'Strength & Conditioning',  color:'#A78BFA', tag:'S&C',       freq:'2× per week',   level:'All Levels',
+      desc:'Sport-specific strength and conditioning designed for martial artists. Sessions target the energy systems and movement patterns used in MMA — explosive power, hip drive, core strength and anaerobic capacity. Programming cycles through strength blocks and conditioning phases. All levels welcome; scaling is built into every session.',
+      filter: s => s.nameClass === 'scard-sc' || s.name.toLowerCase().includes('s&c') || s.name.toLowerCase().includes('conditioning') },
+    performance: { title:'Performance Training',     color:'#FF4D6D', tag:'Pro',        freq:'By assessment', level:'Advanced',
+      desc:'Performance training is reserved for competitive fighters and serious amateurs preparing for bouts. Small-group sessions allow for individual attention, video analysis and competition-specific game planning. Load and intensity are periodised around fight camp timelines. Entry is by assessment — coaches ensure the group stays at the right level for every member.',
+      filter: s => s.nameClass === 'scard-sparring' || s.name.toLowerCase().includes('sparring') || s.name.toLowerCase().includes('performance') },
+    personal:    { title:'Personal Training',        color:'#5BE0FF', tag:'Personal',  freq:'Flexible',      level:'All Levels',
+      desc:'One-on-one sessions with one of our coaches, built entirely around your goals and timeline. Whether you want to accelerate your martial arts development, improve fitness or prepare for a specific event, personal training gives you direct coach attention with no distractions. Sessions are flexible and can combine technical work with conditioning.',
+      filter: s => s.name.toLowerCase().includes('personal') },
+    kettlebell:  { title:'Kettlebell Training',      color:'#FACC15', tag:'Fitness',   freq:'Weekly',        level:'All Levels',
+      desc:'Kettlebell training builds functional strength and grip that carries over directly to martial arts. Classes cover the foundational movements — swing, clean, press, snatch and Turkish get-up — progressing methodically so technique is solid before loads increase. The format combines skill practice with conditioning circuits, suitable for all levels.',
+      filter: s => s.name.toLowerCase().includes('kettlebell') },
+    kids:        { title:'Kids Training',            color:'#FF8C42', tag:'Kids',      freq:'Ages 5–14',     level:'Ages 5–14',
+      desc:'Martial arts training for children aged 5–14. Classes focus on discipline, respect, coordination and confidence alongside age-appropriate technique from MMA and wrestling. Our coaches create a safe, structured and fun environment where kids develop real skills. Training builds the physical literacy and mental resilience that benefits children in sport and everyday life.',
+      filter: s => s.hlClass === 'hl-kids' || s.name.toLowerCase().includes('kids') }
+  };
+
+  const _discOverlay  = document.getElementById('discModal');
+  const _discClose    = document.getElementById('discModalClose');
+  const _discCloseBtn = document.getElementById('discModalCloseBtn');
+  const DAY_SHORT     = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+
+  function _openDisc(key) {
+    const info = DISC_INFO[key]; if (!info) return;
+    document.getElementById('discModalTag').textContent   = info.tag;
+    document.getElementById('discModalTag').style.color   = info.color;
+    document.getElementById('discModalTitle').textContent = info.title;
+    document.getElementById('discModalDesc').textContent  = info.desc;
+    document.getElementById('discModalFreq').textContent  = info.freq;
+    document.getElementById('discModalLevel').textContent = info.level;
+    document.getElementById('discModalJoin').href = 'contact.html?t=' + encodeURIComponent(info.title);
+    const slots = (window._pfSlots || []).filter(info.filter)
+      .slice().sort((a,b) => a.day - b.day || (a.timeStart||'').localeCompare(b.timeStart||''));
+    const el = document.getElementById('discModalSlots');
+    el.innerHTML = slots.length
+      ? slots.map(s => `<div class="disc-slot">
+          <span class="disc-slot-day">${DAY_SHORT[s.day] || s.dayName || ''}</span>
+          <span class="disc-slot-time">${s.timeStart||''}${s.timeEnd ? ' – '+s.timeEnd : ''}</span>
+          <span class="disc-slot-name">${s.name||''}</span>
+          <span class="disc-slot-badge">${s.level||''}</span>
+        </div>`).join('')
+      : '<p class="disc-no-slots">No dedicated session yet — contact us to arrange.</p>';
+    _discOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function _closeDisc() { _discOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+  _discClose.addEventListener('click', _closeDisc);
+  _discCloseBtn.addEventListener('click', _closeDisc);
+  _discOverlay.addEventListener('click', e => { if (e.target === _discOverlay) _closeDisc(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && _discOverlay.classList.contains('open')) _closeDisc(); });
+
+  document.querySelectorAll('.discipline-row[data-disc]').forEach(row => {
+    row.querySelector('.disc-read-more')?.addEventListener('click', () => _openDisc(row.dataset.disc));
+  });
+
   // ── Instagram posts (managed from admin, fetched from Supabase) ───────
   (async function () {
     try {
@@ -2649,5 +2801,39 @@
 
 
 </script>
+
+<!-- ── Discipline modal ──────────────────────────────────────────────── -->
+<div class="disc-modal-overlay" id="discModal" role="dialog" aria-modal="true" aria-labelledby="discModalTitle">
+  <div class="disc-modal">
+    <div class="disc-modal-head">
+      <div>
+        <span class="disc-modal-tag" id="discModalTag"></span>
+        <h2 class="disc-modal-title" id="discModalTitle"></h2>
+      </div>
+      <button class="disc-modal-close" id="discModalClose" aria-label="Close">
+        <svg viewBox="0 0 14 14"><path d="M1 1l12 12M13 1L1 13"/></svg>
+      </button>
+    </div>
+    <div class="disc-modal-body">
+      <p class="disc-modal-desc" id="discModalDesc"></p>
+      <div class="disc-modal-meta-row">
+        <div class="disc-modal-meta-item">
+          <span class="disc-modal-meta-label">Frequency</span>
+          <span class="disc-modal-meta-val" id="discModalFreq"></span>
+        </div>
+        <div class="disc-modal-meta-item">
+          <span class="disc-modal-meta-label">Level</span>
+          <span class="disc-modal-meta-val" id="discModalLevel"></span>
+        </div>
+      </div>
+      <div class="disc-modal-sched-head">When we train</div>
+      <div id="discModalSlots"></div>
+    </div>
+    <div class="disc-modal-footer">
+      <a class="btn btn-primary" id="discModalJoin" href="/contact"><span>Book a session</span></a>
+      <button class="btn" id="discModalCloseBtn"><span>Close</span></button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
