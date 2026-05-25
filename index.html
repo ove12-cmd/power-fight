@@ -1693,7 +1693,41 @@
     {id:'5-19', day:5, dayName:'Friday',    name:'MMA Sparring',         level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-sparring'},
   ];
 
-  // ── Dynamic schedule render (respects admin day + time overrides) ─────
+  // ── Schedule render helper (called synchronously + after async fetch) ──
+  function _renderSchedSlots(slots) {
+    const grid = document.getElementById('schedGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    const byDay = {}, dayNames = {};
+    slots.forEach(s => { (byDay[s.day] = byDay[s.day] || []).push(s); dayNames[s.day] = s.dayName; });
+    Object.values(byDay).forEach(arr => arr.sort((a, b) => a.timeStart.localeCompare(b.timeStart)));
+    const revCls = ['d1','d2','d3'];
+    let ci = 0;
+    [1,2,3,4,5,6,7].filter(d => byDay[d]).forEach(d => {
+      const col = document.createElement('div');
+      col.className = `reveal ${revCls[ci++ % 3]}`;
+      col.innerHTML = `<div class="sched-col-head">${dayNames[d]}</div>`;
+      byDay[d].forEach(s => {
+        const card = document.createElement('div');
+        card.className = `sched-card${s.hlClass ? ' ' + s.hlClass : ''}`;
+        card.dataset.id   = s.id;
+        card.dataset.day  = String(s.day);
+        card.dataset.hour = String(parseInt(s.timeStart));
+        card.innerHTML = `
+          <div class="sched-card-time">${s.timeStart} – ${s.timeEnd}</div>
+          <div class="sched-card-name ${s.nameClass}">${s.name}</div>
+          ${s.level ? `<div class="sched-card-badge">${s.level}</div>` : ''}`;
+        col.appendChild(card);
+      });
+      grid.appendChild(col);
+    });
+  }
+
+  // Render defaults immediately so the schedule is never blank
+  window._pfSlots = FIXED_SCHEDULE_SITE.map(s => ({...s, timeStart: s.defStart, timeEnd: s.defEnd}));
+  _renderSchedSlots(window._pfSlots);
+
+  // Async: fetch DB overrides and re-render if anything changed
   (async function() {
     try {
       const ov = {};
@@ -1701,49 +1735,17 @@
       (schedData || []).forEach(o => { if (o.hidden || o.archived) return; ov[o.id] = { id: o.id, day: o.day, dayName: o.day_name, timeStart: o.time_start, timeEnd: o.time_end }; });
       const _hiddenIds = new Set((schedData || []).filter(o => o.hidden || o.archived).map(o => o.id));
 
-      // Build effective slots (apply overrides)
-      window._pfSlots = FIXED_SCHEDULE_SITE.filter(s => !_hiddenIds.has(s.id)).map(s => {
+      const overridden = FIXED_SCHEDULE_SITE.filter(s => !_hiddenIds.has(s.id)).map(s => {
         const o = ov[s.id];
         return o ? {...s, day: o.day ?? s.day, dayName: o.dayName ?? s.dayName,
                        timeStart: o.timeStart ?? s.defStart, timeEnd: o.timeEnd ?? s.defEnd}
                  : {...s, timeStart: s.defStart, timeEnd: s.defEnd};
       });
-      // Safety: if every class was removed via admin, fall back to full defaults
-      if (!window._pfSlots.length) {
-        window._pfSlots = FIXED_SCHEDULE_SITE.map(s => ({...s, timeStart: s.defStart, timeEnd: s.defEnd}));
-      }
-
-      // Group by effective day, sort by start time within each day
-      const byDay = {}, dayNames = {};
-      window._pfSlots.forEach(s => {
-        (byDay[s.day] = byDay[s.day] || []).push(s);
-        dayNames[s.day] = s.dayName;
-      });
-      Object.values(byDay).forEach(arr => arr.sort((a, b) => a.timeStart.localeCompare(b.timeStart)));
-
-      // Render columns
-      const grid = document.getElementById('schedGrid');
-      const revCls = ['d1','d2','d3'];
-      let ci = 0;
-      [1,2,3,4,5,6,7].filter(d => byDay[d]).forEach(d => {
-        const col = document.createElement('div');
-        col.className = `reveal ${revCls[ci++ % 3]}`;
-        col.innerHTML = `<div class="sched-col-head">${dayNames[d]}</div>`;
-        byDay[d].forEach(s => {
-          const card = document.createElement('div');
-          card.className = `sched-card${s.hlClass ? ' ' + s.hlClass : ''}`;
-          card.dataset.id   = s.id;
-          card.dataset.day  = String(s.day);
-          card.dataset.hour = String(parseInt(s.timeStart));
-          card.innerHTML = `
-            <div class="sched-card-time">${s.timeStart} – ${s.timeEnd}</div>
-            <div class="sched-card-name ${s.nameClass}">${s.name}</div>
-            ${s.level ? `<div class="sched-card-badge">${s.level}</div>` : ''}`;
-          col.appendChild(card);
-        });
-        grid.appendChild(col);
-      });
-    } catch(e) { console.warn('Schedule render:', e); }
+      // If all hidden in DB, keep showing defaults
+      window._pfSlots = overridden.length ? overridden
+                                          : FIXED_SCHEDULE_SITE.map(s => ({...s, timeStart: s.defStart, timeEnd: s.defEnd}));
+      _renderSchedSlots(window._pfSlots);
+    } catch(e) { console.warn('Schedule render (DB):', e); /* defaults remain */ }
   })();
 
   // ── Gallery skeleton shimmer ──────────────────────────────────────
