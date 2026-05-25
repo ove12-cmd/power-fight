@@ -402,6 +402,14 @@
   .disc-join svg{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .3s cubic-bezier(0.22,1,0.36,1); flex-shrink:0}
   .discipline-row:hover .disc-join{color:var(--lime)}
   .discipline-row:hover .disc-join svg{transform:translateX(4px)}
+  .disc-join-btn{
+    font-size:9px; letter-spacing:0.18em; text-transform:uppercase; font-weight:700;
+    color:#080808; background:var(--lime); border:none;
+    padding:7px 15px; cursor:pointer; font-family:var(--sans); white-space:nowrap;
+    text-decoration:none; display:inline-flex; align-items:center;
+    transition:background .2s,box-shadow .2s;
+  }
+  .disc-join-btn:hover{background:#d8ff5a; box-shadow:0 0 18px rgba(199,255,63,.3)}
   .disc-read-more{
     font-size:9px; letter-spacing:0.18em; text-transform:uppercase; font-weight:700;
     color:var(--ink-dim); background:none; border:1px solid var(--line-2);
@@ -1302,6 +1310,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF4D6D">MMA</span>
+        <a class="disc-join-btn" href="contact.html?t=Mixed%20Martial%20Arts">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1313,6 +1322,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#5BE0FF">Grappling</span>
+        <a class="disc-join-btn" href="contact.html?t=Grappling">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1324,6 +1334,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:var(--lime)">Striking</span>
+        <a class="disc-join-btn" href="contact.html?t=Striking">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1335,6 +1346,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FACC15">Wrestling</span>
+        <a class="disc-join-btn" href="contact.html?t=Wrestling">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1346,6 +1358,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF8C42">Fitness</span>
+        <a class="disc-join-btn" href="contact.html?t=Les%20Mills%20Bodycombat">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1357,6 +1370,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#A78BFA">S&amp;C</span>
+        <a class="disc-join-btn" href="contact.html?t=Strength%20%26%20Conditioning">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1368,6 +1382,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF4D6D">Pro</span>
+        <a class="disc-join-btn" href="contact.html?t=Performance%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1379,6 +1394,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#5BE0FF">Personal</span>
+        <a class="disc-join-btn" href="contact.html?t=Personal%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1390,6 +1406,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FACC15">Fitness</span>
+        <a class="disc-join-btn" href="contact.html?t=Kettlebell%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -1401,6 +1418,7 @@
       </div>
       <div class="disc-right">
         <span class="disc-tag" style="color:#FF8C42">Kids</span>
+        <a class="disc-join-btn" href="contact.html?t=Kids%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
     </div>
@@ -2715,13 +2733,12 @@
       filter: s => s.hlClass === 'hl-kids' || s.name.toLowerCase().includes('kids') }
   };
 
-  const _discOverlay  = document.getElementById('discModal');
-  const _discClose    = document.getElementById('discModalClose');
-  const _discCloseBtn = document.getElementById('discModalCloseBtn');
-  const DAY_SHORT     = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+  // Modal elements come after </script> in DOM, so all lookups must be lazy
+  const _DAY_SHORT = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
 
   function _openDisc(key) {
     const info = DISC_INFO[key]; if (!info) return;
+    const ov = document.getElementById('discModal'); if (!ov) return;
     document.getElementById('discModalTag').textContent   = info.tag;
     document.getElementById('discModalTag').style.color   = info.color;
     document.getElementById('discModalTitle').textContent = info.title;
@@ -2731,25 +2748,34 @@
     document.getElementById('discModalJoin').href = 'contact.html?t=' + encodeURIComponent(info.title);
     const slots = (window._pfSlots || []).filter(info.filter)
       .slice().sort((a,b) => a.day - b.day || (a.timeStart||'').localeCompare(b.timeStart||''));
-    const el = document.getElementById('discModalSlots');
-    el.innerHTML = slots.length
+    document.getElementById('discModalSlots').innerHTML = slots.length
       ? slots.map(s => `<div class="disc-slot">
-          <span class="disc-slot-day">${DAY_SHORT[s.day] || s.dayName || ''}</span>
+          <span class="disc-slot-day">${_DAY_SHORT[s.day] || s.dayName || ''}</span>
           <span class="disc-slot-time">${s.timeStart||''}${s.timeEnd ? ' – '+s.timeEnd : ''}</span>
           <span class="disc-slot-name">${s.name||''}</span>
           <span class="disc-slot-badge">${s.level||''}</span>
         </div>`).join('')
       : '<p class="disc-no-slots">No dedicated session yet — contact us to arrange.</p>';
-    _discOverlay.classList.add('open');
+    ov.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
-  function _closeDisc() { _discOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+  function _closeDisc() {
+    const ov = document.getElementById('discModal');
+    if (ov) ov.classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
-  _discClose.addEventListener('click', _closeDisc);
-  _discCloseBtn.addEventListener('click', _closeDisc);
-  _discOverlay.addEventListener('click', e => { if (e.target === _discOverlay) _closeDisc(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && _discOverlay.classList.contains('open')) _closeDisc(); });
+  // Event delegation — works regardless of modal HTML position in document
+  document.addEventListener('click', e => {
+    const t = e.target;
+    if (t.id === 'discModalClose' || t.closest?.('#discModalClose') ||
+        t.id === 'discModalCloseBtn') _closeDisc();
+    if (t.id === 'discModal') _closeDisc();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { const ov = document.getElementById('discModal'); if (ov?.classList.contains('open')) _closeDisc(); }
+  });
 
   document.querySelectorAll('.discipline-row[data-disc]').forEach(row => {
     row.querySelector('.disc-read-more')?.addEventListener('click', () => _openDisc(row.dataset.disc));

@@ -332,12 +332,16 @@
       <div class="form-group">
         <label class="form-label">I'm interested in</label>
         <div class="interest-pills" id="interestPills">
-          <span class="interest-pill" data-val="MMA Striking">MMA Striking</span>
+          <span class="interest-pill" data-val="Mixed Martial Arts">Mixed Martial Arts</span>
           <span class="interest-pill" data-val="Grappling">Grappling</span>
-          <span class="interest-pill" data-val="MMA">MMA</span>
-          <span class="interest-pill" data-val="Kids MMA">Kids MMA</span>
+          <span class="interest-pill" data-val="Striking">Striking</span>
+          <span class="interest-pill" data-val="Wrestling">Wrestling</span>
           <span class="interest-pill" data-val="Les Mills Bodycombat">Les Mills Bodycombat</span>
-          <span class="interest-pill" data-val="Professional">Professional</span>
+          <span class="interest-pill" data-val="Strength &amp; Conditioning">Strength &amp; Conditioning</span>
+          <span class="interest-pill" data-val="Performance Training">Performance Training</span>
+          <span class="interest-pill" data-val="Personal Training">Personal Training</span>
+          <span class="interest-pill" data-val="Kettlebell Training">Kettlebell Training</span>
+          <span class="interest-pill" data-val="Kids Training">Kids Training</span>
           <span class="interest-pill" data-val="Free Trial">Free Trial</span>
         </div>
         <input type="hidden" name="interest" id="interestInput">
@@ -455,12 +459,24 @@
   if (urlT) {
     // Map register-style training names to contact pill data-val values
     const tMap = {
-      'MMA Grappling': 'Grappling',
-      'MMA Striking': 'MMA Striking',
-      'Kids MMA': 'Kids MMA',
-      'Les Mills Bodycombat': 'Les Mills Bodycombat',
-      'Professional Trainings': 'Professional',
-      'MMA': 'MMA',
+      // current discipline names
+      'Mixed Martial Arts':      'Mixed Martial Arts',
+      'Grappling':               'Grappling',
+      'Striking':                'Striking',
+      'Wrestling':               'Wrestling',
+      'Les Mills Bodycombat':    'Les Mills Bodycombat',
+      'Strength & Conditioning': 'Strength & Conditioning',
+      'Performance Training':    'Performance Training',
+      'Personal Training':       'Personal Training',
+      'Kettlebell Training':     'Kettlebell Training',
+      'Kids Training':           'Kids Training',
+      // legacy / alternate spellings
+      'MMA':                     'Mixed Martial Arts',
+      'MMA Striking':            'Striking',
+      'MMA Grappling':           'Grappling',
+      'Kids MMA':                'Kids Training',
+      'Professional Trainings':  'Performance Training',
+      'Professional':            'Performance Training',
     };
     const val = tMap[urlT] || urlT;
     const match = Array.from(pills).find(p => p.dataset.val === val);
