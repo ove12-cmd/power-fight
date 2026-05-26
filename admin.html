@@ -762,6 +762,7 @@
                 <div class="adm-field">
                   <label>Category</label>
                   <select id="uploadCat"></select>
+                  <input type="text" id="uploadCatCustom" placeholder="Type new category…" style="display:none;margin-top:6px">
                 </div>
                 <div class="adm-field">
                   <label>Title <span style="color:var(--ink-mute)">(optional)</span></label>
@@ -793,6 +794,7 @@
                 <div class="adm-field">
                   <label>Category</label>
                   <select id="videoCat"></select>
+                  <input type="text" id="videoCatCustom" placeholder="Type new category…" style="display:none;margin-top:6px">
                 </div>
               </div>
               <div class="adm-form-row">
@@ -1744,9 +1746,27 @@
     this.value = '';
   });
 
+  async function _resolveCategory(selectId, customId) {
+    const sel = document.getElementById(selectId);
+    if (sel.value !== '__other__') return sel.value;
+    const raw = document.getElementById(customId).value.trim();
+    if (!raw) { toast('Enter a category name', true); return null; }
+    const slug = raw.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const cats = await sbLoadCategories();
+    if (!cats.includes(slug)) {
+      cats.push(slug);
+      await sbSaveCategories(cats);
+    }
+    document.getElementById(customId).value = '';
+    document.getElementById(customId).style.display = 'none';
+    sel.value = '__other__'; // will be corrected on next renderGallery
+    return slug;
+  }
+
   document.getElementById('confirmUploadBtn').addEventListener('click', async () => {
     if (!pendingFiles.length) return;
-    const cat   = document.getElementById('uploadCat').value;
+    const cat = await _resolveCategory('uploadCat', 'uploadCatCustom');
+    if (!cat) return;
     const date  = document.getElementById('uploadDate').value;
     const title = document.getElementById('uploadName').value.trim();
     const gallery = await sbLoadGallery();
@@ -1768,7 +1788,7 @@
   document.getElementById('addVideoBtn').addEventListener('click', async () => {
     const url = document.getElementById('videoUrl').value.trim();
     if (!url) { document.getElementById('videoUrl').focus(); return; }
-    const cat = document.getElementById('videoCat').value || 'videos';
+    const cat = await _resolveCategory('videoCat', 'videoCatCustom') || 'videos';
     const name = document.getElementById('videoName').value.trim();
     const date = document.getElementById('videoDate').value;
     const items = await sbLoadGallery();
@@ -1816,9 +1836,21 @@
       btn.addEventListener('click', () => { galleryFilter = btn.dataset.gf; galPage = 1; renderGallery(); });
     });
 
-    // Update category selects
-    const catOptHtml = cats.map(c => `<option value="${escHtml(c)}">${escHtml(catLabel(c))}</option>`).join('');
-    ['uploadCat','videoCat'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = catOptHtml; });
+    // Update category selects (with "Other…" at bottom)
+    const catOptHtml = cats.map(c => `<option value="${escHtml(c)}">${escHtml(catLabel(c))}</option>`).join('')
+      + '<option value="__other__">Other…</option>';
+    ['uploadCat','videoCat'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const prev = el.value;
+      el.innerHTML = catOptHtml;
+      if (prev && prev !== '__other__') el.value = prev;
+      const customId = id === 'uploadCat' ? 'uploadCatCustom' : 'videoCatCustom';
+      el.onchange = () => {
+        document.getElementById(customId).style.display = el.value === '__other__' ? '' : 'none';
+        if (el.value === '__other__') document.getElementById(customId).focus();
+      };
+    });
 
     // Render category chips
     const catListEl = document.getElementById('catList');
