@@ -183,16 +183,10 @@
   .gm-item:hover .gm-overlay{opacity:1}
   .gm-overlay svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
   .gm-item.hidden{display:none}
-  /* Video items sit as widescreen cards so 16:9 thumbnails aren't cropped */
-  .gm-item--video{aspect-ratio:16/9;grid-column:span 2}
-  @media(max-width:900px){
-    .gallery-main-grid{grid-template-columns:repeat(3,1fr)}
-    /* span 2 still works fine in 3-col (leaves 1-col gap filled by next photo) */
-  }
+  @media(max-width:900px){.gallery-main-grid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:640px){
     .gallery-main{padding:0 20px 40px}
     .gallery-main-grid{grid-template-columns:repeat(2,1fr)}
-    /* span 2 in 2-col = full width — fine for video */
   }
 
   /* LOAD MORE */
@@ -468,11 +462,12 @@
     el.dataset.cat = row.cat || 'trainings';
     if (row.date) el.dataset.date = row.date;
     if (isVid) {
-      el.classList.add('gm-item--video');
       el.dataset.video = row.src;
       const ytId = getYouTubeId(row.src);
       const mediaSrc = ytId
-        ? `<img src="https://img.youtube.com/vi/${ytId}/maxresdefault.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`
+        ? `<img src="https://img.youtube.com/vi/${ytId}/maxresdefault.jpg" alt=""
+               onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${ytId}/hqdefault.jpg'"
+               style="width:100%;height:100%;object-fit:cover;display:block">`
         : `<video src="${row.src}" preload="metadata" muted playsinline></video>`;
       el.innerHTML = mediaSrc
         + `<div class="gm-play-badge"><div class="gm-play-circle"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z" fill="#e8e8e4"/></svg></div></div>`;
