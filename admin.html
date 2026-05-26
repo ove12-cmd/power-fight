@@ -1060,8 +1060,13 @@
   }
   async function sbLoadFeedback() {
     if (_cache.feedback) return _cache.feedback;
-    const { data } = await _sb.from('feedback').select('*').order('created_at');
-    return (_cache.feedback = data || []);
+    const raw = await sbGetSetting('pf_reviews_v1', '[]');
+    try { _cache.feedback = JSON.parse(raw); } catch { _cache.feedback = []; }
+    return _cache.feedback;
+  }
+  async function sbSaveReviews(arr) {
+    _cache.feedback = arr;
+    await sbSetSetting('pf_reviews_v1', JSON.stringify(arr));
   }
   async function sbGetSetting(key, def = '') {
     const { data } = await _sb.from('settings').select('value').eq('key', key).maybeSingle();
@@ -2033,24 +2038,26 @@ Reset button restores removed classes.`)) return;
   }
 
   window.approveReview = async id => {
-    if (_cache.feedback) { const e = _cache.feedback.find(x => x.id === id); if (e) e.approved = true; }
-    renderTestimonials(_cache.feedback || undefined);
-    _sb.from('feedback').update({ approved: true }).eq('id', id).catch(() => { delete _cache.feedback; renderTestimonials(); });
+    const all = await sbLoadFeedback();
+    const e = all.find(x => x.id === id); if (e) e.approved = true;
+    await sbSaveReviews(all);
+    renderTestimonials(all);
     toast('Review published on site ✓');
   };
 
   window.unapproveReview = async id => {
-    if (_cache.feedback) { const e = _cache.feedback.find(x => x.id === id); if (e) e.approved = false; }
-    renderTestimonials(_cache.feedback || undefined);
-    _sb.from('feedback').update({ approved: false }).eq('id', id).catch(() => { delete _cache.feedback; renderTestimonials(); });
+    const all = await sbLoadFeedback();
+    const e = all.find(x => x.id === id); if (e) e.approved = false;
+    await sbSaveReviews(all);
+    renderTestimonials(all);
     toast('Review unpublished');
   };
 
   window.deleteReview = async function(id) {
     if (!confirm('Delete this review permanently?')) return;
-    if (_cache.feedback) _cache.feedback = _cache.feedback.filter(x => x.id !== id);
-    renderTestimonials(_cache.feedback || undefined);
-    _sb.from('feedback').delete().eq('id', id).catch(() => { delete _cache.feedback; renderTestimonials(); });
+    const all = (await sbLoadFeedback()).filter(x => x.id !== id);
+    await sbSaveReviews(all);
+    renderTestimonials(all);
     toast('Deleted');
   };
 
@@ -2059,18 +2066,16 @@ Reset button restores removed classes.`)) return;
     const text = document.getElementById('rvText').value.trim();
     if (!name || !text) { toast('Name and review text required', true); return; }
     const entry = {
+      id:         uid(),
       name,
-      training:   document.getElementById('rvTraining').value,
-      rating:     parseInt(document.getElementById('rvRating').value),
+      training:   document.getElementById('rvTraining').value.trim(),
+      rating:     parseInt(document.getElementById('rvRating').value) || 5,
       text,
       approved:   true,
       created_at: new Date().toISOString(),
     };
-    const { data: inserted, error } = await _sb.from('feedback').insert(entry).select().maybeSingle();
-    if (error) { toast('Save failed: ' + error.message, true); return; }
-    const saved = inserted || entry;
-    const all = _cache.feedback ? [..._cache.feedback, saved] : await sbLoadFeedback();
-    _cache.feedback = all;
+    const all = [...(await sbLoadFeedback()), entry];
+    await sbSaveReviews(all);
     renderTestimonials(all);
     document.getElementById('rvName').value = '';
     document.getElementById('rvText').value = '';

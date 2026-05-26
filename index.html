@@ -2720,12 +2720,13 @@
     tApplyTranslate(tCurrentPage);
   }
 
-  // Only show admin-approved testimonials (fetched from Supabase)
+  // Only show admin-approved testimonials (stored in settings as JSON)
   (async function() {
     try {
-      const { data } = await _sb.from('feedback').select('*').eq('approved', true).order('created_at');
-      (data || []).forEach(addToTestimonials);
-    } catch(e) { console.warn('Feedback load:', e); }
+      const { data } = await _sb.from('settings').select('value').eq('key', 'pf_reviews_v1').maybeSingle();
+      const reviews = JSON.parse(data?.value || '[]');
+      reviews.filter(r => r.approved).forEach(addToTestimonials);
+    } catch(e) { console.warn('Reviews load:', e); }
   })();
 
   // ── Discipline modal ─────────────────────────────────────────────────
