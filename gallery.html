@@ -222,6 +222,12 @@
 
   /* SKELETON SHIMMER */
   @keyframes galSkel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .gf-skel{
+    background:linear-gradient(90deg,var(--bg-2) 25%,rgba(255,255,255,0.05) 50%,var(--bg-2) 75%);
+    background-size:200% 100%;
+    animation:galSkel 1.4s ease-in-out infinite;
+  }
+  .gf-skel img{opacity:0}
   .gm-skel{
     background:linear-gradient(90deg,var(--bg-2) 25%,rgba(255,255,255,0.05) 50%,var(--bg-2) 75%);
     background-size:200% 100%;
@@ -368,16 +374,16 @@
 <!-- FEATURED -->
 <div class="gallery-featured">
   <div class="gallery-featured-grid">
-    <div class="gf-item gf-main" data-img="gallery%20imgs/featured/6628d05ba51bdb825763c22e_Messenger_creation_6AA40052-892E-45B1-A215-4E0E228CE9ED_2-p-2600.webp">
-      <img src="gallery%20imgs/featured/6628d05ba51bdb825763c22e_Messenger_creation_6AA40052-892E-45B1-A215-4E0E228CE9ED_2-p-2600.webp" alt="Training">
+    <div class="gf-item gf-main gf-skel" data-img="" data-fallback="gallery%20imgs/featured/6628d05ba51bdb825763c22e_Messenger_creation_6AA40052-892E-45B1-A215-4E0E228CE9ED_2-p-2600.webp">
+      <img src="" alt="Training">
       <div class="gf-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
-    <div class="gf-item" data-img="gallery%20imgs/featured/6628d05ba89169d95e451ac8_Messenger_creation_056A52AF-9CBE-424E-85C6-F789710FD284_4-p-2600.webp">
-      <img src="gallery%20imgs/featured/6628d05ba89169d95e451ac8_Messenger_creation_056A52AF-9CBE-424E-85C6-F789710FD284_4-p-2600.webp" alt="Training">
+    <div class="gf-item gf-skel" data-img="" data-fallback="gallery%20imgs/featured/6628d05ba89169d95e451ac8_Messenger_creation_056A52AF-9CBE-424E-85C6-F789710FD284_4-p-2600.webp">
+      <img src="" alt="Training">
       <div class="gf-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
-    <div class="gf-item" data-img="gallery%20imgs/featured/6628d05b39f121b79617c525_Messenger_creation_0F1411AF-0939-42BD-844D-CFECD6BB59CC_3-p-2600.webp">
-      <img src="gallery%20imgs/featured/6628d05b39f121b79617c525_Messenger_creation_0F1411AF-0939-42BD-844D-CFECD6BB59CC_3-p-2600.webp" alt="Training">
+    <div class="gf-item gf-skel" data-img="" data-fallback="gallery%20imgs/featured/6628d05b39f121b79617c525_Messenger_creation_0F1411AF-0939-42BD-844D-CFECD6BB59CC_3-p-2600.webp">
+      <img src="" alt="Training">
       <div class="gf-item-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
   </div>
@@ -717,22 +723,22 @@
     }
   });
 
-  // Load featured images from Supabase settings
+  // Load featured images — Supabase first, fallback to hardcoded
   (async function() {
+    const featEls = Array.from(document.querySelectorAll('.gf-item'));
+    let urls = [];
     try {
       const { data } = await _sb.from('settings').select('value').eq('key','gallery_featured_images').maybeSingle();
-      if (!data) return;
-      let urls = [];
-      try { urls = JSON.parse(data.value || '[]'); } catch(_) { return; }
-      const items = document.querySelectorAll('.gf-item');
-      items.forEach((el, i) => {
-        const url = urls[i];
-        if (!url) return;
-        const img = el.querySelector('img');
-        if (img) { img.src = url; img.dataset.src = url; }
-        el.dataset.img = url;
-      });
-    } catch(e) { console.warn('Featured images load:', e); }
+      if (data) urls = JSON.parse(data.value || '[]');
+    } catch(_) {}
+
+    featEls.forEach((el, i) => {
+      const url = urls[i] || el.dataset.fallback || '';
+      const img = el.querySelector('img');
+      if (img && url) { img.src = url; }
+      if (url) el.dataset.img = url;
+      el.classList.remove('gf-skel');
+    });
   })();
 
   // ── Init: swap skeleton → real items from Supabase ───────────────
