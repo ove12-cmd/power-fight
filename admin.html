@@ -2059,25 +2059,25 @@ Reset button restores removed classes.`)) return;
     const text = document.getElementById('rvText').value.trim();
     if (!name || !text) { toast('Name and review text required', true); return; }
     const entry = {
-      id:         uid(),
       name,
       training:   document.getElementById('rvTraining').value,
       rating:     parseInt(document.getElementById('rvRating').value),
       text,
       approved:   true,
-      ts:         new Date().toISOString(),
       created_at: new Date().toISOString(),
     };
-    const all = _cache.feedback ? [..._cache.feedback] : await sbLoadFeedback();
-    all.push(entry);
+    const { data: inserted, error } = await _sb.from('feedback').insert(entry).select().maybeSingle();
+    if (error) { toast('Save failed: ' + error.message, true); return; }
+    const saved = inserted || entry;
+    const all = _cache.feedback ? [..._cache.feedback, saved] : await sbLoadFeedback();
     _cache.feedback = all;
     renderTestimonials(all);
-    _sb.from('feedback').insert(entry).catch(() => { delete _cache.feedback; renderTestimonials(); toast('Save failed', true); });
     document.getElementById('rvName').value = '';
     document.getElementById('rvText').value = '';
     document.getElementById('rvRating').value = '5';
+    document.getElementById('rvTraining').value = '';
     toast('Review added and published ✓');
-    document.getElementById('badgeTestimonials').textContent = all.length;
+    document.getElementById('badgeReviews').textContent = all.length;
   });
 
   // ═══════════════════════════════════════════════════════════════════
