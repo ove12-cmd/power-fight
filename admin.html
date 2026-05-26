@@ -542,21 +542,7 @@
                 <input type="url" id="heroVideoUrl" placeholder="https://… or https://youtu.be/…">
                 <span class="adm-field-hint">This video opens when visitors click "Watch Us Train" on the homepage</span>
               </div>
-              <div class="adm-field">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;color:var(--ink-mute);font-size:11px">
-                  <div style="flex:1;height:1px;background:var(--line-2)"></div>
-                  <span>or upload from device</span>
-                  <div style="flex:1;height:1px;background:var(--line-2)"></div>
-                </div>
-                <label class="btn-adm btn-ghost" style="cursor:pointer;text-align:center;display:block">
-                  Choose Video File
-                  <input type="file" id="heroVideoFile" accept="video/*" style="display:none">
-                </label>
-                <div id="heroVideoPreview" style="display:none;margin-top:8px">
-                  <video id="heroVideoPreviewEl" controls style="width:100%;max-height:220px;display:block;background:#000"></video>
-                  <button type="button" id="heroVideoClear" style="margin-top:6px;background:none;border:1px solid rgba(255,77,109,.3);color:var(--red);cursor:pointer;padding:4px 12px;font-size:11px">Remove file</button>
-                </div>
-              </div>
+
               <div style="display:flex;justify-content:flex-end">
                 <button class="btn-adm btn-lime" id="saveHeroVideoBtn">
                   <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1519,43 +1505,15 @@
 
   document.getElementById('saveHeroVideoBtn').addEventListener('click', async () => {
     const urlField = document.getElementById('heroVideoUrl');
-    // pendingHeroVideo wins over the URL field (file upload takes priority)
-    const val = _pendingHeroVideo || urlField.value.trim();
-    if (!val) { urlField.focus(); toast('Enter a video URL or choose a file', true); return; }
+    const val = urlField.value.trim();
+    if (!val) { urlField.focus(); toast('Enter a video URL', true); return; }
     await sbSetSetting('hero_video_url', val);
-    // clear form + file preview, then show in list
     urlField.value = '';
-    _pendingHeroVideo = null;
-    document.getElementById('heroVideoPreviewEl').src = '';
-    document.getElementById('heroVideoPreview').style.display = 'none';
-    document.getElementById('heroVideoFile').value = '';
     renderHeroVideoList(val);
     toast('Hero video saved ✓');
   });
 
-  let _pendingHeroVideo = null;
-  let _pendingAthPhoto  = null;
-
-  document.getElementById('heroVideoFile').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      _pendingHeroVideo = e.target.result;
-      document.getElementById('heroVideoPreviewEl').src = _pendingHeroVideo;
-      document.getElementById('heroVideoPreview').style.display = '';
-      document.getElementById('heroVideoUrl').value = '';
-    };
-    reader.readAsDataURL(file);
-    this.value = '';
-  });
-
-  document.getElementById('heroVideoClear').addEventListener('click', () => {
-    _pendingHeroVideo = null;
-    document.getElementById('heroVideoPreviewEl').src = '';
-    document.getElementById('heroVideoPreview').style.display = 'none';
-    document.getElementById('heroVideoFile').value = '';
-  });
+  let _pendingAthPhoto = null;
 
   // ── Athlete form handlers ─────────────────────────────────────────
   function _clearAthForm() {
