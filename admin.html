@@ -1822,7 +1822,6 @@
   }
 
   async function renderGallery(items, cats) {
-    selectedGalleryIds.clear();
     if (!items) items = await sbLoadGallery();
     if (!cats)  cats  = await sbLoadCategories();
 
@@ -1989,46 +1988,6 @@
     toast(affected > 0 ? `Category removed — ${affected} item${affected > 1 ? 's' : ''} moved to ${catLabel(fallback)}` : 'Category removed');
   };
 
-  // ── Gallery multi-select ───────────────────────────────────────────
-  const selectedGalleryIds = new Set();
-
-  function galUpdateSelBar() {
-    const allChk = [...document.querySelectorAll('.gi-chk')];
-    selectedGalleryIds.clear();
-    allChk.filter(c => c.checked).forEach(c => selectedGalleryIds.add(c.dataset.id));
-    const count = selectedGalleryIds.size;
-    const bar = document.getElementById('galSelBar');
-    bar.style.display = count > 0 ? 'flex' : 'none';
-    document.getElementById('galSelCount').textContent = `${count} selected`;
-    const selAll = document.getElementById('galSelAll');
-    selAll.indeterminate = count > 0 && count < allChk.length;
-    selAll.checked = allChk.length > 0 && count === allChk.length;
-    document.querySelectorAll('.adm-img-card').forEach(card => {
-      const chk = card.querySelector('.gi-chk');
-      card.classList.toggle('selected', !!(chk && chk.checked));
-    });
-  }
-
-  document.getElementById('galleryGrid').addEventListener('change', e => {
-    if (e.target.classList.contains('gi-chk')) galUpdateSelBar();
-  });
-
-  document.getElementById('galSelAll').addEventListener('change', function() {
-    document.querySelectorAll('.gi-chk').forEach(c => c.checked = this.checked);
-    galUpdateSelBar();
-  });
-
-  document.getElementById('galDelSelBtn').addEventListener('click', async () => {
-    if (!selectedGalleryIds.size) return;
-    const n = selectedGalleryIds.size;
-    if (!confirm(`Delete ${n} item${n > 1 ? 's' : ''}? This cannot be undone.`)) return;
-    const ids = new Set(selectedGalleryIds);
-    const newItems = (await sbLoadGallery()).filter(i => !ids.has(i.id));
-    _cache.gallery = newItems;
-    renderGallery(newItems);
-    sbSaveGallery(newItems).catch(() => { delete _cache.gallery; renderGallery(); });
-    toast(`${n} item${n > 1 ? 's' : ''} deleted`);
-  });
 
   // ═══════════════════════════════════════════════════════════════════
   //  SCHEDULE  (day + time editor — class names are fixed)
