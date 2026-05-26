@@ -202,6 +202,15 @@
   .gs-select:hover,.gs-select:focus{border-color:rgba(199,255,63,.35);color:var(--ink)}
   .gf-sort::after{content:"";position:absolute;right:10px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--ink-dim);pointer-events:none}
 
+  /* SKELETON SHIMMER */
+  @keyframes galSkel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .gm-skel{
+    background:linear-gradient(90deg,var(--bg-2) 25%,rgba(255,255,255,0.05) 50%,var(--bg-2) 75%);
+    background-size:200% 100%;
+    animation:galSkel 1.4s ease-in-out infinite;
+    pointer-events:none;
+  }
+
   /* DATE BADGE */
   .gm-date{position:absolute;bottom:0;left:0;right:0;padding:32px 10px 8px;background:linear-gradient(transparent,rgba(4,5,5,.82));font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(232,232,228,.55);opacity:0;transition:opacity .3s;pointer-events:none;text-align:right}
   .gm-item:hover .gm-date{opacity:1}
@@ -355,13 +364,8 @@
   </div>
 </div>
 
-<!-- FILTER BAR -->
+<!-- FILTER BAR — tabs injected by JS after Supabase loads -->
 <div class="gallery-filter">
-  <button class="gf-tab active" data-cat-filter="all">All</button>
-  <button class="gf-tab" data-cat-filter="trainings">Trainings</button>
-  <button class="gf-tab" data-cat-filter="events">Events</button>
-  <button class="gf-tab" data-cat-filter="special-guests">Special Guests</button>
-  <button class="gf-tab" data-cat-filter="videos">Videos</button>
   <div class="gf-sort">
     <select class="gs-select" id="sortSelect">
       <option value="newest">Newest First</option>
@@ -370,30 +374,24 @@
   </div>
 </div>
 
-<!-- MAIN GRID -->
+<!-- MAIN GRID — skeleton placeholders, replaced by JS on load -->
 <div class="gallery-main">
   <div class="gallery-main-grid" id="mainGrid">
-    <div class="gm-item" data-cat="trainings" data-date="2025-01-20" data-img="gallery%20imgs/featured/677e4e7a80a8303d03f18490_52322a2d-aad3-40e7-b153-cc4bfdd94c6e.jpg"><img src="gallery%20imgs/featured/677e4e7a80a8303d03f18490_52322a2d-aad3-40e7-b153-cc4bfdd94c6e.jpg" alt="Training"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="trainings" data-date="2025-01-20" data-img="gallery%20imgs/featured/677e4e7a80a8303d03f1848d_f9d85ec7-357d-4176-9b2c-ae3250ec4d0f.jpg"><img src="gallery%20imgs/featured/677e4e7a80a8303d03f1848d_f9d85ec7-357d-4176-9b2c-ae3250ec4d0f.jpg" alt="Training"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="videos" data-date="2025-01-08" data-video="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/677e436987f77cdae0184837_481378d6-235a-4224-9366-ced613034e7a.mp4"><video src="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/677e436987f77cdae0184837_481378d6-235a-4224-9366-ced613034e7a.mp4" preload="metadata" muted playsinline></video><div class="gm-play-badge"><div class="gm-play-circle"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></div></div></div>
-    <div class="gm-item" data-cat="trainings" data-date="2024-12-10" data-img="gallery%20imgs/featured/677e4e79e5fc6e2e2421aa3e_0b6224a7-5106-42a7-9471-48e35dcd7cc2.jpg"><img src="gallery%20imgs/featured/677e4e79e5fc6e2e2421aa3e_0b6224a7-5106-42a7-9471-48e35dcd7cc2.jpg" alt="Training"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="trainings" data-date="2024-12-10" data-img="gallery%20imgs/featured/677e4e79428806cd6bc4f768_b2bd311d-980c-44a1-8434-e0e01ed27ba0.jpg"><img src="gallery%20imgs/featured/677e4e79428806cd6bc4f768_b2bd311d-980c-44a1-8434-e0e01ed27ba0.jpg" alt="Training"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="trainings" data-date="2024-11-05" data-img="gallery%20imgs/featured/677e4e79334f5eae5fed01fb_84ea69ab-6d98-4d38-b418-67603822b821.jpg"><img src="gallery%20imgs/featured/677e4e79334f5eae5fed01fb_84ea69ab-6d98-4d38-b418-67603822b821.jpg" alt="Training"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="trainings" data-date="2024-09-14" data-img="grappling.png"><img src="grappling.png" alt="Grappling"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="videos" data-date="2024-08-05" data-video="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/66abca0cb7c841dff2b28cd7_2.mp4"><video src="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/66abca0cb7c841dff2b28cd7_2.mp4" preload="metadata" muted playsinline></video><div class="gm-play-badge"><div class="gm-play-circle"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></div></div></div>
-    <div class="gm-item" data-cat="videos" data-date="2024-08-02" data-video="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/66abca187e0c63cd1147ad0e_3.mp4"><video src="https://s3.amazonaws.com/webflow-prod-assets/66a8c3831e3c2b590c08a1ea/66abca187e0c63cd1147ad0e_3.mp4" preload="metadata" muted playsinline></video><div class="gm-play-badge"><div class="gm-play-circle"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></div></div></div>
-    <div class="gm-item" data-cat="events" data-date="2024-06-22" data-img="gallery%20imgs/featured/public.avif"><img src="gallery%20imgs/featured/public.avif" alt="Event"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="special-guests" data-date="2024-05-18" data-img="Rafael Cordeiro.avif"><img src="Rafael Cordeiro.avif" alt="Rafael Cordeiro"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="special-guests" data-date="2024-03-09" data-img="Shogun Rua.avif"><img src="Shogun Rua.avif" alt="Shogun Rua"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="special-guests" data-date="2023-11-25" data-img="Danilo Marques.avif"><img src="Danilo Marques.avif" alt="Danilo Marques"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
-    <div class="gm-item" data-cat="events" data-date="2023-10-07" data-img="gallery%20imgs/featured/6512b45cea060cc3956f1bbc_373457900_828442072111677_1641044789413669100_n.webp"><img src="gallery%20imgs/featured/6512b45cea060cc3956f1bbc_373457900_828442072111677_1641044789413669100_n.webp" alt="Event"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+    <div class="gm-item gm-skel"></div>
+    <div class="gm-item gm-skel"></div>
+    <div class="gm-item gm-skel"></div>
+    <div class="gm-item gm-skel"></div>
+    <div class="gm-item gm-skel"></div>
+    <div class="gm-item gm-skel"></div>
+    <div class="gm-item gm-skel"></div>
+    <div class="gm-item gm-skel"></div>
   </div>
 </div>
 
 <!-- LOAD MORE -->
-<div class="load-more-wrap" id="loadMoreWrap">
+<div class="load-more-wrap" id="loadMoreWrap" style="display:none">
   <div class="load-more-bar"><div class="load-more-bar-fill" id="loadBar"></div></div>
-  <div class="load-more-count" id="loadCount">Showing 8 of 16</div>
+  <div class="load-more-count" id="loadCount"></div>
   <a class="btn" href="#" id="loadMoreBtn"><span>Load More</span></a>
 </div>
 
@@ -626,34 +624,25 @@
     }
   });
 
-  // ── Init: load from Supabase, fallback to hardcoded HTML items ────
+  // ── Init: swap skeleton → real items from Supabase ───────────────
   (async function() {
-    // Collect hardcoded items already in HTML, add date badges
-    const hardcoded = Array.from(grid.querySelectorAll('.gm-item'));
-    hardcoded.forEach(item => {
-      if (item.dataset.date && !item.querySelector('.gm-date')) {
-        item.appendChild(makeDateBadge(item.dataset.date));
-      }
-    });
+    const skels = Array.from(grid.querySelectorAll('.gm-skel'));
 
-    // Try loading from Supabase
-    let usedSupabase = false;
     try {
       const { data, error } = await _sb.from('gallery_items').select('*').order('ord');
+      // Remove skeletons regardless of result
+      skels.forEach(el => el.remove());
       if (!error && data && data.length) {
-        // Replace hardcoded items with admin-managed content
-        hardcoded.forEach(el => el.remove());
         data.forEach(row => grid.appendChild(buildGmItem(row)));
-        usedSupabase = true;
       }
     } catch(e) {
       console.warn('Gallery load:', e);
+      skels.forEach(el => el.remove());
     }
 
-    // Collect all items (from Supabase or hardcoded fallback)
     allItems = Array.from(grid.querySelectorAll('.gm-item'));
 
-    // Attach lightbox click handlers
+    // Attach lightbox click handlers to dynamically built items
     allItems.forEach(el => {
       if (el.dataset.img || el.dataset.video) el.addEventListener('click', () => openLb(el));
     });
