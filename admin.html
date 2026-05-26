@@ -747,8 +747,65 @@
       </div>
       <div class="panel-body">
 
+        <!-- Featured Section Images -->
+        <div class="adm-card">
+          <div class="adm-card-head">
+            <div>
+              <span class="adm-card-title">Featured Section Images</span>
+              <span style="font-size:11px;color:var(--ink-mute);margin-left:10px">(3 images shown above the gallery grid)</span>
+            </div>
+          </div>
+          <div class="adm-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+
+              <div class="adm-field">
+                <label>Image 1 — Large (left)</label>
+                <label class="feat-slot" for="featFile1">
+                  <img id="featPrev1" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+                  <div id="featEmpty1" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
+                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
+                  </div>
+                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
+                  <input type="file" id="featFile1" accept="image/*" style="display:none">
+                </label>
+                <div id="featSpin1" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
+              </div>
+
+              <div class="adm-field">
+                <label>Image 2 — Top right</label>
+                <label class="feat-slot" for="featFile2">
+                  <img id="featPrev2" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+                  <div id="featEmpty2" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
+                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
+                  </div>
+                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
+                  <input type="file" id="featFile2" accept="image/*" style="display:none">
+                </label>
+                <div id="featSpin2" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
+              </div>
+
+              <div class="adm-field">
+                <label>Image 3 — Bottom right</label>
+                <label class="feat-slot" for="featFile3">
+                  <img id="featPrev3" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+                  <div id="featEmpty3" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
+                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
+                  </div>
+                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
+                  <input type="file" id="featFile3" accept="image/*" style="display:none">
+                </label>
+                <div id="featSpin3" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
         <!-- Upload / Add Video card -->
-        <div class="adm-card" style="overflow:hidden;padding:0">
+        <div class="adm-card" style="overflow:hidden;padding:0;margin-top:28px">
           <div class="gal-inner-tabs">
             <button class="gal-itab active" data-itab="upload">
               <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -826,63 +883,6 @@
                   Add Video
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Featured Section Images -->
-        <div class="adm-card" style="margin-top:28px">
-          <div class="adm-card-head">
-            <div>
-              <span class="adm-card-title">Featured Section Images</span>
-              <span style="font-size:11px;color:var(--ink-mute);margin-left:10px">(3 images shown above the gallery grid)</span>
-            </div>
-          </div>
-          <div class="adm-card-body">
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-
-              <div class="adm-field">
-                <label>Image 1 — Large (left)</label>
-                <label class="feat-slot" for="featFile1">
-                  <img id="featPrev1" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
-                  <div id="featEmpty1" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
-                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
-                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
-                  </div>
-                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
-                  <input type="file" id="featFile1" accept="image/*" style="display:none">
-                </label>
-                <div id="featSpin1" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
-              </div>
-
-              <div class="adm-field">
-                <label>Image 2 — Top right</label>
-                <label class="feat-slot" for="featFile2">
-                  <img id="featPrev2" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
-                  <div id="featEmpty2" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
-                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
-                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
-                  </div>
-                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
-                  <input type="file" id="featFile2" accept="image/*" style="display:none">
-                </label>
-                <div id="featSpin2" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
-              </div>
-
-              <div class="adm-field">
-                <label>Image 3 — Bottom right</label>
-                <label class="feat-slot" for="featFile3">
-                  <img id="featPrev3" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
-                  <div id="featEmpty3" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
-                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
-                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
-                  </div>
-                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
-                  <input type="file" id="featFile3" accept="image/*" style="display:none">
-                </label>
-                <div id="featSpin3" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
-              </div>
-
             </div>
           </div>
         </div>
