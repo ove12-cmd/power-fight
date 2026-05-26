@@ -794,18 +794,34 @@
           <!-- Video URL pane -->
           <div id="galVideoPane" style="display:none;padding:24px">
             <div class="adm-form">
-              <div class="adm-form-row">
-                <div class="adm-field" style="grid-column:span 2">
-                  <label>Video URL <span style="color:var(--ink-mute)">(direct MP4, YouTube or Vimeo)</span></label>
-                  <input type="url" id="videoUrl" placeholder="https://...">
-                </div>
+
+              <!-- Source: paste URL or upload file -->
+              <div class="adm-field">
+                <label>Video URL <span style="color:var(--ink-mute)">(YouTube, Vimeo or direct MP4)</span></label>
+                <input type="url" id="videoUrl" placeholder="https://…">
+              </div>
+
+              <div style="display:flex;align-items:center;gap:12px;margin:8px 0">
+                <div style="flex:1;height:1px;background:var(--line-2)"></div>
+                <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute)">or</span>
+                <div style="flex:1;height:1px;background:var(--line-2)"></div>
+              </div>
+
+              <label class="gal-drop-zone" for="videoFileInput" style="cursor:pointer;min-height:72px;padding:14px 20px">
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                <span class="gal-dz-main">Upload video from device</span>
+                <span class="gal-dz-hint">MP4, MOV, WebM</span>
+                <input type="file" id="videoFileInput" accept="video/*" style="display:none">
+              </label>
+              <div id="videoFilePreview" style="display:none;margin-top:8px"></div>
+
+              <!-- Shared metadata -->
+              <div class="adm-form-row" style="margin-top:14px">
                 <div class="adm-field">
                   <label>Category</label>
                   <select id="videoCat"></select>
                   <input type="text" id="videoCatCustom" placeholder="Type new category…" style="display:none;margin-top:6px">
                 </div>
-              </div>
-              <div class="adm-form-row">
                 <div class="adm-field">
                   <label>Title / Name</label>
                   <input type="text" id="videoName" placeholder="e.g. Sparring session">
@@ -1226,7 +1242,8 @@
 
   // ── MUTABLE STATE (declared early so renderAll() can access them safely) ──
   let toastTimer;
-  let pendingFiles = [];   // gallery upload queue
+  let pendingFiles    = [];   // gallery image upload queue
+  let pendingVideoFile = null; // gallery device-video upload
   let galleryFilter = 'all';
 
   // ── TOAST ─────────────────────────────────────────────────────────
@@ -1886,10 +1903,44 @@
     }
   });
 
-  // Add Video URL
+  // ── Video file picker ─────────────────────────────────────────────
+  window.clearVideoFile = function() {
+    pendingVideoFile = null;
+    const p = document.getElementById('videoFilePreview');
+    p.style.display = 'none'; p.innerHTML = '';
+  };
+
+  document.getElementById('videoFileInput').addEventListener('change', function() {
+    const file = this.files[0];
+    this.value = ''; // reset so same file can be re-selected
+    if (!file) return;
+    pendingVideoFile = file;
+    const mb = (file.size / 1024 / 1024).toFixed(1);
+    const preview = document.getElementById('videoFilePreview');
+    preview.style.display = '';
+    preview.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-3);border:1px solid rgba(199,255,63,.35);margin-top:2px">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;flex-shrink:0;stroke:var(--lime);fill:none;stroke-width:1.5;stroke-linecap:round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(file.name)}</div>
+          <div style="font-size:10px;color:var(--ink-mute);margin-top:1px">${mb} MB</div>
+        </div>
+        <button onclick="clearVideoFile()" title="Remove" style="background:none;border:none;cursor:pointer;color:var(--ink-mute);padding:2px;line-height:0;transition:color .2s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--ink-mute)'">
+          <svg viewBox="0 0 16 16" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
+        </button>
+      </div>`;
+    // Auto-fill name if empty
+    const nameEl = document.getElementById('videoName');
+    if (!nameEl.value) nameEl.value = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+    if (!document.getElementById('videoDate').value)
+      document.getElementById('videoDate').value = new Date().toISOString().slice(0, 10);
+  });
+
+  // Add Video (URL or device file)
   document.getElementById('addVideoBtn').addEventListener('click', async () => {
     const url = document.getElementById('videoUrl').value.trim();
-    if (!url) { document.getElementById('videoUrl').focus(); return; }
+    if (!url && !pendingVideoFile) { document.getElementById('videoUrl').focus(); return; }
+
     const cat  = await _resolveCategory('videoCat', 'videoCatCustom') || 'videos';
     const name = document.getElementById('videoName').value.trim();
     const date = document.getElementById('videoDate').value;
@@ -1900,15 +1951,35 @@
     const _iconOk  = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
 
     btn.disabled = true; btn.style.opacity = '.8'; btn.style.pointerEvents = 'none';
-    btn.innerHTML = `${_spin} Uploading video…`;
+
+    let videoSrc = url;
 
     try {
+      // ── Device file: upload to Supabase Storage ─────────────────────
+      if (pendingVideoFile) {
+        btn.innerHTML = `${_spin} Uploading to storage…`;
+        const ext  = (pendingVideoFile.name.split('.').pop() || 'mp4').toLowerCase();
+        const path = `videos/${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
+        const { error: upErr } = await _sb.storage.from('gallery').upload(path, pendingVideoFile, {
+          contentType: pendingVideoFile.type,
+          upsert: false,
+        });
+        if (upErr) throw new Error('Storage upload failed: ' + upErr.message + '. Make sure a public "gallery" bucket exists in your Supabase project.');
+        const { data: urlData } = _sb.storage.from('gallery').getPublicUrl(path);
+        videoSrc = urlData.publicUrl;
+      }
+
+      // ── Save to gallery_items ────────────────────────────────────────
+      btn.innerHTML = `${_spin} Saving…`;
       const gallery = await sbLoadGallery();
-      const newItem = { id: crypto.randomUUID(), src: url, name, cat, date, isVideo: true, featured: false };
-      const ord = gallery.length;
+      const newItem = {
+        id: crypto.randomUUID(), src: videoSrc,
+        name: name || (pendingVideoFile ? pendingVideoFile.name.replace(/\.[^.]+$/, '').replace(/[-_]/g,' ') : ''),
+        cat, date, isVideo: true, featured: false,
+      };
       const { error } = await _sb.from('gallery_items').upsert(
         { id: newItem.id, src: newItem.src, name: newItem.name || '', cat: newItem.cat,
-          date: newItem.date || '', is_video: true, featured: false, ord },
+          date: newItem.date || '', is_video: true, featured: false, ord: gallery.length },
         { onConflict: 'id' }
       );
       if (error) throw error;
@@ -1917,6 +1988,7 @@
 
       document.getElementById('videoUrl').value  = '';
       document.getElementById('videoName').value = '';
+      if (pendingVideoFile) clearVideoFile();
 
       btn.innerHTML = `${_iconOk} Video added!`;
       btn.style.opacity = '1';
