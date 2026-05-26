@@ -68,6 +68,7 @@
   }
   .login-err.show{display:block}
   @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .login-box.shake{animation:shake .35s ease}
 
   /* ── DASHBOARD SHELL ─────────────────────────────────────────── */
@@ -1807,26 +1808,65 @@
     const date  = document.getElementById('uploadDate').value;
     const title = document.getElementById('uploadName').value.trim();
     const btn   = document.getElementById('confirmUploadBtn');
-    btn.disabled = true; btn.style.opacity = '.5'; btn.style.pointerEvents = 'none';
-    btn.innerHTML = '<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-dasharray="50" stroke-dashoffset="50"/></svg> Saving…';
+    const n     = pendingFiles.length;
+
+    const _spin = `<svg viewBox="0 0 24 24" width="15" height="15" style="animation:spin .75s linear infinite;vertical-align:middle;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9" stroke-dasharray="28 56"/></svg>`;
+    const _iconUpload = `<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`;
+    const _iconCheck  = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+    function setBtn(html, locked) {
+      btn.disabled      = locked;
+      btn.style.opacity = locked ? '.8' : '1';
+      btn.style.pointerEvents = locked ? 'none' : '';
+      btn.innerHTML     = html;
+    }
+
+    setBtn(`${_spin} Preparing…`, true);
+
     try {
-      const gallery = await sbLoadGallery();
-      pendingFiles.forEach(f => {
-        gallery.push({ id: crypto.randomUUID(), src: f.dataUrl, name: title || f.name, cat, date, isVideo: f.isVideo, featured: false });
-      });
-      await sbSaveGallery(gallery);
+      const gallery   = await sbLoadGallery();
+      const startOrd  = gallery.length; // new items appended after existing
+
+      const newItems = pendingFiles.map((f, i) => ({
+        id: crypto.randomUUID(), src: f.dataUrl,
+        name: title || f.name, cat, date,
+        isVideo: f.isVideo, featured: false,
+        _ord: startOrd + i,
+      }));
+
+      // Upsert each new item individually, updating label between each
+      for (let i = 0; i < newItems.length; i++) {
+        setBtn(`${_spin} Uploading ${i + 1} / ${n}…`, true);
+        const it = newItems[i];
+        const { error } = await _sb.from('gallery_items').upsert(
+          { id: it.id, src: it.src, name: it.name || '', cat: it.cat || 'trainings',
+            date: it.date || '', is_video: !!it.isVideo, featured: false, ord: it._ord },
+          { onConflict: 'id' }
+        );
+        if (error) throw error;
+        gallery.push(it);
+      }
+
       _cache.gallery = gallery;
       renderGallery(gallery);
       pendingFiles = [];
       document.getElementById('uploadPreviews').innerHTML = '';
       document.getElementById('uploadName').value = '';
+
+      // Brief success state before resetting to disabled
+      setBtn(`${_iconCheck} ${n} image${n > 1 ? 's' : ''} saved!`, false);
       toast('Saved to gallery ✓');
+      setTimeout(() => {
+        btn.disabled = true; btn.style.opacity = '.35'; btn.style.pointerEvents = 'none';
+        btn.innerHTML = `${_iconUpload} Upload Images`;
+      }, 2000);
+
     } catch(err) {
       toast('Save failed: ' + (err?.message || err), true);
       delete _cache.gallery;
+      btn.disabled = false; btn.style.opacity = '1'; btn.style.pointerEvents = '';
+      btn.innerHTML = `${_iconUpload} Upload Images`;
     }
-    btn.disabled = false; btn.style.opacity = '1'; btn.style.pointerEvents = '';
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload Images';
   });
 
   // Add Video URL
