@@ -821,6 +821,7 @@
         <div style="margin-top:28px">
           <div class="gal-lib-head">
             <span class="gal-lib-label">Media Library</span>
+            <span id="galLibCount" style="font-size:10px;color:var(--ink-mute);letter-spacing:.06em;flex-shrink:0"></span>
             <div class="adm-gallery-filter" id="galleryFilter" style="flex:1;margin-bottom:0"></div>
             <select class="gal-sort-sel" id="galSort">
               <option value="newest">Newest first</option>
@@ -1869,10 +1870,28 @@
     if (!items) items = await sbLoadGallery();
     if (!cats)  cats  = await sbLoadCategories();
 
+    // ── Item count in Media Library header ────────────────────────────
+    const countEl = document.getElementById('galLibCount');
+    if (countEl) {
+      const total  = items.length;
+      const photos = items.filter(i => !i.isVideo).length;
+      const vids   = items.filter(i =>  i.isVideo).length;
+      if (!total) {
+        countEl.textContent = '';
+      } else if (photos && vids) {
+        countEl.textContent = `${photos} photo${photos !== 1 ? 's' : ''} · ${vids} video${vids !== 1 ? 's' : ''}`;
+      } else {
+        countEl.textContent = `${total} item${total !== 1 ? 's' : ''}`;
+      }
+    }
+
     // Update filter tabs
     const filterEl = document.getElementById('galleryFilter');
-    filterEl.innerHTML = '<button class="adm-gf-tab active" data-gf="all">All</button>' +
-      cats.map(c => `<button class="adm-gf-tab" data-gf="${escHtml(c)}">${escHtml(catLabel(c))}</button>`).join('');
+    filterEl.innerHTML = `<button class="adm-gf-tab active" data-gf="all">All <span style="font-size:9px;opacity:.55">${items.length}</span></button>` +
+      cats.map(c => {
+        const n = items.filter(i => i.cat === c).length;
+        return `<button class="adm-gf-tab" data-gf="${escHtml(c)}">${escHtml(catLabel(c))} <span style="font-size:9px;opacity:.55">${n}</span></button>`;
+      }).join('');
     filterEl.querySelectorAll('.adm-gf-tab').forEach(btn => {
       if (btn.dataset.gf === galleryFilter) btn.classList.add('active');
       else btn.classList.remove('active');

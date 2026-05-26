@@ -331,6 +331,7 @@
     <div>
       <div class="page-eyebrow">Power Fight</div>
       <h1>Our <em>Gallery</em></h1>
+      <p id="galHeroCount" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute);margin-top:18px;display:none"></p>
     </div>
     <p class="page-hero-meta">Training sessions, events, special guests and everyday life inside Power Fight.</p>
   </div>
@@ -474,11 +475,11 @@
 
     const cats = [...new Set(allItems.map(i => i.dataset.cat).filter(Boolean))].sort();
 
-    function makeTab(cat, label, isActive) {
+    function makeTab(cat, label, count, isActive) {
       const b = document.createElement('button');
       b.className = 'gf-tab' + (isActive ? ' active' : '');
       b.dataset.catFilter = cat;
-      b.textContent = label;
+      b.innerHTML = label + (count != null ? ` <span style="font-size:9px;opacity:.55;margin-left:3px">${count}</span>` : '');
       b.addEventListener('click', () => {
         filterEl.querySelectorAll('.gf-tab').forEach(x => x.classList.remove('active'));
         b.classList.add('active');
@@ -489,8 +490,24 @@
       return b;
     }
 
-    makeTab('all', 'All', true);
-    cats.forEach(c => makeTab(c, catLabel(c), false));
+    makeTab('all', 'All', allItems.length, true);
+    cats.forEach(c => {
+      const n = allItems.filter(i => i.dataset.cat === c).length;
+      makeTab(c, catLabel(c), n, false);
+    });
+  }
+
+  function updateHeroCount() {
+    const el = document.getElementById('galHeroCount');
+    if (!el || !allItems.length) return;
+    const photos = allItems.filter(i => !i.dataset.video).length;
+    const videos = allItems.filter(i =>  i.dataset.video).length;
+    let txt = '';
+    if (photos && videos) txt = `${photos} photo${photos !== 1 ? 's' : ''} · ${videos} video${videos !== 1 ? 's' : ''}`;
+    else if (photos)      txt = `${photos} photo${photos !== 1 ? 's' : ''}`;
+    else if (videos)      txt = `${videos} video${videos !== 1 ? 's' : ''}`;
+    el.textContent = txt;
+    el.style.display = '';
   }
 
   // ── Filter / sort / paginate ──────────────────────────────────────
@@ -642,6 +659,7 @@
     });
 
     rebuildFilterTabs();
+    updateHeroCount();
     applyFilter();
   })();
 </script>
