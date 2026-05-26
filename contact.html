@@ -303,7 +303,9 @@
   <div class="contact-form-wrap reveal">
     <h2>Send a <em>message</em></h2>
     <p class="sub">Fill in the form and we'll get back to you within 24 hours.</p>
-    <form action="mailto:Nurmsoog@gmail.com" method="post" enctype="text/plain">
+    <form name="contact" method="POST" netlify netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="contact">
+      <div style="display:none" aria-hidden="true"><label>Don't fill this out: <input name="bot-field"></label></div>
 
       <div class="form-row" style="margin-bottom:20px">
         <div class="form-group">
@@ -353,8 +355,14 @@
       </div>
 
       <div class="form-submit">
-        <button type="submit" class="btn btn-primary"><span>Send Message</span></button>
+        <button type="submit" class="btn btn-primary" id="contactSubmitBtn"><span id="contactBtnLabel">Send Message</span></button>
         <p class="form-note">Or reach us directly at <a href="mailto:Nurmsoog@gmail.com" style="color:var(--ink-dim);text-decoration:underline">Nurmsoog@gmail.com</a></p>
+      </div>
+
+      <div id="contactSuccess" style="display:none;margin-top:32px;padding:28px 24px;background:rgba(199,255,63,0.06);border:1px solid rgba(199,255,63,0.2);text-align:center">
+        <div style="font-size:28px;margin-bottom:10px">✓</div>
+        <div style="font-family:var(--display);font-size:18px;font-weight:600;letter-spacing:-0.01em;margin-bottom:6px">Message sent!</div>
+        <div style="font-size:13px;color:var(--ink-dim)">We'll get back to you within 24 hours.</div>
       </div>
 
     </form>
@@ -529,21 +537,41 @@
   document.querySelector('[name="message"]').addEventListener('input', function(){
     if (this.value.trim().length > 0) setField(this, true);
   });
-  // On submit, validate all required fields
-  document.querySelector('form').addEventListener('submit', function(e) {
-    const name = this.querySelector('[name="first_name"]');
-    const email = this.querySelector('[name="email"]');
-    const msg = this.querySelector('[name="message"]');
+  // On submit — validate, then POST to Netlify via fetch
+  document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = this;
+    const nameEl = form.querySelector('[name="first_name"]');
+    const emailEl = form.querySelector('[name="email"]');
     let ok = true;
-    if (name.value.trim().length < 2) { setField(name, false); name.closest('.form-group').classList.add('has-error'); ok = false; }
-    if (!validateEmail(email.value)) { setField(email, false); email.closest('.form-group').classList.add('has-error'); ok = false; }
-    // On submit, if no interest selected, shake the pills
+    if (nameEl.value.trim().length < 2) { setField(nameEl, false); nameEl.closest('.form-group').classList.add('has-error'); ok = false; }
+    if (!validateEmail(emailEl.value)) { setField(emailEl, false); emailEl.closest('.form-group').classList.add('has-error'); ok = false; }
     const pillsWrap = document.getElementById('interestPills');
     if (pillsWrap && selected.size === 0) {
       pillsWrap.style.outline = '1px solid rgba(255,96,96,0.5)';
       setTimeout(() => pillsWrap.style.outline = '', 2000);
     }
-    if (!ok) e.preventDefault();
+    if (!ok) return;
+
+    const btn = document.getElementById('contactSubmitBtn');
+    const label = document.getElementById('contactBtnLabel');
+    btn.disabled = true;
+    label.textContent = 'Sending…';
+
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)).toString()
+      });
+      // Show success
+      form.querySelectorAll('.form-row, .form-group, .form-submit').forEach(el => el.style.display = 'none');
+      document.getElementById('contactSuccess').style.display = 'block';
+    } catch (_) {
+      btn.disabled = false;
+      label.textContent = 'Send Message';
+      alert('Something went wrong. Please try again or email us directly.');
+    }
   });
 </script>
 </body>
