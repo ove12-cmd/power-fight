@@ -358,6 +358,10 @@
 
   .gal-drop-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:36px 20px;border:1.5px dashed var(--line-2);border-radius:10px;cursor:pointer;text-align:center;transition:border-color .2s,background .2s;min-height:180px}
   .gal-drop-zone:hover,.gal-drop-zone.drag-over{border-color:var(--lime);background:var(--lime-bg)}
+  .feat-slot{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;aspect-ratio:4/3;background:var(--bg-3);border:1.5px dashed var(--line-2);cursor:pointer;overflow:hidden;transition:border-color .2s}
+  .feat-slot:hover{border-color:rgba(199,255,63,.5)}
+  .feat-slot-overlay{position:absolute;inset:0;background:rgba(4,5,5,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+  .feat-slot:hover .feat-slot-overlay{opacity:1}
   .gal-drop-zone svg{width:48px;height:48px;stroke:var(--lime);fill:none;stroke-width:1.2}
   .gal-dz-main{font-size:13px;color:var(--ink);font-weight:600;margin-top:4px}
   .gal-dz-sub{font-size:12px;color:var(--ink-dim)}
@@ -836,27 +840,49 @@
           </div>
           <div class="adm-card-body">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+
               <div class="adm-field">
                 <label>Image 1 — Large (left)</label>
-                <input type="url" id="featImg1" placeholder="https://…">
-                <img id="featPrev1" src="" alt="" style="width:100%;height:60px;object-fit:cover;margin-top:6px;display:none">
+                <label class="feat-slot" for="featFile1">
+                  <img id="featPrev1" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+                  <div id="featEmpty1" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
+                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
+                  </div>
+                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
+                  <input type="file" id="featFile1" accept="image/*" style="display:none">
+                </label>
+                <div id="featSpin1" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
               </div>
+
               <div class="adm-field">
                 <label>Image 2 — Top right</label>
-                <input type="url" id="featImg2" placeholder="https://…">
-                <img id="featPrev2" src="" alt="" style="width:100%;height:60px;object-fit:cover;margin-top:6px;display:none">
+                <label class="feat-slot" for="featFile2">
+                  <img id="featPrev2" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+                  <div id="featEmpty2" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
+                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
+                  </div>
+                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
+                  <input type="file" id="featFile2" accept="image/*" style="display:none">
+                </label>
+                <div id="featSpin2" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
               </div>
+
               <div class="adm-field">
                 <label>Image 3 — Bottom right</label>
-                <input type="url" id="featImg3" placeholder="https://…">
-                <img id="featPrev3" src="" alt="" style="width:100%;height:60px;object-fit:cover;margin-top:6px;display:none">
+                <label class="feat-slot" for="featFile3">
+                  <img id="featPrev3" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+                  <div id="featEmpty3" style="display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none">
+                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--lime);fill:none;stroke-width:1.4"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                    <span style="font-size:11px;color:var(--ink-dim)">Click to upload</span>
+                  </div>
+                  <div class="feat-slot-overlay"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff">Change</span></div>
+                  <input type="file" id="featFile3" accept="image/*" style="display:none">
+                </label>
+                <div id="featSpin3" style="display:none;font-size:11px;color:var(--ink-mute);margin-top:4px;text-align:center">Uploading…</div>
               </div>
-            </div>
-            <div style="display:flex;justify-content:flex-end;margin-top:16px">
-              <button class="btn-adm btn-lime" id="saveFeatBtn">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                Save Featured Images
-              </button>
+
             </div>
           </div>
         </div>
@@ -2205,39 +2231,46 @@
 
 
   // ── Featured images ────────────────────────────────────────────────
+  const _featUrls = ['', '', ''];
+
   async function loadFeaturedImages() {
     const raw = await sbGetSetting('gallery_featured_images', '[]');
     let urls = [];
     try { urls = JSON.parse(raw); } catch(_) { urls = []; }
     ['1','2','3'].forEach((n, i) => {
       const u = urls[i] || '';
-      document.getElementById('featImg' + n).value = u;
-      const p = document.getElementById('featPrev' + n);
-      p.src = u; p.style.display = u ? 'block' : 'none';
+      _featUrls[i] = u;
+      const prev  = document.getElementById('featPrev'  + n);
+      const empty = document.getElementById('featEmpty' + n);
+      if (u) { prev.src = u; prev.style.display = 'block'; empty.style.display = 'none'; }
+      else   { prev.style.display = 'none'; empty.style.display = ''; }
     });
   }
-  document.getElementById('saveFeatBtn').addEventListener('click', async () => {
-    const btn = document.getElementById('saveFeatBtn');
-    const urls = ['1','2','3'].map(n => document.getElementById('featImg' + n).value.trim());
-    const _iconOk = `<svg viewBox="0 0 24 24" width="13" height="13"><polyline points="20 6 9 17 4 12" stroke="currentColor" fill="none" stroke-width="2.5"/></svg>`;
-    btn.disabled = true;
-    try {
-      await sbSetSetting('gallery_featured_images', JSON.stringify(urls));
-      const orig = btn.innerHTML;
-      btn.innerHTML = _iconOk + ' Saved!';
-      setTimeout(() => { btn.disabled = false; btn.innerHTML = orig; }, 2000);
-      toast('Featured images saved ✓');
-    } catch(e) {
-      toast('Save failed: ' + e.message, true);
-      btn.disabled = false;
-    }
-  });
-  // Add live preview update for each input
-  ['1','2','3'].forEach(n => {
-    document.getElementById('featImg' + n).addEventListener('input', function() {
-      const p = document.getElementById('featPrev' + n);
-      p.src = this.value;
-      p.style.display = this.value ? 'block' : 'none';
+
+  ['1','2','3'].forEach((n, i) => {
+    document.getElementById('featFile' + n).addEventListener('change', async function() {
+      const file = this.files[0];
+      this.value = '';
+      if (!file) return;
+      const spin  = document.getElementById('featSpin' + n);
+      const prev  = document.getElementById('featPrev'  + n);
+      const empty = document.getElementById('featEmpty' + n);
+      spin.style.display = 'block';
+      try {
+        const ext  = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `featured/feat-${i + 1}-${Date.now()}.${ext}`;
+        const { error: upErr } = await _sb.storage.from('gallery').upload(path, file, { contentType: file.type, upsert: true });
+        if (upErr) throw upErr;
+        const { data: urlData } = _sb.storage.from('gallery').getPublicUrl(path);
+        const url = urlData.publicUrl;
+        _featUrls[i] = url;
+        prev.src = url; prev.style.display = 'block'; empty.style.display = 'none';
+        await sbSetSetting('gallery_featured_images', JSON.stringify(_featUrls));
+        toast('Image ' + n + ' saved ✓');
+      } catch(e) {
+        toast('Upload failed: ' + e.message, true);
+      }
+      spin.style.display = 'none';
     });
   });
 
