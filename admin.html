@@ -573,9 +573,8 @@
                 </div>
               </div>
               <div class="adm-field">
-                <label>Photo <span style="color:var(--ink-mute)">(file or URL)</span></label>
-                <input type="text" id="ath-photo" placeholder="filename.avif or https://…">
-                <label class="btn-adm btn-ghost" style="cursor:pointer;text-align:center;display:block;margin-top:6px">
+                <label>Photo</label>
+                <label class="btn-adm btn-ghost" style="cursor:pointer;text-align:center;display:block">
                   Upload Photo
                   <input type="file" id="ath-photo-file" accept="image/*" style="display:none">
                 </label>
@@ -1396,7 +1395,7 @@
   // ── Athlete form handlers ─────────────────────────────────────────
   function _clearAthForm() {
     document.getElementById('ath-edit-idx').value = '-1';
-    ['ath-name','ath-tag','ath-tagColor','ath-role','ath-s1n','ath-s1l','ath-s2n','ath-s2l','ath-photo'].forEach(id => document.getElementById(id).value = '');
+    ['ath-name','ath-tag','ath-tagColor','ath-role','ath-s1n','ath-s1l','ath-s2n','ath-s2l'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('ath-desc').value = '';
     _pendingAthPhoto = null;
     document.getElementById('ath-photo-preview-wrap').style.display = 'none';
@@ -1413,7 +1412,6 @@
     const reader = new FileReader();
     reader.onload = e => {
       _pendingAthPhoto = e.target.result;
-      document.getElementById('ath-photo').value = '';
       document.getElementById('ath-photo-preview').src = _pendingAthPhoto;
       document.getElementById('ath-photo-preview-wrap').style.display = '';
     };
@@ -1442,7 +1440,7 @@
       s1l:      document.getElementById('ath-s1l').value.trim(),
       s2n:      document.getElementById('ath-s2n').value.trim(),
       s2l:      document.getElementById('ath-s2l').value.trim(),
-      photo:    _pendingAthPhoto || document.getElementById('ath-photo').value.trim(),
+      photo:    _pendingAthPhoto || '',
     };
     const athletes = _cache.athletes ? [..._cache.athletes] : await sbLoadAthletes();
     const editIdx = parseInt(document.getElementById('ath-edit-idx').value);
@@ -1483,8 +1481,7 @@
     document.getElementById('ath-s1l').value      = a.s1l  || '';
     document.getElementById('ath-s2n').value      = a.s2n  || '';
     document.getElementById('ath-s2l').value      = a.s2l  || '';
-    _pendingAthPhoto = a.photo && a.photo.startsWith('data:') ? a.photo : null;
-    document.getElementById('ath-photo').value = (!_pendingAthPhoto && a.photo) ? a.photo : '';
+    _pendingAthPhoto = a.photo || null;
     if (a.photo) {
       document.getElementById('ath-photo-preview').src = a.photo;
       document.getElementById('ath-photo-preview-wrap').style.display = '';
