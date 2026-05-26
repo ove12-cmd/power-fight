@@ -1050,7 +1050,26 @@
   async function sbLoadFeedback() {
     if (_cache.feedback) return _cache.feedback;
     const raw = await sbGetSetting('pf_reviews_v1', '[]');
-    try { _cache.feedback = JSON.parse(raw); } catch { _cache.feedback = []; }
+    let stored;
+    try { stored = JSON.parse(raw); } catch { stored = []; }
+    // One-time migration: seed the 5 Google reviews if not already in the array
+    const storedNames = new Set(stored.map(r => r.name));
+    const toSeed = PINNED_REVIEWS
+      .filter(r => !storedNames.has(r.name))
+      .map((r, i) => ({
+        id:         uid(),
+        name:       r.name,
+        training:   '',
+        rating:     5,
+        text:       r.text,
+        approved:   true,
+        created_at: new Date(Date.now() - (PINNED_REVIEWS.length - i) * 30 * 86400000).toISOString(),
+      }));
+    if (toSeed.length) {
+      stored = [...toSeed, ...stored];
+      await sbSaveReviews(stored);
+    }
+    _cache.feedback = stored;
     return _cache.feedback;
   }
   async function sbSaveReviews(arr) {
@@ -1980,9 +1999,8 @@ Reset button restores removed classes.`)) return;
     const list  = document.getElementById('reviewList');
     const empty = document.getElementById('reviewEmpty');
     list.innerHTML = '';
-    const total = all.length + PINNED_REVIEWS.length;
-    empty.style.display = total ? 'none' : '';
-    if (!total) { return; }
+    empty.style.display = all.length ? 'none' : '';
+    if (!all.length) { return; }
 
     all.forEach((entry, idx) => {
       const isApproved = entry.approved;
@@ -2016,22 +2034,6 @@ Reset button restores removed classes.`)) return;
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
           </button>
         </div>`;
-      list.appendChild(row);
-    });
-
-    // Pinned Google reviews — read-only
-    PINNED_REVIEWS.forEach(r => {
-      const row = document.createElement('div');
-      row.className = 'review-row';
-      row.style.opacity = '.6';
-      row.innerHTML = `
-        <div class="review-head">
-          <span class="review-name">${escHtml(r.name)}</span>
-          <span class="review-stars">★★★★★</span>
-          <span class="review-approved" style="margin-left:auto">✓ Published</span>
-        </div>
-        <div class="review-text">"${escHtml(r.text)}"</div>
-        <div class="review-date">${escHtml(r.meta)} · Google review · <em>hardcoded</em></div>`;
       list.appendChild(row);
     });
   }
