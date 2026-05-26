@@ -472,7 +472,7 @@
       el.dataset.video = row.src;
       const ytId = getYouTubeId(row.src);
       const mediaSrc = ytId
-        ? `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`
+        ? `<img src="https://img.youtube.com/vi/${ytId}/maxresdefault.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`
         : `<video src="${row.src}" preload="metadata" muted playsinline></video>`;
       el.innerHTML = mediaSrc
         + `<div class="gm-play-badge"><div class="gm-play-circle"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z" fill="#e8e8e4"/></svg></div></div>`;
