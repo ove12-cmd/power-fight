@@ -1965,15 +1965,24 @@ Reset button restores removed classes.`)) return;
   //  TESTIMONIALS / REVIEWS
   // ═══════════════════════════════════════════════════════════════════
 
+  const PINNED_REVIEWS = [
+    { name: 'Christopher Frank (Chris)', meta: '3 months ago', text: 'Very good trainer and motivator, his experience will help you to achieve your goals, I recommend strongly.' },
+    { name: 'Pirgit Agafonov',           meta: '6 months ago', text: 'Germo is very smart and highly motivating. Very experienced in traditionally thaiboxing and personal training.' },
+    { name: 'Michael Schüpbach',         meta: '7 months ago', text: 'Germo is a motivator, great friend and a trainer who will always inspire you to reach higher. Highly recommended as personal trainer and motivator.' },
+    { name: 'Ehitus Support 24 OÜ',      meta: '6 months ago', text: 'Very experienced. Scientifical approach and always listens to what I say or feel. Followed my progress.' },
+    { name: 'marjan tinitski',           meta: '7 months ago', text: 'Best trainer and motivator for sports and spirit.' },
+  ];
+
   async function renderTestimonials(all) {
     if (!all) all = await sbLoadFeedback();
     const list  = document.getElementById('reviewList');
     const empty = document.getElementById('reviewEmpty');
     list.innerHTML = '';
-    empty.style.display = all.length ? 'none' : '';
-    if (!all.length) { return; }
+    const total = all.length + PINNED_REVIEWS.length;
+    empty.style.display = total ? 'none' : '';
+    if (!total) { return; }
 
-    // Newest first
+    // Newest first (editable reviews)
     [...all].reverse().forEach(entry => {
       const isApproved = entry.approved;
       const stars = '★'.repeat(entry.rating || 5) + '☆'.repeat(5 - (entry.rating || 5));
@@ -1999,6 +2008,22 @@ Reset button restores removed classes.`)) return;
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
           </button>
         </div>`;
+      list.appendChild(row);
+    });
+
+    // Pinned Google reviews — read-only
+    PINNED_REVIEWS.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'review-row';
+      row.style.opacity = '.6';
+      row.innerHTML = `
+        <div class="review-head">
+          <span class="review-name">${escHtml(r.name)}</span>
+          <span class="review-stars">★★★★★</span>
+          <span class="review-approved" style="margin-left:auto">✓ Published</span>
+        </div>
+        <div class="review-text">"${escHtml(r.text)}"</div>
+        <div class="review-date">${escHtml(r.meta)} · Google review · <em>hardcoded</em></div>`;
       list.appendChild(row);
     });
   }
