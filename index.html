@@ -1817,7 +1817,12 @@
   // ── Gallery: render featured items from Supabase ──────────────────────
   (async function() {
     try {
-      const { data } = await _sb.from('gallery_items').select('*').eq('featured', true).order('ord');
+      // Prefer pinned/featured items; fall back to the 8 most recent if none are pinned
+      let { data } = await _sb.from('gallery_items').select('*').eq('featured', true).order('ord');
+      if (!data || !data.length) {
+        const res = await _sb.from('gallery_items').select('*').order('ord').limit(8);
+        data = res.data;
+      }
       if (!data || !data.length) return;
       const grid = document.getElementById('galleryGrid');
       if (!grid) return;
