@@ -509,17 +509,15 @@
       <div class="panel-head">
         <div>
           <div class="panel-title">Highlights</div>
-          <div class="panel-subtitle">Manage the athlete / guest legend slider shown in the Highlights section</div>
+          <div class="panel-subtitle">Manage the slider of featured athletes and guest legends shown in the Highlights section</div>
         </div>
       </div>
       <div class="panel-body">
 
-        <!-- Athletes / Guest Legends -->
-        <div class="adm-card">
-          <div class="adm-card-head"><span class="adm-card-title">Guest Legends — Athletes Section</span></div>
-          <div id="athList"></div>
-          <div class="adm-card-body" style="border-top:1px solid var(--line-2);padding-top:20px">
-            <div style="font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:14px" id="athFormTitle">Add Athlete</div>
+        <!-- Add / Edit form — top -->
+        <div class="adm-card" id="athFormCard">
+          <div class="adm-card-head"><span class="adm-card-title" id="athFormTitle">Add Highlight</span></div>
+          <div class="adm-card-body">
             <div class="adm-form">
               <input type="hidden" id="ath-edit-idx" value="-1">
               <div class="adm-form-row cols3">
@@ -528,7 +526,7 @@
                   <input type="text" id="ath-name" placeholder="Danilo Marques">
                 </div>
                 <div class="adm-field">
-                  <label>Badge</label>
+                  <label>Badge Text</label>
                   <input type="text" id="ath-tag" placeholder="UFC, World Champion…">
                 </div>
               </div>
@@ -538,8 +536,18 @@
                   <input type="text" id="ath-role" placeholder="Former UFC World Champion">
                 </div>
                 <div class="adm-field">
-                  <label>Badge Colour <span style="color:var(--ink-mute)">(hex or blank)</span></label>
-                  <input type="text" id="ath-tagColor" placeholder="#FACC15">
+                  <label>Badge Colour</label>
+                  <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+                    <button type="button" class="ath-color-swatch" data-color="" title="Default (dark)" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--line-2);background:var(--bg-3);cursor:pointer"></button>
+                    <button type="button" class="ath-color-swatch" data-color="#FACC15" title="Gold"    style="width:22px;height:22px;border-radius:4px;border:none;background:#FACC15;cursor:pointer"></button>
+                    <button type="button" class="ath-color-swatch" data-color="#A78BFA" title="Purple"  style="width:22px;height:22px;border-radius:4px;border:none;background:#A78BFA;cursor:pointer"></button>
+                    <button type="button" class="ath-color-swatch" data-color="#C7FF3F" title="Lime"    style="width:22px;height:22px;border-radius:4px;border:none;background:#C7FF3F;cursor:pointer"></button>
+                    <button type="button" class="ath-color-swatch" data-color="#FF4D6D" title="Red"     style="width:22px;height:22px;border-radius:4px;border:none;background:#FF4D6D;cursor:pointer"></button>
+                    <button type="button" class="ath-color-swatch" data-color="#5BE0FF" title="Blue"    style="width:22px;height:22px;border-radius:4px;border:none;background:#5BE0FF;cursor:pointer"></button>
+                    <button type="button" class="ath-color-swatch" data-color="#FB923C" title="Orange"  style="width:22px;height:22px;border-radius:4px;border:none;background:#FB923C;cursor:pointer"></button>
+                    <button type="button" class="ath-color-swatch" data-color="#F472B6" title="Pink"    style="width:22px;height:22px;border-radius:4px;border:none;background:#F472B6;cursor:pointer"></button>
+                  </div>
+                  <input type="text" id="ath-tagColor" placeholder="#FACC15 or blank for default">
                 </div>
               </div>
               <div class="adm-field">
@@ -580,11 +588,17 @@
                 <button class="btn-adm btn-ghost" id="cancelAthBtn" style="display:none">Cancel</button>
                 <button class="btn-adm btn-lime" id="saveAthBtn">
                   <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  <span id="saveAthLabel">Add Athlete</span>
+                  <span id="saveAthLabel">Add Highlight</span>
                 </button>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Highlights list -->
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Club Highlights</span></div>
+          <div id="athList"></div>
         </div>
 
       </div>
@@ -1388,8 +1402,8 @@
     document.getElementById('ath-photo-preview-wrap').style.display = 'none';
     document.getElementById('ath-photo-preview').src = '';
     document.getElementById('ath-photo-file').value = '';
-    document.getElementById('athFormTitle').textContent = 'Add Athlete';
-    document.getElementById('saveAthLabel').textContent = 'Add Athlete';
+    document.getElementById('athFormTitle').textContent = 'Add Highlight';
+    document.getElementById('saveAthLabel').textContent = 'Add Highlight';
     document.getElementById('cancelAthBtn').style.display = 'none';
   }
 
@@ -1442,7 +1456,15 @@
     renderAdminAthletes(athletes);
     sbSaveAthletes(athletes).catch(() => { delete _cache.athletes; renderAdminAthletes(); });
     _clearAthForm();
-    toast(editIdx >= 0 ? 'Athlete updated ✓' : 'Athlete added ✓');
+    document.getElementById('badgeHighlights').textContent = athletes.length;
+    toast(editIdx >= 0 ? 'Highlight updated ✓' : 'Highlight added ✓');
+  });
+
+  // Color swatch clicks
+  document.querySelectorAll('.ath-color-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('ath-tagColor').value = btn.dataset.color;
+    });
   });
 
   document.getElementById('cancelAthBtn').addEventListener('click', _clearAthForm);
@@ -1467,19 +1489,20 @@
       document.getElementById('ath-photo-preview').src = a.photo;
       document.getElementById('ath-photo-preview-wrap').style.display = '';
     }
-    document.getElementById('athFormTitle').textContent = 'Edit Athlete';
+    document.getElementById('athFormTitle').textContent = 'Edit Highlight';
     document.getElementById('saveAthLabel').textContent = 'Save Changes';
     document.getElementById('cancelAthBtn').style.display = '';
-    document.getElementById('tabHighlights').scrollTo({ top: 9999, behavior: 'smooth' });
+    document.getElementById('athFormCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   window.athDelete = async idx => {
     const athletes = _cache.athletes ? [..._cache.athletes] : await sbLoadAthletes();
-    if (!confirm(`Remove ${escHtml(athletes[idx]?.name || 'this athlete')}?`)) return;
+    if (!confirm(`Remove ${escHtml(athletes[idx]?.name || 'this highlight')}?`)) return;
     athletes.splice(idx, 1);
     _cache.athletes = athletes;
     renderAdminAthletes(athletes);
     sbSaveAthletes(athletes).catch(() => { delete _cache.athletes; renderAdminAthletes(); });
+    document.getElementById('badgeHighlights').textContent = athletes.length;
     toast('Removed');
   };
 
