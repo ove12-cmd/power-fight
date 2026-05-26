@@ -1076,6 +1076,16 @@
 
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
+  // Extract YouTube video ID from any YouTube URL format
+  function getYouTubeId(url) {
+    const m = (url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+  function getVimeoId(url) {
+    const m = (url || '').match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    return m ? m[1] : null;
+  }
+
   // ── Supabase data helpers ─────────────────────────────────────────
   async function sbLoadTicker() {
     if (_cache.ticker) return _cache.ticker;
@@ -1880,16 +1890,48 @@
   document.getElementById('addVideoBtn').addEventListener('click', async () => {
     const url = document.getElementById('videoUrl').value.trim();
     if (!url) { document.getElementById('videoUrl').focus(); return; }
-    const cat = await _resolveCategory('videoCat', 'videoCatCustom') || 'videos';
+    const cat  = await _resolveCategory('videoCat', 'videoCatCustom') || 'videos';
     const name = document.getElementById('videoName').value.trim();
     const date = document.getElementById('videoDate').value;
-    const items = await sbLoadGallery();
-    items.push({ id: crypto.randomUUID(), src: url, name, cat, date, isVideo: true, featured: false });
-    await sbSaveGallery(items);
-    document.getElementById('videoUrl').value = '';
-    document.getElementById('videoName').value = '';
-    await renderGallery();
-    toast('Video added ✓');
+    const btn  = document.getElementById('addVideoBtn');
+
+    const _spin    = `<svg viewBox="0 0 24 24" width="15" height="15" style="animation:spin .75s linear infinite;vertical-align:middle;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9" stroke-dasharray="28 56"/></svg>`;
+    const _iconVid = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+    const _iconOk  = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+    btn.disabled = true; btn.style.opacity = '.8'; btn.style.pointerEvents = 'none';
+    btn.innerHTML = `${_spin} Uploading video…`;
+
+    try {
+      const gallery = await sbLoadGallery();
+      const newItem = { id: crypto.randomUUID(), src: url, name, cat, date, isVideo: true, featured: false };
+      const ord = gallery.length;
+      const { error } = await _sb.from('gallery_items').upsert(
+        { id: newItem.id, src: newItem.src, name: newItem.name || '', cat: newItem.cat,
+          date: newItem.date || '', is_video: true, featured: false, ord },
+        { onConflict: 'id' }
+      );
+      if (error) throw error;
+      gallery.push(newItem);
+      _cache.gallery = gallery;
+
+      document.getElementById('videoUrl').value  = '';
+      document.getElementById('videoName').value = '';
+
+      btn.innerHTML = `${_iconOk} Video added!`;
+      btn.style.opacity = '1';
+      toast('Video added ✓');
+      renderGallery(gallery);
+
+      setTimeout(() => {
+        btn.disabled = false; btn.style.opacity = '1'; btn.style.pointerEvents = '';
+        btn.innerHTML = `${_iconVid} Add Video`;
+      }, 2000);
+    } catch(err) {
+      toast('Save failed: ' + (err?.message || err), true);
+      btn.disabled = false; btn.style.opacity = '1'; btn.style.pointerEvents = '';
+      btn.innerHTML = `${_iconVid} Add Video`;
+    }
   });
 
   // Add Category
@@ -2013,8 +2055,11 @@
     pageItems.forEach(item => {
       const card = document.createElement('div');
       card.className = 'adm-img-card';
+      const ytId = item.isVideo ? getYouTubeId(item.src) : null;
       const thumbInner = item.isVideo
-        ? `<div class="adm-img-card-thumb-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`
+        ? (ytId
+            ? `<img src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`
+            : `<div class="adm-img-card-thumb-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`)
         : `<img src="${escHtml(item.src)}" alt="" loading="lazy">`;
       const typeSvg = item.isVideo
         ? `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>`
