@@ -18,6 +18,7 @@
 <link rel="canonical" href="https://powerfight.ch/gallery" />
 <link rel="icon" type="image/png" href="favicon.png" />
 <link rel="apple-touch-icon" href="favicon.png" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet" />
 <style>
@@ -411,49 +412,88 @@
 <script>
   initComponents('gallery');
 
-  // Inject admin-uploaded gallery items
-  (function() {
-    try {
-      const adminImgs = JSON.parse(localStorage.getItem('pf_gallery_v1') || '[]');
-      if (!adminImgs.length) return;
-      const grid = document.getElementById('mainGrid');
-      adminImgs.forEach(item => {
-        const el = document.createElement('div');
-        el.className = 'gm-item';
-        el.dataset.cat = item.cat || 'trainings';
-        if (item.date) el.dataset.date = item.date;
-        if (item.isVideo) {
-          el.dataset.video = item.src;
-          el.innerHTML = `<video src="${item.src}" preload="metadata" muted playsinline style="pointer-events:none;width:100%;height:100%;object-fit:cover;display:block"></video><div class="gm-play-badge"><div class="gm-play-circle"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></div></div>`;
-        } else {
-          el.dataset.img = item.src;
-          el.innerHTML = `<img src="${item.src}" alt="${item.name || ''}" style="width:100%;height:100%;object-fit:cover;display:block"><div class="gm-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>`;
-        }
-        grid.appendChild(el);
-      });
-    } catch(e) {}
-  })();
+  // ── Supabase ──────────────────────────────────────────────────────
+  const _sb = supabase.createClient(
+    'https://nzfqsgdzbainfijbhwag.supabase.co',
+    'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al'
+  );
 
+  // ── State ─────────────────────────────────────────────────────────
   const BATCH = 8;
-  const grid = document.getElementById('mainGrid');
-  const allItems = Array.from(document.querySelectorAll('.gm-item'));
+  const grid  = document.getElementById('mainGrid');
+  let allItems = [];
   let activeCat = 'all';
   let sortOrder = 'newest';
   let shown = 0;
 
-  // Inject date badges
+  // ── Helpers ───────────────────────────────────────────────────────
   function fmtDate(iso) {
     const d = new Date(iso + 'T00:00:00');
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   }
-  allItems.forEach(item => {
-    if (!item.dataset.date) return;
-    const badge = document.createElement('div');
-    badge.className = 'gm-date';
-    badge.textContent = fmtDate(item.dataset.date);
-    item.appendChild(badge);
-  });
 
+  function catLabel(slug) {
+    const map = { trainings:'Trainings', events:'Events', 'special-guests':'Special Guests', videos:'Videos' };
+    return map[slug] || slug.replace(/-/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function makeDateBadge(iso) {
+    const b = document.createElement('div');
+    b.className = 'gm-date';
+    b.textContent = fmtDate(iso);
+    return b;
+  }
+
+  // Build a .gm-item element from a Supabase row
+  function buildGmItem(row) {
+    const isVid = row.is_video || row.isVideo;
+    const el = document.createElement('div');
+    el.className = 'gm-item';
+    el.dataset.cat = row.cat || 'trainings';
+    if (row.date) el.dataset.date = row.date;
+    if (isVid) {
+      el.dataset.video = row.src;
+      el.innerHTML = `<video src="${row.src}" preload="metadata" muted playsinline></video>`
+        + `<div class="gm-play-badge"><div class="gm-play-circle"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z" fill="#e8e8e4"/></svg></div></div>`;
+    } else {
+      el.dataset.img = row.src;
+      const alt = (row.name || '').replace(/"/g, '&quot;');
+      el.innerHTML = `<img src="${row.src}" alt="${alt}" loading="lazy">`
+        + `<div class="gm-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>`;
+    }
+    if (row.date) el.appendChild(makeDateBadge(row.date));
+    return el;
+  }
+
+  // ── Filter tabs (rebuilt from actual item categories) ─────────────
+  function rebuildFilterTabs() {
+    const filterEl = document.querySelector('.gallery-filter');
+    if (!filterEl) return;
+    const sortDiv = filterEl.querySelector('.gf-sort');
+    filterEl.querySelectorAll('.gf-tab').forEach(b => b.remove());
+
+    const cats = [...new Set(allItems.map(i => i.dataset.cat).filter(Boolean))].sort();
+
+    function makeTab(cat, label, isActive) {
+      const b = document.createElement('button');
+      b.className = 'gf-tab' + (isActive ? ' active' : '');
+      b.dataset.catFilter = cat;
+      b.textContent = label;
+      b.addEventListener('click', () => {
+        filterEl.querySelectorAll('.gf-tab').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        activeCat = cat;
+        applyFilter();
+      });
+      filterEl.insertBefore(b, sortDiv || null);
+      return b;
+    }
+
+    makeTab('all', 'All', true);
+    cats.forEach(c => makeTab(c, catLabel(c), false));
+  }
+
+  // ── Filter / sort / paginate ──────────────────────────────────────
   function getFiltered() {
     return activeCat === 'all' ? allItems : allItems.filter(i => i.dataset.cat === activeCat);
   }
@@ -470,7 +510,6 @@
     const sorted = getSorted(getFiltered());
     allItems.forEach(i => { i.style.display = 'none'; });
     shown = Math.min(BATCH, sorted.length);
-    // Reorder visible items in the DOM so they appear sorted
     sorted.slice(0, shown).forEach(i => { i.style.display = ''; grid.appendChild(i); });
     updateLoadMore();
     buildLbItems();
@@ -479,18 +518,9 @@
   function updateLoadMore() {
     const total = getFiltered().length;
     document.getElementById('loadCount').textContent = `Showing ${shown} of ${total}`;
-    document.getElementById('loadBar').style.width = (shown / total * 100) + '%';
+    document.getElementById('loadBar').style.width = total ? (shown / total * 100) + '%' : '0%';
     document.getElementById('loadMoreWrap').style.display = shown >= total ? 'none' : '';
   }
-
-  document.querySelectorAll('[data-cat-filter]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-cat-filter]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeCat = btn.dataset.catFilter;
-      applyFilter();
-    });
-  });
 
   document.getElementById('sortSelect').addEventListener('change', function () {
     sortOrder = this.value;
@@ -507,12 +537,10 @@
     buildLbItems();
   });
 
-  applyFilter();
-
-  // Lightbox
-  const lightbox = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lbImg');
-  const lbVideo = document.getElementById('lbVideo');
+  // ── Lightbox ──────────────────────────────────────────────────────
+  const lightbox  = document.getElementById('lightbox');
+  const lbImg     = document.getElementById('lbImg');
+  const lbVideo   = document.getElementById('lbVideo');
   const lbCounter = document.getElementById('lbCounter');
   let lbItems = [];
   let lbCurrent = 0;
@@ -555,7 +583,8 @@
     document.body.style.overflow = '';
   }
 
-  document.querySelectorAll('.gf-item, .gm-item').forEach(el => {
+  // Featured grid (always hardcoded)
+  document.querySelectorAll('.gf-item').forEach(el => {
     if (el.dataset.img || el.dataset.video) el.addEventListener('click', () => openLb(el));
   });
 
@@ -570,7 +599,6 @@
     if (e.key === 'ArrowRight') { lbCurrent = (lbCurrent + 1) % lbItems.length; showLbItem(lbCurrent); }
   });
 
-  // Touch swipe
   let lbTouchX = 0;
   lightbox.addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
   lightbox.addEventListener('touchend', e => {
@@ -580,6 +608,42 @@
       else        { lbCurrent = (lbCurrent - 1 + lbItems.length) % lbItems.length; showLbItem(lbCurrent); }
     }
   });
+
+  // ── Init: load from Supabase, fallback to hardcoded HTML items ────
+  (async function() {
+    // Collect hardcoded items already in HTML, add date badges
+    const hardcoded = Array.from(grid.querySelectorAll('.gm-item'));
+    hardcoded.forEach(item => {
+      if (item.dataset.date && !item.querySelector('.gm-date')) {
+        item.appendChild(makeDateBadge(item.dataset.date));
+      }
+    });
+
+    // Try loading from Supabase
+    let usedSupabase = false;
+    try {
+      const { data, error } = await _sb.from('gallery_items').select('*').order('ord');
+      if (!error && data && data.length) {
+        // Replace hardcoded items with admin-managed content
+        hardcoded.forEach(el => el.remove());
+        data.forEach(row => grid.appendChild(buildGmItem(row)));
+        usedSupabase = true;
+      }
+    } catch(e) {
+      console.warn('Gallery load:', e);
+    }
+
+    // Collect all items (from Supabase or hardcoded fallback)
+    allItems = Array.from(grid.querySelectorAll('.gm-item'));
+
+    // Attach lightbox click handlers
+    allItems.forEach(el => {
+      if (el.dataset.img || el.dataset.video) el.addEventListener('click', () => openLb(el));
+    });
+
+    rebuildFilterTabs();
+    applyFilter();
+  })();
 </script>
 </body>
 </html>
