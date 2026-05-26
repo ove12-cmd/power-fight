@@ -348,9 +348,8 @@
       </div>
 
       <div class="form-group has-textarea" style="margin-top:20px">
-        <label class="form-label">Message</label>
+        <label class="form-label">Message <span style="font-size:10px;letter-spacing:.06em;color:var(--ink-mute);text-transform:none;font-weight:400">(optional)</span></label>
         <textarea class="form-textarea" name="message" placeholder="Tell us a bit about yourself — experience level, goals, any questions..."></textarea>
-        <span class="form-error">Message is required</span>
       </div>
 
       <div class="form-submit">
@@ -528,7 +527,7 @@
     setField(this, validateEmail(this.value));
   });
   document.querySelector('[name="message"]').addEventListener('input', function(){
-    setField(this, this.value.trim().length >= 10);
+    if (this.value.trim().length > 0) setField(this, true);
   });
   // On submit, validate all required fields
   document.querySelector('form').addEventListener('submit', function(e) {
@@ -538,7 +537,6 @@
     let ok = true;
     if (name.value.trim().length < 2) { setField(name, false); name.closest('.form-group').classList.add('has-error'); ok = false; }
     if (!validateEmail(email.value)) { setField(email, false); email.closest('.form-group').classList.add('has-error'); ok = false; }
-    if (msg && msg.value.trim().length < 10) { setField(msg, false); msg.closest('.form-group').classList.add('has-error'); ok = false; }
     // On submit, if no interest selected, shake the pills
     const pillsWrap = document.getElementById('interestPills');
     if (pillsWrap && selected.size === 0) {
