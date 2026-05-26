@@ -659,6 +659,24 @@
     }
   });
 
+  // Load featured images from Supabase settings
+  (async function() {
+    try {
+      const { data } = await _sb.from('settings').select('value').eq('key','gallery_featured_images').maybeSingle();
+      if (!data) return;
+      let urls = [];
+      try { urls = JSON.parse(data.value || '[]'); } catch(_) { return; }
+      const items = document.querySelectorAll('.gf-item');
+      items.forEach((el, i) => {
+        const url = urls[i];
+        if (!url) return;
+        const img = el.querySelector('img');
+        if (img) { img.src = url; img.dataset.src = url; }
+        el.dataset.img = url;
+      });
+    } catch(e) { console.warn('Featured images load:', e); }
+  })();
+
   // ── Init: swap skeleton → real items from Supabase ───────────────
   (async function() {
     const skels = Array.from(grid.querySelectorAll('.gm-skel'));

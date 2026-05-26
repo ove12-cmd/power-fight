@@ -826,6 +826,41 @@
           </div>
         </div>
 
+        <!-- Featured Section Images -->
+        <div class="adm-card" style="margin-top:28px">
+          <div class="adm-card-head">
+            <div>
+              <span class="adm-card-title">Featured Section Images</span>
+              <span style="font-size:11px;color:var(--ink-mute);margin-left:10px">(3 images shown above the gallery grid)</span>
+            </div>
+          </div>
+          <div class="adm-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+              <div class="adm-field">
+                <label>Image 1 — Large (left)</label>
+                <input type="url" id="featImg1" placeholder="https://…">
+                <img id="featPrev1" src="" alt="" style="width:100%;height:60px;object-fit:cover;margin-top:6px;display:none">
+              </div>
+              <div class="adm-field">
+                <label>Image 2 — Top right</label>
+                <input type="url" id="featImg2" placeholder="https://…">
+                <img id="featPrev2" src="" alt="" style="width:100%;height:60px;object-fit:cover;margin-top:6px;display:none">
+              </div>
+              <div class="adm-field">
+                <label>Image 3 — Bottom right</label>
+                <input type="url" id="featImg3" placeholder="https://…">
+                <img id="featPrev3" src="" alt="" style="width:100%;height:60px;object-fit:cover;margin-top:6px;display:none">
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:16px">
+              <button class="btn-adm btn-lime" id="saveFeatBtn">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Save Featured Images
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Media Library -->
         <div style="margin-top:28px">
           <div class="gal-lib-head">
@@ -1295,6 +1330,7 @@
       btn.classList.add('active');
       Object.values(tabPanels).forEach(id => document.getElementById(id).style.display = 'none');
       document.getElementById(tabPanels[btn.dataset.tab]).style.display = '';
+      if (btn.dataset.tab === 'gallery') loadFeaturedImages();
     });
   });
 
@@ -2167,6 +2203,43 @@
     toast(affected > 0 ? `Category removed — ${affected} item${affected > 1 ? 's' : ''} moved to ${catLabel(fallback)}` : 'Category removed');
   };
 
+
+  // ── Featured images ────────────────────────────────────────────────
+  async function loadFeaturedImages() {
+    const raw = await sbGetSetting('gallery_featured_images', '[]');
+    let urls = [];
+    try { urls = JSON.parse(raw); } catch(_) { urls = []; }
+    ['1','2','3'].forEach((n, i) => {
+      const u = urls[i] || '';
+      document.getElementById('featImg' + n).value = u;
+      const p = document.getElementById('featPrev' + n);
+      p.src = u; p.style.display = u ? 'block' : 'none';
+    });
+  }
+  document.getElementById('saveFeatBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('saveFeatBtn');
+    const urls = ['1','2','3'].map(n => document.getElementById('featImg' + n).value.trim());
+    const _iconOk = `<svg viewBox="0 0 24 24" width="13" height="13"><polyline points="20 6 9 17 4 12" stroke="currentColor" fill="none" stroke-width="2.5"/></svg>`;
+    btn.disabled = true;
+    try {
+      await sbSetSetting('gallery_featured_images', JSON.stringify(urls));
+      const orig = btn.innerHTML;
+      btn.innerHTML = _iconOk + ' Saved!';
+      setTimeout(() => { btn.disabled = false; btn.innerHTML = orig; }, 2000);
+      toast('Featured images saved ✓');
+    } catch(e) {
+      toast('Save failed: ' + e.message, true);
+      btn.disabled = false;
+    }
+  });
+  // Add live preview update for each input
+  ['1','2','3'].forEach(n => {
+    document.getElementById('featImg' + n).addEventListener('input', function() {
+      const p = document.getElementById('featPrev' + n);
+      p.src = this.value;
+      p.style.display = this.value ? 'block' : 'none';
+    });
+  });
 
   // ═══════════════════════════════════════════════════════════════════
   //  SCHEDULE  (day + time editor — class names are fixed)
