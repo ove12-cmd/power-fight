@@ -272,25 +272,27 @@
       <div class="bk-form-title">Request a Session</div>
       <p class="bk-form-sub">Fill in the details and we'll get back to you within 24 hours.</p>
 
-      <form id="bkForm" novalidate>
+      <form id="bkForm" name="booking" method="POST" netlify netlify-honeypot="bot-field" novalidate>
+        <input type="hidden" name="form-name" value="booking">
+        <div style="display:none" aria-hidden="true"><label>Don't fill this out: <input name="bot-field"></label></div>
         <div class="bk-grid">
           <div class="bk-field">
             <label for="bkName">Full Name</label>
-            <input type="text" id="bkName" placeholder="Jonas Lie" autocomplete="name" required>
+            <input type="text" id="bkName" name="name" placeholder="Jonas Lie" autocomplete="name" required>
           </div>
           <div class="bk-field">
             <label for="bkPhone">Phone / WhatsApp</label>
-            <input type="tel" id="bkPhone" placeholder="+41 78 000 00 00" autocomplete="tel">
+            <input type="tel" id="bkPhone" name="phone" placeholder="+41 78 000 00 00" autocomplete="tel">
           </div>
         </div>
         <div class="bk-field">
           <label for="bkEmail">Email</label>
-          <input type="email" id="bkEmail" placeholder="you@email.com" autocomplete="email" required>
+          <input type="email" id="bkEmail" name="email" placeholder="you@email.com" autocomplete="email" required>
         </div>
         <div class="bk-grid">
           <div class="bk-field">
             <label for="bkType">Session Type</label>
-            <select id="bkType" required>
+            <select id="bkType" name="session_type" required>
               <option value="">Select…</option>
               <option>Solo (1-on-1)</option>
               <option>Small Group (2–4)</option>
@@ -300,7 +302,7 @@
           </div>
           <div class="bk-field">
             <label for="bkDiscipline">Discipline</label>
-            <select id="bkDiscipline">
+            <select id="bkDiscipline" name="discipline">
               <option value="">Select…</option>
               <option>MMA Striking</option>
               <option>MMA Grappling</option>
@@ -313,13 +315,13 @@
         </div>
         <div class="bk-field">
           <label for="bkDate">Preferred Date &amp; Time</label>
-          <input type="text" id="bkDate" placeholder="e.g. Weekdays morning, or specific date">
+          <input type="text" id="bkDate" name="preferred_date" placeholder="e.g. Weekdays morning, or specific date">
         </div>
         <div class="bk-field">
           <label for="bkMessage">Goals / Notes</label>
-          <textarea id="bkMessage" placeholder="What are you working on? Any injuries or limitations we should know about?"></textarea>
+          <textarea id="bkMessage" name="message" placeholder="What are you working on? Any injuries or limitations we should know about?"></textarea>
         </div>
-        <button class="btn btn-primary bk-submit" type="submit"><span>Send Request</span></button>
+        <button class="btn btn-primary bk-submit" id="bkSubmitBtn" type="submit"><span id="bkBtnLabel">Send Request</span></button>
         <p class="bk-form-note">No payment required upfront. We'll confirm details before anything is booked.</p>
       </form>
 
@@ -340,21 +342,35 @@
 <script>
   initComponents('booking');
 
-  document.getElementById('bkForm').addEventListener('submit', function(e) {
+  document.getElementById('bkForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const name = document.getElementById('bkName').value.trim();
     const email = document.getElementById('bkEmail').value.trim();
     const type = document.getElementById('bkType').value;
     if (!name || !email || !type) {
-      const missing = document.querySelector('.bk-field input:invalid, .bk-field select:invalid');
+      const missing = this.querySelector('input:invalid, select:invalid');
       if (missing) missing.focus();
       return;
     }
-    // In production: send to backend. For now, show success.
-    this.style.display = 'none';
-    document.querySelector('.bk-form-title').style.display = 'none';
-    document.querySelector('.bk-form-sub').style.display = 'none';
-    document.getElementById('bkSuccess').classList.add('show');
+    const btn = document.getElementById('bkSubmitBtn');
+    const label = document.getElementById('bkBtnLabel');
+    btn.disabled = true;
+    label.textContent = 'Sending…';
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(this)).toString()
+      });
+      this.style.display = 'none';
+      document.querySelector('.bk-form-title').style.display = 'none';
+      document.querySelector('.bk-form-sub').style.display = 'none';
+      document.getElementById('bkSuccess').classList.add('show');
+    } catch (_) {
+      btn.disabled = false;
+      label.textContent = 'Send Request';
+      alert('Something went wrong. Please try again or contact us directly.');
+    }
   });
 </script>
 </body>
