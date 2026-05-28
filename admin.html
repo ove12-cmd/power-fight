@@ -85,7 +85,7 @@
     background:var(--bg-2);border-right:1px solid var(--line-2);
     display:flex;flex-direction:column;height:100vh;overflow-y:auto;
   }
-  .sb-logo{padding:24px 20px 20px;border-bottom:1px solid var(--line-2)}
+  .sb-logo{padding:24px 20px 20px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:10px}
   .sb-logo img{height:32px;width:auto;display:block}
   .sb-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute);padding:20px 20px 8px}
   .sb-nav{display:flex;flex-direction:column;gap:2px;padding:0 10px}
@@ -419,19 +419,100 @@
   ::-webkit-scrollbar-thumb{background:var(--line-3);border-radius:2px}
 
   /* ── RESPONSIVE ──────────────────────────────────────────────── */
+
+  /* Tablet */
+  @media(max-width:900px){
+    :root{--sidebar:180px}
+    .panel-head{padding:24px 24px 20px}
+    .panel-body{padding:24px;gap:24px}
+    .adm-card-body{padding:18px}
+    .adm-card-head{padding:14px 18px}
+    .adm-img-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+    .gal-dz-area{min-height:100px}
+    /* Gallery lib header — put filter on its own row */
+    .gal-lib-head{gap:6px 8px}
+    #galLibCount{flex:1}
+    #galleryFilter{order:3;flex:0 0 100% !important;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:0 !important}
+    #galleryFilter::-webkit-scrollbar{display:none}
+    .gal-sort-sel{order:4;flex:1;min-width:0}
+    .gal-view-btns{order:4;margin-left:0}
+  }
+
+  /* Mobile */
   @media(max-width:700px){
     :root{--sidebar:100%}
-    #sidebar{width:100%;height:auto;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--line-2)}
-    .sb-logo,.sb-label,.sb-footer{display:none}
-    .sb-nav{flex-direction:row;padding:8px;width:100%;gap:4px}
-    .sb-link{flex-direction:column;gap:4px;padding:8px;font-size:10px;flex:1;align-items:center;text-align:center}
-    .sb-badge{margin:0}
     #dashboard.visible{flex-direction:column}
-    #content{height:calc(100vh - 80px)}
-    .panel-head{padding:20px 20px 16px}
-    .panel-body{padding:20px}
+
+    /* Sidebar → sticky top tab bar */
+    #sidebar{
+      width:100%;height:auto;flex-shrink:0;
+      flex-direction:row;flex-wrap:nowrap;
+      border-right:none;border-bottom:1px solid var(--line-2);
+      overflow-x:auto;overflow-y:hidden;
+      scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    }
+    #sidebar::-webkit-scrollbar{display:none}
+    .sb-logo,.sb-label,.sb-footer{display:none}
+
+    /* Hide the "Site" nav section (second sb-nav — just the Home link) */
+    #sidebar .sb-nav:last-of-type{display:none}
+
+    .sb-nav{
+      flex-direction:row;padding:4px 6px;
+      gap:1px;flex-shrink:0;flex:1;
+    }
+    .sb-link{
+      flex-direction:column;gap:3px;
+      padding:10px 8px;font-size:10px;
+      flex:1;min-width:52px;
+      align-items:center;text-align:center;white-space:nowrap;
+    }
+    .sb-link svg{width:15px;height:15px}
+    .sb-badge{margin:0;font-size:9px;padding:1px 5px}
+
+    /* Content area fills remaining height */
+    #content{height:calc(100vh - 64px);overflow-y:auto}
+
+    /* Panel */
+    .panel-head{padding:14px 16px 12px;gap:10px}
+    .panel-title{font-size:17px}
+    .panel-subtitle{font-size:12px}
+    .panel-body{padding:14px;gap:16px}
+    .adm-card-body{padding:14px}
+    .adm-card-head{padding:12px 14px}
+
+    /* Forms */
     .adm-form-row{grid-template-columns:1fr}
     .adm-form-row.cols3{grid-template-columns:1fr}
+    .adm-field input,.adm-field textarea,.adm-field select{font-size:16px} /* prevent iOS zoom */
+
+    /* Gallery grid → 2 cols on mobile */
+    .adm-img-grid{grid-template-columns:repeat(2,1fr)}
+    .adm-img-grid.list-view{grid-template-columns:1fr}
+    .adm-img-grid.list-view .adm-img-card-thumb{width:56px;height:42px}
+
+    /* Gallery controls */
+    .gal-controls{flex-wrap:wrap;gap:8px}
+    .gal-view-btns{margin-left:auto}
+
+    /* Gallery lib header — stack filter on own row */
+    .gal-lib-head{gap:6px 8px}
+    .gal-lib-label{flex-shrink:0}
+    #galLibCount{flex:1}
+    #galleryFilter{order:3;flex:0 0 100% !important;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:0 !important}
+    #galleryFilter::-webkit-scrollbar{display:none}
+    .gal-sort-sel{order:4;flex:1;min-width:0}
+    .gal-view-btns{order:4;margin-left:0}
+
+    /* Schedule slot row — tighten inputs to fit mobile */
+    .sl-day{width:86px !important;font-size:12px !important;padding:5px 6px !important}
+    .sl-start,.sl-end{width:90px !important;font-size:12px !important;padding:5px 6px !important}
+    .sched-slot-row{gap:6px !important}
+    .sched-slot-row>span:last-child{max-width:100% !important;flex-shrink:1 !important}
+
+    /* Ticker row — tighten */
+    .ticker-row{padding:12px 14px}
+    .ticker-row-text{font-size:13px}
   }
 </style>
 </head>
@@ -470,7 +551,7 @@
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="sb-logo" style="display:flex;align-items:center;gap:10px">
+    <div class="sb-logo">
       <img src="logo2.png" alt="Power Fight">
       <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:rgba(199,255,63,.14);color:var(--lime);font-weight:700;padding:2px 8px;border-radius:3px;border:1px solid rgba(199,255,63,.28);white-space:nowrap">Admin</span>
     </div>
@@ -1480,13 +1561,13 @@
     }
 
     el.innerHTML = `<div style="padding:12px 16px">
-      <div style="display:flex;align-items:center;gap:12px;background:var(--layer-3);border-radius:8px;padding:10px 14px">
+      <div class="hv-row" style="display:flex;align-items:center;gap:12px;background:var(--layer-3);border-radius:8px;padding:10px 14px;flex-wrap:wrap">
         ${thumbHtml}
-        <div style="flex:1;min-width:0">
+        <div style="flex:1;min-width:120px">
           <div style="font-size:11px;color:${iconColor};font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">${label} · Active</div>
           <div style="font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayUrl}</div>
         </div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
+        <div style="display:flex;gap:6px;flex-shrink:0;margin-left:auto">
           <button class="btn-adm btn-ghost" style="font-size:11px;padding:4px 10px" onclick="document.getElementById('heroVideoUrl').value=${JSON.stringify(url)};document.getElementById('heroVideoUrl').focus()">Edit URL</button>
           <button class="btn-adm" style="font-size:11px;padding:4px 10px;background:rgba(255,77,109,.12);color:var(--red);border:1px solid rgba(255,77,109,.25)" onclick="heroVideoRemove()">Remove</button>
         </div>
