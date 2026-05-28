@@ -2460,11 +2460,12 @@
   document.querySelectorAll('.cert-thumb').forEach(el => {
     el.addEventListener('click', () => openLightbox(el.dataset.img, false));
   });
-  document.querySelectorAll('.gallery-item[data-img]').forEach(el => {
-    el.addEventListener('click', () => openLightbox(el.dataset.img, false));
-  });
-  document.querySelectorAll('.gallery-item[data-video]').forEach(el => {
-    el.addEventListener('click', () => openLightbox(el.dataset.video, true));
+  // Use event delegation — items are injected async after Supabase fetch
+  document.getElementById('galleryGrid').addEventListener('click', e => {
+    const el = e.target.closest('.gallery-item');
+    if (!el) return;
+    if (el.dataset.video) openLightbox(el.dataset.video, true);
+    else if (el.dataset.img) openLightbox(el.dataset.img, false);
   });
 
   document.getElementById('certLightboxClose').addEventListener('click', closeLightbox);
