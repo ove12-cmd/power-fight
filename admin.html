@@ -2683,11 +2683,19 @@ Reset button restores removed classes.`)) return;
       for (let i = 0; i < url.length; i++) h = (Math.imul(31, h) + url.charCodeAt(i)) | 0;
       return Math.abs(h) % IG_COLORS.length;
     }
+    const IG_TITLES = [
+      'Training Session','Fight Night','Sparring Day','Team Practice',
+      'Competition Prep','Grappling Class','Striking Drills','Live Rolls',
+      'Gym Life','Fight Camp','Mat Time','Technique Work',
+      'Open Mat','Morning Session','Team Lineup','Event Highlights',
+    ];
     function igAutoTitle(url) {
-      const m = url.match(/instagram\.com\/(reel|p|tv|stories)\/([^/?#]+)/i);
-      if (!m) return { type: 'Post', id: '' };
-      const map = { reel:'Reel', p:'Post', tv:'IGTV', stories:'Story' };
-      return { type: map[m[1].toLowerCase()] || 'Post', id: m[2] };
+      const m = url.match(/instagram\.com\/(?:reel|p|tv|stories)\/([^/?#]+)/i);
+      const id = m ? m[1] : '';
+      let h = 0;
+      for (let i = 0; i < url.length; i++) h = (Math.imul(31, h) + url.charCodeAt(i)) | 0;
+      const title = IG_TITLES[Math.abs(h) % IG_TITLES.length];
+      return { type: title, id };
     }
 
     posts.forEach((post, idx) => {
