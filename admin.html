@@ -2080,6 +2080,17 @@
     const usedCats = [...new Set(items.map(i => i.cat).filter(Boolean))];
     usedCats.forEach(c => { if (!cats.includes(c)) cats = [...cats, c]; });
 
+    // Classify each category: 'video', 'image', or 'empty' (no items yet)
+    // A cat is video-only if ALL its items are videos; image-only if ALL are images.
+    const catType = {};
+    cats.forEach(c => {
+      const members = items.filter(i => i.cat === c);
+      if (!members.length) { catType[c] = 'empty'; return; }
+      const hasVideo = members.some(i => i.is_video || i.isVideo);
+      const hasImage = members.some(i => !(i.is_video || i.isVideo));
+      catType[c] = hasVideo && !hasImage ? 'video' : !hasVideo && hasImage ? 'image' : 'mixed';
+    });
+
     // ── Item count in Media Library header ────────────────────────────
     const countEl = document.getElementById('galLibCount');
     if (countEl) {
@@ -2194,7 +2205,11 @@
         <div class="adm-img-card-info">
           <div class="adm-img-card-name">${escHtml(item.name || item.cat || '—')}</div>
           <select class="adm-cat-select" onchange="galleryChangeCategory('${item.id}',this.value)" title="Change category">
-            ${cats.map(c => `<option value="${escHtml(c)}"${c === item.cat ? ' selected' : ''}>${escHtml(catLabel(c))}</option>`).join('')}
+            ${cats.filter(c => {
+              const t = catType[c];
+              if (item.is_video || item.isVideo) return t !== 'image';  // videos: exclude image-only cats
+              return t !== 'video';                                       // images: exclude video-only cats
+            }).map(c => `<option value="${escHtml(c)}"${c === item.cat ? ' selected' : ''}>${escHtml(catLabel(c))}</option>`).join('')}
           </select>
           ${item.date ? `<div class="adm-img-card-meta" style="margin-top:3px">${_fmtDate(item.date)}</div>` : ''}
         </div>
