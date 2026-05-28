@@ -2669,43 +2669,55 @@ Reset button restores removed classes.`)) return;
     const empty = document.getElementById('igEmpty');
     list.innerHTML = '';
     empty.style.display = posts.length ? 'none' : '';
+    list.style.cssText = 'display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px';
+
     const IG_COLORS = [
-      'rgba(99,179,237,.10)',
-      'rgba(167,139,250,.10)',
-      'rgba(252,129,147,.10)',
-      'rgba(250,204,21,.08)',
-      'rgba(52,211,153,.08)',
+      ['rgba(99,179,237,.12)','rgba(99,179,237,.5)'],
+      ['rgba(167,139,250,.12)','rgba(167,139,250,.5)'],
+      ['rgba(252,129,147,.12)','rgba(252,129,147,.5)'],
+      ['rgba(250,204,21,.10)','rgba(250,204,21,.5)'],
+      ['rgba(52,211,153,.10)','rgba(52,211,153,.5)'],
     ];
-    // Hash the URL so the colour is tied to the item, not its position
     function igColorIdx(url) {
       let h = 0;
       for (let i = 0; i < url.length; i++) h = (Math.imul(31, h) + url.charCodeAt(i)) | 0;
       return Math.abs(h) % IG_COLORS.length;
     }
+    function igAutoTitle(url) {
+      const m = url.match(/instagram\.com\/(reel|p|tv|stories)\/([^/?#]+)/i);
+      if (!m) return { type: 'Post', id: '' };
+      const map = { reel:'Reel', p:'Post', tv:'IGTV', stories:'Story' };
+      return { type: map[m[1].toLowerCase()] || 'Post', id: m[2] };
+    }
+
     posts.forEach((post, idx) => {
-      const url    = typeof post === 'string' ? post : post.url;
-      const accent = IG_COLORS[igColorIdx(url)];
-      const border = accent.replace('.10','0.6').replace('.08','0.5');
-      const row = document.createElement('div');
-      row.className = 'review-row';
-      row.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 14px';
-      row.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;background:${accent};border-left:3px solid ${border};padding:10px 14px;border-radius:0">
-          <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);min-width:18px;text-align:center;flex-shrink:0">${idx + 1}</span>
-          <div style="width:40px;height:40px;border-radius:4px;background:var(--layer-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--line-2)">
-            <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--ink-mute);fill:none;stroke-width:1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-          </div>
-          <a href="${escHtml(url)}" target="_blank" rel="noopener"
-             style="flex:1;font-size:13px;color:var(--lime);word-break:break-all;text-decoration:none;min-width:0">
-            ${escHtml(url)}
-          </a>
+      const url = typeof post === 'string' ? post : post.url;
+      const [accent, border] = IG_COLORS[igColorIdx(url)];
+      const { type, id } = igAutoTitle(url);
+      const shortId = id.length > 14 ? id.substring(0, 14) + '…' : id;
+      const shortUrl = url.replace(/^https?:\/\/(www\.)?instagram\.com\//,'ig.com/');
+
+      const card = document.createElement('div');
+      card.style.cssText = `background:${accent};border:1px solid ${border};border-radius:8px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:8px;min-width:0`;
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);background:var(--bg-3);border:1px solid var(--line-2);padding:2px 6px;border-radius:3px;flex-shrink:0">#${idx + 1}</span>
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:${border};fill:none;stroke-width:1.5;margin-left:auto;flex-shrink:0"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
         </div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          ${idx > 0 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},-1)" style="padding:5px 10px;font-size:11px" title="Move up">↑</button>` : ''}
-          ${idx < posts.length - 1 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},1)" style="padding:5px 10px;font-size:11px" title="Move down">↓</button>` : ''}
-          <button class="btn-adm btn-ghost" onclick="igRemove(${idx})" style="padding:5px 10px;font-size:11px;color:#FF6B6B;border-color:rgba(255,107,107,.3)">Remove</button>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.01em;line-height:1">${type}</div>
+          ${shortId ? `<div style="font-size:10px;color:var(--ink-dim);font-family:monospace;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${shortId}</div>` : ''}
+        </div>
+        <a href="${escHtml(url)}" target="_blank" rel="noopener" title="${escHtml(url)}"
+           style="font-size:10px;color:var(--lime);opacity:.65;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">
+          ${escHtml(shortUrl)}
+        </a>
+        <div style="display:flex;gap:4px;margin-top:2px">
+          ${idx > 0 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},-1)" style="padding:4px 0;font-size:12px;flex:1" title="Move up">↑</button>` : `<div style="flex:1"></div>`}
+          ${idx < posts.length - 1 ? `<button class="btn-adm btn-ghost" onclick="igMove(${idx},1)" style="padding:4px 0;font-size:12px;flex:1" title="Move down">↓</button>` : `<div style="flex:1"></div>`}
+          <button class="btn-adm btn-ghost" onclick="igRemove(${idx})" style="padding:4px 10px;font-size:11px;color:#FF6B6B;border-color:rgba(255,107,107,.3)">✕</button>
         </div>`;
-      list.appendChild(row);
+      list.appendChild(card);
     });
   }
 
