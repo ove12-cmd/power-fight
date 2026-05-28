@@ -31,6 +31,7 @@
     position:fixed;inset:0;z-index:999;
     display:flex;align-items:center;justify-content:center;
     background:var(--bg);
+    isolation:isolate;
   }
   .login-box{
     width:100%;max-width:380px;padding:24px;
@@ -70,6 +71,9 @@
   @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
   @keyframes spin{to{transform:rotate(360deg)}}
   .login-box.shake{animation:shake .35s ease}
+  #loginBack{position:absolute;top:16px;left:16px;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--ink-mute);font-size:12px;letter-spacing:.06em;padding:6px 8px;transition:color .2s}
+  #loginBack:hover{color:var(--ink)}
+  #loginBack svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
   /* ── DASHBOARD SHELL ─────────────────────────────────────────── */
   #dashboard{display:none;height:100vh;overflow:hidden}
@@ -435,6 +439,10 @@
 <div id="pgWrap"><div id="pgBar"></div></div>
 
 <div id="loginScreen">
+  <button id="loginBack" onclick="history.length>1?history.back():window.location.href='/'" aria-label="Go back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </button>
   <div class="login-box" id="loginBox">
     <img class="login-logo" src="logo2.png" alt="Power Fight">
     <div>

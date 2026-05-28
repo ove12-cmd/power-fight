@@ -106,7 +106,7 @@
   /* ---------- MOB LANG NAV ---------- */
   .mob-lang-nav{display:none; align-items:center; gap:6px}
   @media(max-width:640px){
-    .mob-lang-nav{display:flex; margin-right:4px}
+    .mob-lang-nav{display:flex; margin-left:auto; margin-right:1rem}
   }
 
   /* ---------- LANG SWITCH ---------- */
@@ -119,9 +119,6 @@
   }
   .lang-btn:hover{color:var(--ink)}
   .lang-btn.active{color:var(--lime);font-weight:600}
-  .mob-lang{padding-top:20px;border-top:1px solid var(--line);margin-top:8px}
-  .mob-lang .lang-btn{font-size:13px;letter-spacing:0.18em}
-  .mob-lang .lang-sep{font-size:13px}
 
   /* ---------- HAMBURGER ---------- */
   .hamburger{
@@ -158,15 +155,34 @@
     margin:calc((3.75rem - 44px)/2) 10px;
   }
   .mob-close svg{width:16px; height:16px; stroke:var(--ink); fill:none; stroke-width:1.4; stroke-linecap:round}
-  .mob-menu nav{display:flex; flex-direction:column; gap:4px; margin-bottom:40px; flex:1}
+  .mob-menu nav{display:flex; flex-direction:column; gap:0; margin-bottom:40px; flex:1}
   .mob-menu nav a{
-    font-family:var(--display); font-size:clamp(28px, 8vw, 44px);
-    font-weight:600; letter-spacing:-0.02em; color:var(--ink);
-    padding:10px 0; border-bottom:1px solid var(--line);
-    transition:color .3s;
+    display:flex; align-items:center;
+    padding:18px 0; border-bottom:1px solid var(--line);
+    color:var(--ink); text-decoration:none; transition:color .3s;
   }
   .mob-menu nav a:last-child{border-bottom:none}
-  .mob-menu nav a:hover{color:var(--lime)}
+  .mob-menu nav a:hover .mob-link-text{color:var(--lime)}
+  .mob-link-icon{
+    width:34px; flex-shrink:0;
+    display:flex; align-items:center;
+    color:var(--lime);
+  }
+  .mob-link-icon svg{width:26px; height:26px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+  .mob-link-sep{
+    color:var(--lime); font-size:20px; font-weight:300; opacity:0.55;
+    margin:0 14px; flex-shrink:0; line-height:1;
+  }
+  .mob-link-text{
+    font-family:var(--display); font-size:clamp(26px, 7.5vw, 38px);
+    font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    flex:1; line-height:1; transition:color .3s;
+  }
+  .mob-link-arr{
+    width:9px; height:15px; flex-shrink:0;
+    stroke:var(--lime); fill:none; stroke-width:2;
+    stroke-linecap:round; stroke-linejoin:round;
+  }
   .mob-menu .mob-cta{display:flex; flex-direction:column; gap:12px; margin-bottom:32px}
   .mob-menu .mob-cta .btn{justify-content:center}
   .mob-social{display:flex; gap:20px; padding-top:24px; border-top:1px solid var(--line)}
@@ -214,6 +230,7 @@
   }
 
   .btn-ghost{color:var(--ink) !important; background:rgba(10,11,12,0.85) !important}
+  .btn-ghost:hover span{color:var(--ink) !important}
 
   /* ---------- HERO ---------- */
   .hero-video{
@@ -363,7 +380,7 @@
     margin-top:60px; border-top:1px solid var(--line-2);
   }
   .discipline-row{
-    display:grid; grid-template-columns:52px 1fr auto;
+    display:grid; grid-template-columns:52px 1fr auto auto;
     gap:0 28px; align-items:center;
     padding:28px 36px; border-bottom:1px solid var(--line-2);
     background:var(--bg);
@@ -424,10 +441,35 @@
     .disc-tag{display:none}
   }
   @media(max-width:640px){
-    .disciplines-list{grid-template-columns:1fr; background:none}
-    .discipline-row{grid-template-columns:32px 1fr auto; gap:0 14px; padding:18px 0; background:transparent}
-    .disc-desc{display:none}
-    .disc-read-more{font-size:8px; padding:6px 10px}
+    .disciplines-list{
+      grid-template-columns:1fr; background:var(--line-2);
+      gap:1px; margin-top:32px; border-top:1px solid var(--line-2);
+    }
+    .discipline-row{
+      display:grid;
+      grid-template-columns:36px 1fr;
+      grid-template-rows:auto auto;
+      gap:0 14px;
+      padding:20px 20px 18px;
+      background:var(--bg);
+      border-bottom:none;
+    }
+    .discipline-row::after{display:none}
+    /* Tag: hidden on mobile (redundant with class name) */
+    .disc-tag{display:none}
+    /* Number + body: row 1 */
+    .disc-num{grid-column:1; grid-row:1; align-self:start; padding-top:3px}
+    .disc-body{grid-column:2; grid-row:1; align-self:start; gap:4px}
+    .disc-name{font-size:clamp(18px,5vw,24px)}
+    .disc-desc{
+      display:-webkit-box; -webkit-line-clamp:2;
+      -webkit-box-orient:vertical; overflow:hidden;
+      font-size:12px; line-height:1.5; margin-top:3px;
+    }
+    /* Buttons: full-width row 2, true 50/50 via flex */
+    .disc-right{grid-column:1/-1; grid-row:2; display:flex; gap:8px; margin-top:12px}
+    .disc-join-btn{flex:1; justify-content:center; padding:10px 16px}
+    .disc-read-more{flex:1; padding:9px 14px; font-size:9px; justify-content:center; text-align:center}
   }
 
   /* ── Discipline modal ───────────────────────────────────────────────── */
@@ -526,10 +568,13 @@
     gap:12px; margin-top:60px;
   }
   .sched-col-head{
-    font-family:var(--display); font-size:13px; letter-spacing:0.22em;
-    color:var(--lime); font-weight:600; text-transform:uppercase;
-    text-align:center; padding-bottom:18px; margin-bottom:4px;
-    border-bottom:1px solid var(--line-2);
+    font-family:var(--display); font-size:12px; letter-spacing:0.22em;
+    color:var(--lime); font-weight:700; text-transform:uppercase;
+    text-align:center; padding:9px 6px;
+    margin-bottom:8px;
+    background:rgba(199,255,63,0.08);
+    border:1px solid rgba(199,255,63,0.2);
+    border-radius:6px;
   }
   .sched-card{
     background:var(--bg-2); border:1px solid var(--line-2);
@@ -572,11 +617,15 @@
   .sf-tab.active{color:var(--lime);border-color:rgba(199,255,63,0.35);background:rgba(199,255,63,0.06)}
   .sched-card{transition:opacity .3s,border-color .3s,box-shadow .3s}
   .sched-card.sched-dim{opacity:0.12;pointer-events:none}
+  .sched-masonry-col{display:none}
   @media(max-width:900px){
-    .sched-cols{grid-template-columns:repeat(3,1fr)}
+    .sched-cols{display:flex; gap:12px; align-items:flex-start}
+    .sched-masonry-col{display:flex; flex-direction:column; flex:1; gap:12px}
+    .sched-card{margin-bottom:0}
   }
   @media(max-width:640px){
-    .sched-cols{grid-template-columns:repeat(2,1fr)}
+    .sched-cols{gap:10px; margin-top:1.5rem}
+    .sched-masonry-col{gap:10px}
   }
 
   /* ---------- CLASSES GRID ---------- */
@@ -671,20 +720,28 @@
   .af-wrap{position:relative; overflow:hidden}
   @media(max-width:900px){.af-wrap{min-height:480px}}
   .af-slide{
-    display:grid; grid-template-columns:1fr 1fr;
+    display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto 1fr;
     height:100%; opacity:0; z-index:0;
     position:absolute; inset:0; pointer-events:none;
     transition:opacity .55s cubic-bezier(0.22,1,0.36,1);
   }
   .af-slide.af-active{opacity:1; z-index:1; pointer-events:all}
-  .af-left{
-    padding:60px 60px 60px 32px;
-    display:flex; flex-direction:column; justify-content:center;
+  .af-slide > .af-tag{grid-column:1; grid-row:1; margin:60px 32px 0 32px; align-self:start}
+  .af-left-top{
+    grid-column:1; grid-row:2;
+    padding:16px 60px 0 32px;
+    display:flex; flex-direction:column;
   }
+  .af-left{
+    grid-column:1; grid-row:3;
+    padding:0 60px 60px 32px;
+    display:flex; flex-direction:column; justify-content:flex-start;
+  }
+  .af-right{grid-column:2; grid-row:1/4}
   .af-tag{
     display:inline-block; background:var(--lime); color:#080808;
     font-size:9px; letter-spacing:0.22em; font-weight:700;
-    padding:5px 12px; text-transform:uppercase; margin-bottom:24px; width:fit-content;
+    padding:5px 12px; text-transform:uppercase; margin-bottom:0; width:fit-content;
   }
   .af-name{
     font-family:var(--display); font-weight:700;
@@ -694,7 +751,7 @@
   .af-role-row{display:flex; align-items:center; gap:14px; margin-bottom:24px}
   .af-role-line{width:28px; height:2px; background:var(--lime); flex-shrink:0}
   .af-role{font-size:10px; letter-spacing:0.28em; text-transform:uppercase; color:var(--lime); font-weight:700}
-  .af-desc{font-size:15px; color:var(--ink-dim); line-height:1.65; margin:0 0 36px; max-width:380px}
+  .af-desc{font-size:15px; color:var(--ink-dim); line-height:1.65; margin:1rem 0 36px; max-width:380px}
   .af-stats{display:flex; gap:0; margin-bottom:40px}
   .af-stat{padding:0 28px; border-right:1px solid var(--line-2); display:flex; flex-direction:column; gap:4px}
   .af-stat:first-child{padding-left:0}
@@ -740,15 +797,19 @@
   .af-nav-btn:hover{border-color:var(--lime)}
   .af-nav-btn svg{width:12px; height:12px; stroke:var(--ink); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
   @media(max-width:900px){
-    .af-slide{grid-template-columns:1fr; min-height:auto}
-    .af-right{aspect-ratio:4/3}
+    .af-slide{display:flex; flex-direction:column; min-height:auto}
+    .af-slide > .af-tag{margin:32px 32px 0}
+    .af-left-top{padding:16px 32px 8px; grid-column:unset; grid-row:unset}
+    .af-right{aspect-ratio:4/3; grid-row:unset}
+    .af-left{grid-column:unset; grid-row:unset; padding:16px 32px 32px}
     .af-right-fade{background:linear-gradient(180deg, var(--bg-2) 0%, transparent 30%)}
-    .af-left{padding:40px 32px 32px}
   }
   @media(max-width:640px){
     .athletes{padding:70px 0 0}
     .athletes-head{padding:0 20px 40px}
-    .af-left{padding:32px 20px 24px}
+    .af-slide > .af-tag{margin:24px 20px 0}
+    .af-left-top{padding:12px 20px 4px}
+    .af-left{padding:12px 20px 24px}
     .af-name{font-size:clamp(42px,13vw,72px)}
     .af-ctas{flex-direction:column}
     .af-ctas .btn{justify-content:center}
@@ -824,6 +885,7 @@
     .gallery{padding:70px 20px}
     .gallery-grid{grid-template-columns:1fr 1fr; grid-auto-rows:160px}
     .gi-tall{grid-row:span 1}
+    .gallery-view-all{grid-column:span 2}
   }
 
   /* ---------- TESTIMONIALS ---------- */
@@ -859,6 +921,8 @@
   .t-meta{font-size:10px; letter-spacing:0.2em; color:var(--ink-dim); text-transform:uppercase; margin-top:2px}
   .t-controls{display:flex; align-items:center; gap:8px; padding:20px 32px; border-top:1px solid var(--line-2); background:var(--bg-2); margin:0 -32px}
   .t-dots{display:flex; gap:8px; align-items:center}
+  .t-progress-bar{display:none; flex:1; height:2px; background:var(--line-2); position:relative; overflow:hidden; border-radius:0}
+  .t-progress-fill{position:absolute; inset:0 auto 0 0; width:0%; background:var(--lime); transition:width .55s cubic-bezier(0.22,1,0.36,1)}
   .t-dot{
     width:48px; height:2px; border-radius:0;
     background:var(--line-2); cursor:pointer;
@@ -872,6 +936,8 @@
   @media(max-width:640px){
     .t-dot{width:28px}
     .t-card{flex:0 0 100%; padding:40px 24px 36px; border-right:none}
+    .t-dots{display:none}
+    .t-progress-bar{display:block}
   }
 
   /* ---------- INFO POPUP ---------- */
@@ -944,6 +1010,7 @@
     line-height:0.9; letter-spacing:-0.03em; margin:0 0 28px; text-transform:uppercase;
   }
   .final h2 em{font-style:normal; color:var(--lime); display:block}
+  .final-mob-img{display:none}
   .final p{font-size:16px; color:var(--ink-dim); max-width:420px; margin:0 0 40px; line-height:1.6}
   .final-ctas{display:flex; gap:12px; flex-wrap:wrap}
   .final-right{
@@ -967,12 +1034,21 @@
   .final-badge img{max-width:68px; max-height:68px; width:auto; height:auto; display:block; object-fit:contain}
   @media(max-width:900px){
     .final{grid-template-columns:1fr}
-    .final-right{min-height:320px}
     .final-left{padding:60px 32px}
+    .final-right{display:none}
+    .final-mob-img{
+      display:block;
+      width:calc(100% + 64px);
+      margin:0 -32px 32px;
+      aspect-ratio:4/3;
+      object-fit:cover;
+      object-position:center top;
+    }
   }
   @media(max-width:640px){
     .final-left{padding:60px 20px}
-    .final h2{font-size:clamp(40px,14vw,60px)}
+    .final h2{font-size:clamp(34px,10.5vw,60px)}
+    .final-mob-img{width:calc(100% + 40px); margin:0 -20px 28px}
     .final-ctas{flex-direction:column}
     .final-ctas .btn{justify-content:center}
   }
@@ -1040,11 +1116,12 @@
     .hamburger{display:flex}
   }
   @media (max-width: 900px){
-    .section-head{grid-template-columns:1fr; gap:20px}
+    .logo-scrolled{max-width:6rem; width:100%; height:2.5rem; object-fit:contain; object-position:left center}
+    .section-head{grid-template-columns:1fr; gap:20px; margin-bottom:40px}
     .coaches-grid{grid-template-columns:repeat(2,1fr)}
     .principles{grid-template-columns:repeat(2,1fr)}
     .foot-top{grid-template-columns:1fr 1fr; gap:40px}
-    .t-card{flex:0 0 calc(100% / 3)}
+    .t-card{flex:0 0 100%; border-right:none}
     .classes-grid{grid-template-columns:repeat(2,1fr)}
     .sched-grid{grid-template-columns:repeat(2,1fr)}
   }
@@ -1058,13 +1135,17 @@
     .hero h1{font-size: 22vw; text-transform:uppercase}
     .mob-line{display:block}
     .desk-line{display:none}
-    .hero-ctas{width:100%; display:flex}
-    .hero-ctas .btn{flex:1; justify-content:center}
+    .hero-ctas{width:100%; display:flex; flex-direction:column; gap:10px}
+    .hero-ctas .btn{width:100%; justify-content:center; flex:none}
+    .t-track-wrap{margin:0 -20px}
+    .t-controls{margin:0 -20px}
+    .logo-scrolled{max-width:6rem; width:100%; height:2.5rem; object-fit:contain; object-position:left center}
     #metaDateWrap, #metaTimeWrap{display:none}
     .hero-tag{font-size:17px}
     .reveal{opacity:1; transform:none; transition:none}
     .hero h1 .line > span{transform:none; opacity:1; transition:none}
     .section{padding:70px 20px}
+    .section-head{margin-bottom:24px}
     .philosophy{padding:70px 20px}
     .testimonials{padding:70px 20px}
     .final{padding:100px 20px}
@@ -1076,7 +1157,7 @@
     .foot-top{grid-template-columns:1fr; gap:32px}
     .foot-bottom{flex-direction:column; gap:16px; text-align:center}
     .foot-bottom .right{gap:20px}
-    /* t-card mobile: uses 100% from the 640px block above */
+    /* t-card: already 100% from 900px block */
     .final-ctas{flex-direction:column; align-items:center}
     .final-ctas .btn{width:100%; justify-content:center; max-width:320px}
     .sched-modal-inner{width:95vw}
@@ -1205,6 +1286,19 @@
   .sched-cal-btn:hover{color:var(--lime);border-color:rgba(199,255,63,.35);background:rgba(199,255,63,.06)}
   .sched-cal-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;display:block}
 
+  @media(max-width:768px){
+    .section{padding:80px 32px}
+    .philosophy{padding:80px 32px}
+    .testimonials{padding:80px 32px 0}
+    .schedule{padding:80px 32px}
+    .disciplines-list{grid-template-columns:1fr}
+    .discipline-row{padding:22px 28px}
+    .sched-cols{flex-wrap:wrap}
+    .sched-masonry-col{flex:0 0 calc(50% - 6px);min-width:0}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px}
+    .coach-duo-info{padding:30px}
+  }
+
 </style>
 </head>
 <body>
@@ -1303,8 +1397,8 @@
         <span class="disc-name">Mixed Martial Arts</span>
         <p class="disc-desc">Strike, grapple, cage work and transitions — all disciplines combined into one complete fighting game.</p>
       </div>
+      <span class="disc-tag" style="color:#FF4D6D">MMA</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#FF4D6D">MMA</span>
         <a class="disc-join-btn" href="contact.html?t=Mixed%20Martial%20Arts">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1315,8 +1409,8 @@
         <span class="disc-name">Grappling</span>
         <p class="disc-desc">Clinch work, takedowns, submissions and mat control. Build your ground game from the bottom up.</p>
       </div>
+      <span class="disc-tag" style="color:#5BE0FF">Grappling</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#5BE0FF">Grappling</span>
         <a class="disc-join-btn" href="contact.html?t=Grappling">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1327,8 +1421,8 @@
         <span class="disc-name">Striking</span>
         <p class="disc-desc">Punches, kicks, elbows and footwork. Develop the stand-up game of a complete martial artist.</p>
       </div>
+      <span class="disc-tag" style="color:var(--lime)">Striking</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:var(--lime)">Striking</span>
         <a class="disc-join-btn" href="contact.html?t=Striking">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1339,8 +1433,8 @@
         <span class="disc-name">Wrestling</span>
         <p class="disc-desc">Takedowns, scrambles and dominant positions. The backbone of every great MMA game plan.</p>
       </div>
+      <span class="disc-tag" style="color:#FACC15">Wrestling</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#FACC15">Wrestling</span>
         <a class="disc-join-btn" href="contact.html?t=Wrestling">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1351,8 +1445,8 @@
         <span class="disc-name">Les Mills Bodycombat</span>
         <p class="disc-desc">High-energy martial arts-inspired fitness. Full-body conditioning built on striking patterns — no contact, all intensity.</p>
       </div>
+      <span class="disc-tag" style="color:#FF8C42">Fitness</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#FF8C42">Fitness</span>
         <a class="disc-join-btn" href="contact.html?t=Les%20Mills%20Bodycombat">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1363,8 +1457,8 @@
         <span class="disc-name">Strength &amp; Conditioning</span>
         <p class="disc-desc">Build the engine behind your fight game. Sport-specific strength, power and endurance for martial artists.</p>
       </div>
+      <span class="disc-tag" style="color:#A78BFA">S&amp;C</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#A78BFA">S&amp;C</span>
         <a class="disc-join-btn" href="contact.html?t=Strength%20%26%20Conditioning">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1375,8 +1469,8 @@
         <span class="disc-name">Performance Training</span>
         <p class="disc-desc">Elite-level preparation for competitive fighters. High-intensity sessions with competition-focused game plans.</p>
       </div>
+      <span class="disc-tag" style="color:#FF4D6D">Pro</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#FF4D6D">Pro</span>
         <a class="disc-join-btn" href="contact.html?t=Performance%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1387,8 +1481,8 @@
         <span class="disc-name">Personal Training</span>
         <p class="disc-desc">1-on-1 coaching tailored to your goals. Faster progress, direct feedback and a programme built around you.</p>
       </div>
+      <span class="disc-tag" style="color:#5BE0FF">Personal</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#5BE0FF">Personal</span>
         <a class="disc-join-btn" href="contact.html?t=Personal%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1399,8 +1493,8 @@
         <span class="disc-name">Kettlebell Training</span>
         <p class="disc-desc">Functional strength and conditioning with kettlebells. Raw power, grip and endurance for sport and life.</p>
       </div>
+      <span class="disc-tag" style="color:#FACC15">Fitness</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#FACC15">Fitness</span>
         <a class="disc-join-btn" href="contact.html?t=Kettlebell%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1411,8 +1505,8 @@
         <span class="disc-name">Kids Training</span>
         <p class="disc-desc">Martial arts for ages 5–14. Discipline, confidence and technique in a safe, coached environment.</p>
       </div>
+      <span class="disc-tag" style="color:#FF8C42">Kids</span>
       <div class="disc-right">
-        <span class="disc-tag" style="color:#FF8C42">Kids</span>
         <a class="disc-join-btn" href="contact.html?t=Kids%20Training">Join</a>
         <button class="disc-read-more">Read more</button>
       </div>
@@ -1531,10 +1625,16 @@
 
     <!-- Danilo Marques -->
     <div class="af-slide af-active">
-      <div class="af-left">
-        <div class="af-tag">UFC</div>
+      <div class="af-tag">UFC</div>
+      <div class="af-left-top">
         <h3 class="af-name">Danilo<br>Marques</h3>
         <div class="af-role-row"><div class="af-role-line"></div><div class="af-role">Former UFC Fighter</div></div>
+      </div>
+      <div class="af-right">
+        <img src="Danilo Marques.avif" alt="Danilo Marques">
+        <div class="af-right-fade"></div>
+      </div>
+      <div class="af-left">
         <p class="af-desc">World-class MMA fighter with experience at the highest level of the sport. Now training the next generation — bringing UFC-level technique and intensity to every session.</p>
         <div class="af-stats">
           <div class="af-stat">
@@ -1547,22 +1647,24 @@
           </div>
         </div>
         <div class="af-ctas">
-          <a class="btn btn-primary" href="/contact"><span>Train with us <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+          <a class="btn btn-primary" href="/contact"><span>Train with us</span></a>
           <a class="btn btn-ghost" href="#programs"><span>View Programs</span></a>
         </div>
-      </div>
-      <div class="af-right">
-        <img src="Danilo Marques.avif" alt="Danilo Marques">
-        <div class="af-right-fade"></div>
       </div>
     </div>
 
     <!-- Shogun Rua -->
     <div class="af-slide">
-      <div class="af-left">
-        <div class="af-tag" style="background:#FACC15">World Champion</div>
+      <div class="af-tag" style="background:#FACC15">World Champion</div>
+      <div class="af-left-top">
         <h3 class="af-name">Maurício<br>Shogun Rua</h3>
         <div class="af-role-row"><div class="af-role-line"></div><div class="af-role">Former UFC World Champion</div></div>
+      </div>
+      <div class="af-right">
+        <img src="Shogun Rua.avif" alt="Shogun Rua">
+        <div class="af-right-fade"></div>
+      </div>
+      <div class="af-left">
         <p class="af-desc">UFC Light Heavyweight World Champion and one of the most feared strikers in MMA history. A true legend of the sport who has graced our gym.</p>
         <div class="af-stats">
           <div class="af-stat">
@@ -1575,22 +1677,24 @@
           </div>
         </div>
         <div class="af-ctas">
-          <a class="btn btn-primary" href="/contact"><span>Train with us <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+          <a class="btn btn-primary" href="/contact"><span>Train with us</span></a>
           <a class="btn btn-ghost" href="#programs"><span>View Programs</span></a>
         </div>
-      </div>
-      <div class="af-right">
-        <img src="Shogun Rua.avif" alt="Shogun Rua">
-        <div class="af-right-fade"></div>
       </div>
     </div>
 
     <!-- Rafael Cordeiro -->
     <div class="af-slide">
-      <div class="af-left">
-        <div class="af-tag" style="background:#A78BFA;color:#fff">Legend</div>
+      <div class="af-tag" style="background:#A78BFA;color:#fff">Legend</div>
+      <div class="af-left-top">
         <h3 class="af-name">Rafael<br>Cordeiro</h3>
         <div class="af-role-row"><div class="af-role-line"></div><div class="af-role">Trainer of Champions</div></div>
+      </div>
+      <div class="af-right">
+        <img src="Rafael Cordeiro.avif" alt="Rafael Cordeiro">
+        <div class="af-right-fade"></div>
+      </div>
+      <div class="af-left">
         <p class="af-desc">One of the most respected striking coaches in combat sports history. Trainer of Mike Tyson and world champions across multiple disciplines.</p>
         <div class="af-stats">
           <div class="af-stat">
@@ -1603,13 +1707,9 @@
           </div>
         </div>
         <div class="af-ctas">
-          <a class="btn btn-primary" href="/contact"><span>Train with us <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+          <a class="btn btn-primary" href="/contact"><span>Train with us</span></a>
           <a class="btn btn-ghost" href="#programs"><span>View Programs</span></a>
         </div>
-      </div>
-      <div class="af-right">
-        <img src="Rafael Cordeiro.avif" alt="Rafael Cordeiro">
-        <div class="af-right-fade"></div>
       </div>
     </div>
 
@@ -1668,6 +1768,7 @@
   </div>
   <div class="t-controls reveal">
     <div class="t-dots" id="tDots"></div>
+    <div class="t-progress-bar"><div class="t-progress-fill" id="tProgressFill"></div></div>
     <div class="af-nav-btns">
       <button class="af-nav-btn" id="tPrev" aria-label="Previous"><svg viewBox="0 0 14 14"><path d="M9 1L3 7l6 6"/></svg></button>
       <button class="af-nav-btn" id="tPlayPause" aria-label="Pause">
@@ -1701,6 +1802,7 @@
   <div class="final-left">
     <div class="final-eyebrow" data-i18n="final.eyebrow">Get Started</div>
     <h2 class="reveal">Your first<br>training is<em>Free.</em></h2>
+    <img class="final-mob-img" src="cta.png" alt="">
     <p class="reveal" data-i18n="final.desc">Come in, meet the coaches, train with the team. No commitment. No sales pitch. Just show up and see if it fits.</p>
     <div class="final-ctas reveal">
       <a class="btn btn-primary" href="#system"><span data-i18n="final.cta1">See Schedules <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
@@ -1890,7 +1992,14 @@
     Object.values(byDay).forEach(arr => arr.sort((a, b) => a.timeStart.localeCompare(b.timeStart)));
     const revCls = ['d1','d2','d3'];
     let ci = 0;
-    [1,2,3,4,5,6,7].filter(d => byDay[d]).forEach(d => {
+    const masonry = window.innerWidth <= 900;
+    let leftWrap, rightWrap;
+    if (masonry) {
+      leftWrap = document.createElement('div'); leftWrap.className = 'sched-masonry-col';
+      rightWrap = document.createElement('div'); rightWrap.className = 'sched-masonry-col';
+      grid.appendChild(leftWrap); grid.appendChild(rightWrap);
+    }
+    [1,2,3,4,5,6,7].filter(d => byDay[d]).forEach((d, idx) => {
       const col = document.createElement('div');
       col.className = `reveal${instant ? ' in' : ''} ${revCls[ci++ % 3]}`;
       col.innerHTML = `<div class="sched-col-head">${dayNames[d]}</div>`;
@@ -1906,7 +2015,8 @@
           ${s.level ? `<div class="sched-card-badge">${s.level}</div>` : ''}`;
         col.appendChild(card);
       });
-      grid.appendChild(col);
+      if (masonry) (idx % 2 === 0 ? leftWrap : rightWrap).appendChild(col);
+      else grid.appendChild(col);
     });
   }
 
@@ -2193,7 +2303,7 @@
   let tPaused = false;
   let tCurrentPage = 0;
 
-  function tGetPerPage() { return window.innerWidth >= 641 ? 3 : 1; }
+  function tGetPerPage() { return window.innerWidth > 900 ? 3 : 1; }
   // Per-card sliding: positions = slides − visible + 1 (no empty-space overflow)
   function tTotalPages() { return Math.max(1, tSlides.length - tGetPerPage() + 1); }
 
@@ -2228,6 +2338,8 @@
     tDots[tCurrentPage]?.classList.remove('t-dot-active', 't-dot-paused', 't-dot-selected');
     tCurrentPage = pageIdx;
     tApplyTranslate(pageIdx);
+    const tFill = document.getElementById('tProgressFill');
+    if (tFill) tFill.style.width = `${(tCurrentPage + 1) / pages * 100}%`;
     const dot = tDots[tCurrentPage];
     if (dot) {
       dot.classList.remove('t-dot-active');
@@ -2376,23 +2488,25 @@
       const nh = _escHtml(np[0]) + (np[1] ? '<br>' + _escHtml(np[1]) : '');
       return `
       <div class="af-slide${i===0?' af-active':''}">
-        <div class="af-left">
-          <div class="af-tag"${a.tagColor?` style="background:${_escHtml(a.tagColor)};color:#fff"`:''}>` + _escHtml(a.tag) + `</div>
+        <div class="af-tag"${a.tagColor?` style="background:${_escHtml(a.tagColor)};color:#fff"`:''}>` + _escHtml(a.tag) + `</div>
+        <div class="af-left-top">
           <h3 class="af-name">${nh}</h3>
           <div class="af-role-row"><div class="af-role-line"></div><div class="af-role">` + _escHtml(a.role) + `</div></div>
+        </div>
+        <div class="af-right">
+          <img src="` + _escHtml(a.photo) + `" alt="` + _escHtml(a.name) + `">
+          <div class="af-right-fade"></div>
+        </div>
+        <div class="af-left">
           <p class="af-desc">` + _escHtml(a.desc) + `</p>
           <div class="af-stats">
             <div class="af-stat"><div class="af-stat-num">` + _escHtml(a.s1n) + `</div><div class="af-stat-label">` + _escHtml(a.s1l) + `</div></div>
             <div class="af-stat"><div class="af-stat-num">` + _escHtml(a.s2n) + `</div><div class="af-stat-label">` + _escHtml(a.s2l) + `</div></div>
           </div>
           <div class="af-ctas">
-            <a class="btn btn-primary" href="/contact"><span>Train with us <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+            <a class="btn btn-primary" href="/contact"><span>Train with us</span></a>
             <a class="btn btn-ghost" href="#programs"><span>View Programs</span></a>
           </div>
-        </div>
-        <div class="af-right">
-          <img src="` + _escHtml(a.photo) + `" alt="` + _escHtml(a.name) + `">
-          <div class="af-right-fade"></div>
         </div>
       </div>`;
     }).join('');
