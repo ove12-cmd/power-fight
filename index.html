@@ -1919,11 +1919,15 @@
   // ── Gallery: render featured items from Supabase ──────────────────────
   (async function() {
     try {
-      // Prefer pinned/featured items; fall back to the 8 most recent if none are pinned
-      let { data } = await _sb.from('gallery_items').select('*').eq('featured', true).order('ord');
-      if (!data || !data.length) {
-        const res = await _sb.from('gallery_items').select('*').order('ord').limit(8);
-        data = res.data;
+      // Featured items first, then pad with most-recent to always fill up to 8
+      let { data: featured } = await _sb.from('gallery_items').select('*').eq('featured', true).order('ord');
+      featured = featured || [];
+      let data = featured;
+      if (featured.length < 8) {
+        const featIds = featured.map(i => i.id);
+        const { data: recent } = await _sb.from('gallery_items').select('*').order('ord').limit(8 + featured.length);
+        const extras = (recent || []).filter(i => !featIds.includes(i.id)).slice(0, 8 - featured.length);
+        data = [...featured, ...extras];
       }
       if (!data || !data.length) return;
       const grid = document.getElementById('galleryGrid');
