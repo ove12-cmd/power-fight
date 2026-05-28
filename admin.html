@@ -391,6 +391,8 @@
   .adm-img-card-info{padding:10px 12px 6px;flex:1}
   .adm-img-card-name{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .adm-img-card-meta{font-size:10px;color:var(--ink-mute);margin-top:3px}
+  .adm-cat-select{width:100%;background:var(--bg-3);border:1px solid var(--line-2);color:var(--ink-dim);padding:4px 8px;font-size:10px;letter-spacing:.04em;cursor:pointer;outline:none;appearance:none;font-family:var(--sans);border-radius:3px;margin-top:5px;transition:border-color .2s,color .2s}
+  .adm-cat-select:hover,.adm-cat-select:focus{border-color:rgba(199,255,63,.4);color:var(--ink)}
   .adm-img-card-actions{display:flex;justify-content:space-between;padding:4px 8px 10px}
   .adm-video-badge{position:absolute;top:6px;left:6px;font-size:8px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:2px 7px;background:rgba(4,5,5,.8);border:1px solid var(--line-2);color:var(--lime);border-radius:3px}
   .adm-type-badge{position:absolute;top:6px;right:6px;display:flex;align-items:center;gap:3px;background:rgba(4,5,5,.7);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:3px 6px}
@@ -1991,6 +1993,9 @@
   async function renderGallery(items, cats) {
     if (!items) items = await sbLoadGallery();
     if (!cats)  cats  = await sbLoadCategories();
+    // Ensure all cats actually used by items are present in the list
+    const usedCats = [...new Set(items.map(i => i.cat).filter(Boolean))];
+    usedCats.forEach(c => { if (!cats.includes(c)) cats = [...cats, c]; });
 
     // ── Item count in Media Library header ────────────────────────────
     const countEl = document.getElementById('galLibCount');
@@ -2105,7 +2110,10 @@
         </div>
         <div class="adm-img-card-info">
           <div class="adm-img-card-name">${escHtml(item.name || item.cat || '—')}</div>
-          <div class="adm-img-card-meta">${escHtml(catLabel(item.cat))}${item.date ? ' • ' + _fmtDate(item.date) : ''}</div>
+          <select class="adm-cat-select" onchange="galleryChangeCategory('${item.id}',this.value)" title="Change category">
+            ${cats.map(c => `<option value="${escHtml(c)}"${c === item.cat ? ' selected' : ''}>${escHtml(catLabel(c))}</option>`).join('')}
+          </select>
+          ${item.date ? `<div class="adm-img-card-meta" style="margin-top:3px">${_fmtDate(item.date)}</div>` : ''}
         </div>
         <div class="adm-img-card-actions">
           <button class="btn-icon ${item.featured ? 'featured-on' : ''}" title="${item.featured ? 'Unpin from homepage' : 'Pin to homepage'}" onclick="galleryToggleFeatured('${item.id}')">
@@ -2163,6 +2171,17 @@
     renderGallery(items);
     sbSaveGallery(items).catch(() => { delete _cache.gallery; renderGallery(); });
     toast(item.featured ? 'Pinned to homepage ✓' : 'Removed from homepage');
+  };
+
+  window.galleryChangeCategory = async (id, newCat) => {
+    const items = await sbLoadGallery();
+    const item = items.find(i => i.id === id);
+    if (!item || item.cat === newCat) return;
+    item.cat = newCat;
+    _cache.gallery = items;
+    const { error } = await _sb.from('gallery_items').update({ cat: newCat }).eq('id', id);
+    if (error) { delete _cache.gallery; toast('Save failed', true); return; }
+    toast('Category updated ✓');
   };
 
   window.moveCat = async (slug, dir) => {
