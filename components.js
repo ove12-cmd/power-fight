@@ -35,10 +35,10 @@
   function _renderInfoHours(slots) {
     const grid = document.getElementById('infoHoursGrid');
     if (!grid) return;
-    const DAY = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+    const DAY = {1:'Mo',2:'Di',3:'Mi',4:'Do',5:'Fr',6:'Sa',7:'So'};
     const active = (slots || []).filter(s => !s.hidden && !s.archived);
     if (!active.length) {
-      grid.innerHTML = '<div class="info-hour-row" style="font-size:12px;color:var(--ink-dim)">See full schedule →</div>';
+      grid.innerHTML = '<div class="info-hour-row" style="font-size:12px;color:var(--ink-dim)">Vollständigen Plan →</div>';
       return;
     }
     // Group by day, deduplicate session names per day
@@ -107,14 +107,14 @@
     const active = slots.filter(s => !s.hidden && !s.archived);
     const byDay = {};
     active.forEach(s => { (byDay[s.day] = byDay[s.day] || []).push(s); });
-    const DAY_FULL = {1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Saturday',7:'Sunday'};
+    const DAY_FULL = {1:'Montag',2:'Dienstag',3:'Mittwoch',4:'Donnerstag',5:'Freitag',6:'Samstag',7:'Sonntag'};
     // Days that have sessions, plus always show Sat+Sun as closed if absent
     const allDays = [...new Set([...Object.keys(byDay).map(Number), 6, 7])].sort((a,b)=>a-b);
     list.innerHTML = allDays.map(d => {
       const sessions = byDay[d];
       if (!sessions) {
         // Day with no sessions → Closed
-        return `<li><span class="foot-sched-row" style="opacity:0.4"><span>${DAY_FULL[d]||d}</span><span style="font-size:10px;letter-spacing:0.14em;color:var(--ink-mute)">Closed</span></span></li>`;
+        return `<li><span class="foot-sched-row" style="opacity:0.4"><span>${DAY_FULL[d]||d}</span><span style="font-size:10px;letter-spacing:0.14em;color:var(--ink-mute)">Geschlossen</span></span></li>`;
       }
       const seen = new Set();
       const pills = sessions
@@ -144,26 +144,26 @@
     </div>
   </a>
   <div class="mob-lang-nav">
-    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="en">EN</button>
     <span class="lang-sep">|</span>
-    <button class="lang-btn" data-lang="de">DE</button>
+    <button class="lang-btn active" data-lang="de">DE</button>
   </div>
   <div class="nav-cta">
     <div class="nav-links">
-      <a href="${sh}">Schedules</a>
-      <a href="${pr}">Trainings</a>
-      <a href="/contact" data-nav-contact>Contact</a>
+      <a href="${sh}">Stundenplan</a>
+      <a href="${pr}">Training</a>
+      <a href="/contact" data-nav-contact>Kontakt</a>
       <a href="/faq" data-nav-faq>FAQ</a>
     </div>
     <div class="lang-switch">
-      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="en">EN</button>
       <span class="lang-sep">|</span>
-      <button class="lang-btn" data-lang="de">DE</button>
+      <button class="lang-btn active" data-lang="de">DE</button>
     </div>
     <button class="btn btn-ghost" id="infoBtn" onclick="openInfoPopup()">
       <span style="display:inline-flex;align-items:center;gap:0.5rem"><span>Info</span><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;position:relative;z-index:1"><circle cx="7" cy="7" r="6"/><line x1="7" y1="6" x2="7" y2="10"/><circle cx="7" cy="4" r="0.5" fill="currentColor" stroke="none"/></svg></span>
     </button>
-    <a class="btn btn-primary" href="${sh}"><span>See Schedules</span></a>
+    <a class="btn btn-primary" href="${sh}"><span>Stundenplan ansehen</span></a>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Open menu">
     <span></span><span></span>
@@ -183,13 +183,13 @@
     <a href="${pr}" class="mob-link">
       <span class="mob-link-icon"><svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.71973 1.08008C5.96901 1.08015 5.24869 1.37564 4.71777 1.90234C4.18688 2.42906 3.88873 3.1437 3.88867 3.88867V6.11133C3.88861 6.25005 3.83323 6.38319 3.73438 6.48145C3.63532 6.57972 3.50054 6.63565 3.36035 6.63574C3.22004 6.63574 3.08547 6.5798 2.98633 6.48145C2.88725 6.38315 2.83111 6.25022 2.83105 6.11133V4.96875H2.24023C1.93498 4.96875 1.6417 5.0895 1.42578 5.30371C1.21007 5.51789 1.08887 5.80844 1.08887 6.11133V8.14648L1.09766 8.15527L3.73145 10.7383C3.78123 10.787 3.82067 10.8452 3.84766 10.9092C3.87464 10.9732 3.88864 11.042 3.88867 11.1113V13.9199H11.791V11.1113C11.791 11.0626 11.798 11.0137 11.8115 10.9668L12.9102 7.15332L12.8799 7.14453L12.9111 7.15332V3.88867C12.9111 3.14367 12.613 2.42907 12.082 1.90234C11.5511 1.37561 10.8309 1.0801 10.0801 1.08008H6.71973ZM10.042 9.47656C10.1112 9.47168 10.1812 9.48024 10.2471 9.50195C10.313 9.52374 10.3743 9.5584 10.4268 9.60352C10.4792 9.64867 10.5227 9.70401 10.5537 9.76562C10.5847 9.82715 10.6025 9.89431 10.6074 9.96289C10.6123 10.0316 10.604 10.1007 10.582 10.166C10.5601 10.2313 10.525 10.2917 10.4795 10.3438C10.434 10.3957 10.3785 10.438 10.3164 10.4688L9.07812 11.083L9.02148 11.1113L9.07812 11.1387L10.3164 11.7529C10.4419 11.8152 10.5377 11.9247 10.582 12.0566C10.6263 12.1885 10.6164 12.3327 10.5537 12.457C10.491 12.5814 10.3802 12.6757 10.2471 12.7197C10.1141 12.7636 9.96915 12.7535 9.84375 12.6914L7.85352 11.7041L7.83984 11.6973L7.82617 11.7041L5.83691 12.6914C5.77481 12.7222 5.70697 12.7402 5.6377 12.7451C5.56835 12.75 5.49856 12.7415 5.43262 12.7197C5.3667 12.6979 5.3054 12.6633 5.25293 12.6182C5.20069 12.5731 5.15793 12.5184 5.12695 12.457C5.09596 12.3955 5.07723 12.3283 5.07227 12.2598C5.06735 12.1912 5.07579 12.1219 5.09766 12.0566C5.11958 11.9914 5.15477 11.9309 5.2002 11.8789C5.22296 11.8529 5.24807 11.8287 5.27539 11.8076L5.36328 11.7529L6.60156 11.1387L6.6582 11.1113L6.60156 11.083L5.36328 10.4688C5.30122 10.4379 5.24565 10.3957 5.2002 10.3438C5.1547 10.2917 5.11961 10.2313 5.09766 10.166C5.07571 10.1007 5.06735 10.0316 5.07227 9.96289C5.07719 9.89421 5.09591 9.82723 5.12695 9.76562C5.15799 9.70404 5.20048 9.64866 5.25293 9.60352C5.30541 9.55836 5.36668 9.52376 5.43262 9.50195C5.56577 9.45795 5.7114 9.46899 5.83691 9.53125L7.82617 10.5186L7.83984 10.5254L7.85352 10.5186L9.84375 9.53125C9.90572 9.50054 9.97288 9.4815 10.042 9.47656ZM2.83105 11.3301L2.82227 11.3203L0.310547 8.8584C0.296234 8.84432 0.283106 8.82908 0.270508 8.81348C0.135609 8.64558 0.0536987 8.44201 0.0351562 8.22949L0.03125 8.1377V6.11133C0.03125 5.53033 0.263541 4.97243 0.677734 4.56152C1.09193 4.15063 1.65437 3.91992 2.24023 3.91992H2.83105V3.88867C2.83222 2.86606 3.24272 1.88529 3.97168 1.16211C4.65513 0.484234 5.56658 0.0843514 6.52734 0.0361328L6.71973 0.03125H10.0801C11.1111 0.0323734 12.1001 0.438891 12.8291 1.16211C13.558 1.88528 13.9676 2.8661 13.9688 3.88867V7.14453C13.9686 7.24461 13.9545 7.34422 13.9268 7.44043L12.8496 11.1797H12.8486V13.8887C12.8486 14.1749 12.7343 14.4498 12.5303 14.6523C12.3261 14.8549 12.0486 14.9688 11.7598 14.9688H3.91992C3.63119 14.9687 3.35452 14.8548 3.15039 14.6523C2.94624 14.4498 2.83105 14.175 2.83105 13.8887V11.3301Z" fill="#C7FF3F" stroke="#C7FF3F" stroke-width="0.0625"/></svg></span>
       <span class="mob-link-sep">|</span>
-      <span class="mob-link-text">Trainings</span>
+      <span class="mob-link-text">Training</span>
       <svg class="mob-link-arr" viewBox="0 0 9 15"><polyline points="1,1 8,7.5 1,14"/></svg>
     </a>
     <a href="/contact" class="mob-link">
       <span class="mob-link-icon"><svg width="15" height="11" viewBox="0 0 15 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.07129 0.25H13.9287C14.1444 0.250038 14.3523 0.338397 14.5068 0.49707C14.6615 0.655901 14.7499 0.872274 14.75 1.09961V9.90039C14.7499 10.1277 14.6615 10.3441 14.5068 10.5029C14.3523 10.6616 14.1444 10.75 13.9287 10.75H1.07129C0.855637 10.75 0.647716 10.6616 0.493164 10.5029C0.338511 10.3441 0.250101 10.1277 0.25 9.90039V1.09961C0.250101 0.872274 0.338511 0.655901 0.493164 0.49707C0.647716 0.338397 0.855637 0.250038 1.07129 0.25ZM13.7842 1.39648L7.66016 5.74707C7.61243 5.78106 7.55667 5.79883 7.5 5.79883C7.47153 5.79883 7.44316 5.7949 7.41602 5.78613L7.33984 5.74707L1.21582 1.39648L0.821289 1.11621V10.1504H14.1787V1.11621L13.7842 1.39648ZM2.10547 1.30371L7.35547 5.0332L7.5 5.13574L7.64453 5.0332L12.8945 1.30371L13.5342 0.849609H1.46582L2.10547 1.30371Z" fill="black" stroke="#C7FF3F" stroke-width="0.5"/></svg></span>
       <span class="mob-link-sep">|</span>
-      <span class="mob-link-text">Contact</span>
+      <span class="mob-link-text">Kontakt</span>
       <svg class="mob-link-arr" viewBox="0 0 9 15"><polyline points="1,1 8,7.5 1,14"/></svg>
     </a>
     <a href="/faq" class="mob-link">
@@ -206,8 +206,8 @@
     </a>
   </nav>
   <div class="mob-cta">
-    <a class="btn btn-primary" href="${sh}"><span>See Schedules</span></a>
-    <a class="btn btn-ghost" href="/contact"><span>Contact</span></a>
+    <a class="btn btn-primary" href="${sh}"><span>Stundenplan ansehen</span></a>
+    <a class="btn btn-ghost" href="/contact"><span>Kontakt</span></a>
   </div>
   <div class="mob-social">
     <a href="https://www.instagram.com/powerfightteam" target="_blank" rel="noopener" aria-label="Instagram">
@@ -231,42 +231,42 @@
   <div class="foot-top">
     <div class="foot-brand">
       <a href="${home}" style="display:block;margin-bottom:20px;line-height:0"><img src="logo2.png" alt="Power Fight" style="height:4rem;width:auto;display:block"></a>
-      <p data-i18n="foot.brand">A serious training environment for fighters who are serious about getting better. Open to all levels — built for those who want to compete.</p>
+      <p data-i18n="foot.brand">Ein ernsthaftes Trainingsumfeld für Kämpfer, die besser werden wollen. Offen für alle Niveaus – gebaut für alle, die kämpfen wollen.</p>
       <div class="foot-contact">
         <div class="foot-contact-name">Power Fight Team</div>
         <div>Pfeffingerring 201, 4147 Aesch</div>
-        <a href="https://www.google.com/maps/search/?api=1&query=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:2px;transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Open in Maps</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:2px;transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>In Maps öffnen</a>
         <a href="tel:+41788937929">+41788937929</a>
         <a href="mailto:Nurmsoog@gmail.com">Nurmsoog@gmail.com</a>
       </div>
     </div>
     <div class="foot-col">
-      <h5>Schedule</h5>
+      <h5>Stundenplan</h5>
       <ul id="footSchedList" style="gap:14px">
-        <li><span class="foot-sched-row" style="opacity:0.35;font-size:12px;color:var(--ink-mute)">Loading…</span></li>
+        <li><span class="foot-sched-row" style="opacity:0.35;font-size:12px;color:var(--ink-mute)">Lädt…</span></li>
       </ul>
     </div>
     <div class="foot-col">
-      <h5>Trainings</h5>
+      <h5>Training</h5>
       <ul>
         <li><a href="/#programs">MMA Striking</a></li>
         <li><a href="/#programs">MMA Grappling</a></li>
         <li><a href="/#programs">Les Mills Bodycombat</a></li>
         <li><a href="/#programs">Kids MMA</a></li>
         <li><a href="/#programs">Professional</a></li>
-        <li><a href="/booking" style="color:var(--lime)">Private Bookings →</a></li>
+        <li><a href="/booking" style="color:var(--lime)">Private Buchungen →</a></li>
       </ul>
     </div>
     <div class="foot-col">
-      <h5>Follow Us</h5>
+      <h5>Folge uns</h5>
       <ul>
         <li><a href="https://www.instagram.com/powerfightteam" target="_blank" rel="noopener">Instagram – Power Fight</a></li>
         <li><a href="https://www.facebook.com/p/Power-Fight-Team-100068990680962/" target="_blank" rel="noopener">Facebook – Power Fight</a></li>
         <li><a href="https://www.youtube.com/@germoofficial-experienceta1157" target="_blank" rel="noopener">YouTube</a></li>
       </ul>
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
-        <a class="btn btn-ghost" href="/contact" style="font-size:10px;padding:11px 18px"><span>Contact Us</span></a>
-        <button onclick="openFeedbackModal()" style="background:none;border:none;padding:0;text-align:left;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .2s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'">Leave Feedback →</button>
+        <a class="btn btn-ghost" href="/contact" style="font-size:10px;padding:11px 18px"><span>Kontaktiere uns</span></a>
+        <button onclick="openFeedbackModal()" style="background:none;border:none;padding:0;text-align:left;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .2s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'">Feedback hinterlassen →</button>
       </div>
     </div>
   </div>
@@ -290,37 +290,37 @@
       <div class="info-row">
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
         <div>
-          <div class="info-label">Address</div>
+          <div class="info-label">Adresse</div>
           <div class="info-val">Pfeffingerring 201<br>4147 Aesch, Switzerland</div>
-          <a href="https://www.google.com/maps/search/?api=1&query=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Open in Maps</a>
+          <a href="https://www.google.com/maps/search/?api=1&query=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>In Maps öffnen</a>
         </div>
       </div>
       <div class="info-row">
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.12 7.1 19.79 19.79 0 01.07 4.5 2 2 0 012 2.36h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
         <div>
-          <div class="info-label">Phone</div>
+          <div class="info-label">Telefon</div>
           <div class="info-val"><a href="tel:+41788937929">+41 78 893 79 29</a></div>
         </div>
       </div>
       <div class="info-row">
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
         <div>
-          <div class="info-label">Email</div>
+          <div class="info-label">E-Mail</div>
           <div class="info-val"><a href="mailto:Nurmsoog@gmail.com">Nurmsoog@gmail.com</a></div>
         </div>
       </div>
       <div class="info-row">
         <div class="info-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
         <div style="flex:1">
-          <div class="info-label">Training Hours</div>
+          <div class="info-label">Trainingszeiten</div>
           <div class="info-hours-grid" id="infoHoursGrid">
-            <div class="info-hour-row" style="opacity:.4;font-size:12px;color:var(--ink-dim)">Loading schedule…</div>
+            <div class="info-hour-row" style="opacity:.4;font-size:12px;color:var(--ink-dim)">Stundenplan wird geladen…</div>
           </div>
         </div>
       </div>
     </div>
     <div class="info-popup-cta">
-      <a class="btn btn-primary" href="${sh}" onclick="closeInfoPopup()"><span>See Schedules</span></a>
+      <a class="btn btn-primary" href="${sh}" onclick="closeInfoPopup()"><span>Stundenplan ansehen</span></a>
     </div>
   </div>
 </div>`;
@@ -504,9 +504,9 @@
     bottomRow.innerHTML = `
       <div id="stickyCta">
         <div class="sticky-cta-inner">
-          <span class="sticky-cta-text">Browse our weekly training schedule.</span>
+          <span class="sticky-cta-text">Unser wöchentlicher Trainingsplan.</span>
           <div class="sticky-cta-actions">
-            <a class="btn btn-primary sticky-cta-btn" href="${sh}"><span>See Schedules</span></a>
+            <a class="btn btn-primary sticky-cta-btn" href="${sh}"><span>Stundenplan ansehen</span></a>
             <button class="sticky-cta-close" id="stickyCtaClose" aria-label="Dismiss"><svg viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>
           </div>
         </div>
@@ -561,7 +561,7 @@
     fbStyle.textContent = '.fb-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:7777;opacity:0;pointer-events:none;transition:opacity .3s ease;display:flex;align-items:center;justify-content:center;padding:24px}.fb-modal-overlay.open{opacity:1;pointer-events:all}.fb-modal-inner{background:var(--bg-2,#0a0b0c);border:1px solid var(--line-2,rgba(255,255,255,0.06));border-radius:16px;width:100%;max-width:560px;padding:36px;position:relative;transform:translateY(20px);transition:transform .35s cubic-bezier(.16,1,.3,1);max-height:90vh;overflow-y:auto}.fb-modal-overlay.open .fb-modal-inner{transform:translateY(0)}.fb-modal-close{position:absolute;top:16px;right:16px;background:none;border:1px solid var(--line-2,rgba(255,255,255,0.06));border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-dim,#8a8c86);transition:color .2s,border-color .2s}.fb-modal-close:hover{color:var(--ink,#e8e8e4);border-color:rgba(255,255,255,0.25)}.fb-modal-close svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.8;overflow:visible}.fb-modal-title{font-size:26px;font-family:"Clash Display",ui-sans-serif,system-ui,sans-serif;font-weight:700;color:var(--ink,#e8e8e4);margin-bottom:6px}.fb-modal-sub{font-size:14px;color:var(--ink-dim,#8a8c86);margin-bottom:28px;line-height:1.55}.fb-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}.fb-form .fb-full{grid-column:1/-1}.fb-field{display:flex;flex-direction:column;gap:7px}.fb-field label{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-dim,#8a8c86)}.fb-field input,.fb-field textarea,.fb-field select{background:var(--bg,#040505);border:1px solid var(--line-2,rgba(255,255,255,0.06));border-radius:10px;padding:12px 14px;font-family:"General Sans",ui-sans-serif,system-ui,sans-serif;font-size:14px;color:var(--ink,#e8e8e4);outline:none;transition:border-color .25s}.fb-field input:focus,.fb-field textarea:focus,.fb-field select:focus{border-color:rgba(199,255,63,.4)}.fb-field textarea{resize:vertical;min-height:90px}.fb-field select{appearance:none;-webkit-appearance:none;cursor:pointer}.fb-stars{display:flex;gap:6px;margin-bottom:4px}.fb-star{font-size:22px;cursor:pointer;filter:grayscale(1);opacity:.35;background:none;border:none;padding:0;line-height:1;transition:opacity .15s,filter .15s}.fb-star.active{filter:none;opacity:1}.fb-submit-row{grid-column:1/-1;display:flex;align-items:center;gap:16px;margin-top:4px}.fb-success-screen{display:none;flex-direction:column;align-items:center;text-align:center;padding:12px 0 8px;gap:20px}.fb-success-screen.show{display:flex}.fb-success-icon svg{width:72px;height:72px}.fb-success-title{font-family:"Clash Display",ui-sans-serif,system-ui,sans-serif;font-size:clamp(22px,5vw,28px);font-weight:700;color:var(--ink,#e8e8e4)}.fb-success-sub{font-size:14px;color:var(--ink-dim,#8a8c86);line-height:1.6;max-width:320px}.fb-success-close-btn{min-width:160px;margin-top:8px;justify-content:center}@media(max-width:600px){.fb-modal-inner{padding:24px 20px}.fb-form{grid-template-columns:1fr}}';
     document.head.appendChild(fbStyle);
 
-    document.body.insertAdjacentHTML('beforeend', '<div class="fb-modal-overlay" id="fbModal"><div class="fb-modal-inner"><button class="fb-modal-close" id="fbModalClose" aria-label="Close"><svg viewBox="0 0 16 16"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg></button><div class="fb-modal-title">Leave Feedback</div><p class="fb-modal-sub">Trained with us? Your experience goes straight into the testimonials.</p><form class="fb-form" id="fbForm" novalidate><div class="fb-field"><label for="fbName">Your Name</label><input type="text" id="fbName" placeholder="Jonas Lie" autocomplete="name"></div><div class="fb-field"><label for="fbTraining">Training Type</label><select id="fbTraining"><option value="">Select a discipline</option><option>MMA Striking</option><option>MMA Grappling</option><option>Kids MMA</option><option>Les Mills Bodycombat</option><option>Professional</option><option>Sparring</option><option>S&C</option></select></div><div class="fb-field fb-full"><label for="fbText">Your Experience</label><textarea id="fbText" placeholder="What was your experience training at Power Fight?"></textarea></div><div class="fb-field fb-full"><label>Rating</label><div class="fb-stars" id="fbStars" role="group" aria-label="Rating"><button class="fb-star" type="button" data-val="1" aria-label="1 star">★</button><button class="fb-star" type="button" data-val="2" aria-label="2 stars">★</button><button class="fb-star" type="button" data-val="3" aria-label="3 stars">★</button><button class="fb-star" type="button" data-val="4" aria-label="4 stars">★</button><button class="fb-star" type="button" data-val="5" aria-label="5 stars">★</button></div></div><div class="fb-submit-row"><button class="btn btn-primary" type="submit"><span>Submit Feedback</span></button></div></form><div class="fb-success-screen" id="fbSuccessScreen"><div class="fb-success-icon"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="#C7FF3F" stroke-width="1.5"/><path d="M13 24.5l8 8 14-16" stroke="#C7FF3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="fb-success-title">Thanks for the feedback!</div><p class="fb-success-sub">Your review is now live in the testimonials section.</p><button class="btn btn-primary fb-success-close-btn" id="fbSuccessDone"><span>Close</span></button></div></div></div>');
+    document.body.insertAdjacentHTML('beforeend', '<div class="fb-modal-overlay" id="fbModal"><div class="fb-modal-inner"><button class="fb-modal-close" id="fbModalClose" aria-label="Close"><svg viewBox="0 0 16 16"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg></button><div class="fb-modal-title">Feedback hinterlassen</div><p class="fb-modal-sub">Hast du bei uns trainiert? Deine Erfahrung erscheint direkt in den Testimonials.</p><form class="fb-form" id="fbForm" novalidate><div class="fb-field"><label for="fbName">Dein Name</label><input type="text" id="fbName" placeholder="Jonas Lie" autocomplete="name"></div><div class="fb-field"><label for="fbTraining">Trainingsart</label><select id="fbTraining"><option value="">Disziplin wählen</option><option>MMA Striking</option><option>MMA Grappling</option><option>Kids MMA</option><option>Les Mills Bodycombat</option><option>Professional</option><option>Sparring</option><option>S&C</option></select></div><div class="fb-field fb-full"><label for="fbText">Deine Erfahrung</label><textarea id="fbText" placeholder="Wie war dein Training bei Power Fight?"></textarea></div><div class="fb-field fb-full"><label>Bewertung</label><div class="fb-stars" id="fbStars" role="group" aria-label="Rating"><button class="fb-star" type="button" data-val="1" aria-label="1 star">★</button><button class="fb-star" type="button" data-val="2" aria-label="2 stars">★</button><button class="fb-star" type="button" data-val="3" aria-label="3 stars">★</button><button class="fb-star" type="button" data-val="4" aria-label="4 stars">★</button><button class="fb-star" type="button" data-val="5" aria-label="5 stars">★</button></div></div><div class="fb-submit-row"><button class="btn btn-primary" type="submit"><span>Feedback einreichen</span></button></div></form><div class="fb-success-screen" id="fbSuccessScreen"><div class="fb-success-icon"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="#C7FF3F" stroke-width="1.5"/><path d="M13 24.5l8 8 14-16" stroke="#C7FF3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="fb-success-title">Danke für dein Feedback!</div><p class="fb-success-sub">Deine Bewertung ist nun im Testimonials-Bereich sichtbar.</p><button class="btn btn-primary fb-success-close-btn" id="fbSuccessDone"><span>Schliessen</span></button></div></div></div>');
 
     const fbModalEl = document.getElementById('fbModal');
 

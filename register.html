@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Register — Power Fight</title>
+<title>Registrieren — Power Fight</title>
 <link rel="icon" type="image/png" href="favicon.png" />
 <link rel="apple-touch-icon" href="favicon.png" />
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
@@ -52,6 +52,31 @@
   .hamburger span{display:block;width:100%;height:2px;background:var(--ink);transition:transform .35s cubic-bezier(0.22,1,0.36,1),opacity .25s;transform-origin:center}
   @media(max-width:1100px){.nav-links{display:none}}
   @media(max-width:640px){.nav-cta{display:none}.hamburger{display:flex}}
+  /* Mobile lang nav */
+  .mob-lang-nav{display:none;align-items:center;gap:6px}
+  @media(max-width:640px){.mob-lang-nav{display:flex;margin-left:auto;margin-right:1rem}}
+  /* Mobile menu */
+  .mob-menu{position:fixed;inset:0;z-index:55;background:#040505;display:flex;flex-direction:column;padding:0 28px 40px;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(0.22,1,0.36,1);overflow-y:auto}
+  .mob-menu.open{opacity:1;pointer-events:all}
+  .mob-menu-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 32px;flex-shrink:0}
+  .mob-menu-header img{height:72px;width:auto}
+  .mob-close{position:fixed;top:0;right:0;z-index:61;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;background:transparent;border:none;margin:calc((3.75rem - 44px)/2) 10px}
+  .mob-close svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:1.4;stroke-linecap:round}
+  .mob-menu nav{display:flex;flex-direction:column;gap:0;margin-bottom:40px;flex:1}
+  .mob-menu nav a{display:flex;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;transition:color .3s}
+  .mob-menu nav a:last-child{border-bottom:none}
+  .mob-menu nav a:hover .mob-link-text{color:var(--lime)}
+  .mob-link-icon{width:34px;flex-shrink:0;display:flex;align-items:center;color:var(--lime)}
+  .mob-link-icon svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mob-link-sep{color:var(--lime);font-size:20px;font-weight:300;opacity:0.55;margin:0 14px;flex-shrink:0;line-height:1}
+  .mob-link-text{font-family:var(--display);font-size:clamp(26px,7.5vw,38px);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;flex:1;line-height:1;transition:color .3s}
+  .mob-link-arr{width:9px;height:15px;flex-shrink:0;stroke:var(--lime);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .mob-menu .mob-cta{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+  .mob-menu .mob-cta .btn{justify-content:center}
+  .mob-social{display:flex;gap:20px;padding-top:24px;border-top:1px solid var(--line)}
+  .mob-social a{display:grid;place-items:center;color:var(--ink-dim);transition:color .3s}
+  .mob-social a:hover{color:var(--lime)}
+  .mob-social svg{width:20px;height:20px;fill:currentColor}
 
   /* BUTTONS */
   .btn{display:inline-flex;align-items:center;padding:14px 22px;font-family:var(--sans);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;border:1px solid var(--line);background:rgba(255,255,255,0.015);position:relative;overflow:hidden}
@@ -191,42 +216,18 @@
 <body>
 
 <!-- NAV -->
-<nav class="nav" id="nav">
-  <a class="brand" href="/">
-    <div class="logo-wrap">
-      <img src="logo.png" class="logo-default" alt="Power Fight">
-      <img src="logo2.png" class="logo-scrolled" alt="Power Fight">
-    </div>
-  </a>
-  <div class="nav-links">
-    <a href="index.html#system">Schedules</a>
-    <a href="index.html#programs">Trainings</a>
-    <a href="register.html" class="active">Register</a>
-    <a href="/contact">Contact</a>
-  </div>
-  <div class="nav-cta">
-    <div class="lang-switch">
-      <button class="lang-btn active">EN</button>
-      <span class="lang-sep">|</span>
-      <button class="lang-btn">DE</button>
-    </div>
-    <a class="btn btn-primary" href="index.html#system"><span>See Schedules</span></a>
-  </div>
-  <button class="hamburger" id="hamburger" aria-label="Open menu">
-    <span></span><span></span>
-  </button>
-</nav>
+<div id="nav-root"></div>
 
 <!-- PAGE HERO -->
 <header class="page-hero">
   <div class="page-hero-inner">
     <div>
       <div class="page-eyebrow">Power Fight</div>
-      <h1>Join the <em>Team.</em></h1>
+      <h1>Tritt dem <em>Team</em> bei.</h1>
     </div>
     <div>
-      <div class="hero-badge">First training is always free</div>
-      <p class="page-hero-meta" style="margin-top:16px">Pick your training, fill in your details — we'll confirm and set you up for your first session.</p>
+      <div class="hero-badge">Das erste Training ist immer kostenlos</div>
+      <p class="page-hero-meta" style="margin-top:16px">Wähle dein Training, fülle deine Daten aus – wir bestätigen und bereiten dich auf deine erste Session vor.</p>
     </div>
   </div>
 </header>
@@ -243,55 +244,55 @@
 
         <!-- Training selection -->
         <div class="form-section">
-          <div class="form-section-label">Select Trainings</div>
+          <div class="form-section-label">Training wählen</div>
           <div class="training-pills">
             <div class="tp" data-training="MMA Striking" style="--tp-color:#FACC15">
               <div class="tp-dot"></div>
               <div>
                 <div class="tp-name">MMA Striking</div>
-                <div class="tp-meta">3× per week · Mon, Tue, Wed, Thu</div>
+                <div class="tp-meta">3× pro Woche · Mo, Di, Mi, Do</div>
               </div>
             </div>
             <div class="tp" data-training="MMA Grappling" style="--tp-color:#5BE0FF">
               <div class="tp-dot"></div>
               <div>
                 <div class="tp-name">MMA Grappling</div>
-                <div class="tp-meta">2× per week · Mon, Wed</div>
+                <div class="tp-meta">2× pro Woche · Mo, Mi</div>
               </div>
             </div>
             <div class="tp" data-training="MMA Sparring" style="--tp-color:#FF4D6D">
               <div class="tp-dot"></div>
               <div>
                 <div class="tp-name">MMA Sparring</div>
-                <div class="tp-meta">Fridays · 18:00 &amp; 19:00</div>
+                <div class="tp-meta">Freitags · 18:00 &amp; 19:00</div>
               </div>
             </div>
             <div class="tp" data-training="Fight S&C" style="--tp-color:#A78BFA">
               <div class="tp-dot"></div>
               <div>
                 <div class="tp-name">Fight S&amp;C</div>
-                <div class="tp-meta">Thursdays · 18:00</div>
+                <div class="tp-meta">Donnerstags · 18:00</div>
               </div>
             </div>
             <div class="tp" data-training="Kids MMA" style="--tp-color:#FF8C42">
               <div class="tp-dot"></div>
               <div>
                 <div class="tp-name">Kids MMA</div>
-                <div class="tp-meta">Ages 5–14 · Thursdays 16:00</div>
+                <div class="tp-meta">5–14 Jahre · Donnerstags 16:00</div>
               </div>
             </div>
             <div class="tp" data-training="Les Mills Bodycombat" style="--tp-color:#C7FF3F">
               <div class="tp-dot"></div>
               <div>
                 <div class="tp-name">Les Mills Bodycombat</div>
-                <div class="tp-meta">Fitness · All levels</div>
+                <div class="tp-meta">Fitness · Alle Niveaus</div>
               </div>
             </div>
             <div class="tp" data-training="Professional Trainings" style="--tp-color:#A78BFA">
               <div class="tp-dot"></div>
               <div>
                 <div class="tp-name">Professional</div>
-                <div class="tp-meta">By assessment only</div>
+                <div class="tp-meta">Nur nach Beurteilung</div>
               </div>
             </div>
           </div>
@@ -299,55 +300,55 @@
 
         <!-- Experience level -->
         <div class="form-section">
-          <div class="form-section-label">Experience Level</div>
+          <div class="form-section-label">Erfahrungsniveau</div>
           <div class="level-pills">
-            <div class="lp" data-level="Beginner">Beginner</div>
-            <div class="lp" data-level="Intermediate">Intermediate</div>
-            <div class="lp" data-level="Advanced">Advanced</div>
-            <div class="lp" data-level="Competitor">Competitor</div>
+            <div class="lp" data-level="Beginner">Anfänger</div>
+            <div class="lp" data-level="Intermediate">Fortgeschritten</div>
+            <div class="lp" data-level="Advanced">Erfahren</div>
+            <div class="lp" data-level="Competitor">Wettkämpfer</div>
           </div>
         </div>
 
         <!-- Personal info -->
         <div class="form-section">
-          <div class="form-section-label">Your Details</div>
+          <div class="form-section-label">Deine Daten</div>
           <div class="field-row">
             <div class="field">
-              <label for="firstName">First Name</label>
-              <input type="text" id="firstName" name="First Name" placeholder="First name" required>
+              <label for="firstName">Vorname</label>
+              <input type="text" id="firstName" name="First Name" placeholder="Vorname" required>
             </div>
             <div class="field">
-              <label for="lastName">Last Name</label>
-              <input type="text" id="lastName" name="Last Name" placeholder="Last name" required>
+              <label for="lastName">Nachname</label>
+              <input type="text" id="lastName" name="Last Name" placeholder="Nachname" required>
             </div>
           </div>
           <div class="field-row">
             <div class="field">
-              <label for="email">Email</label>
+              <label for="email">E-Mail</label>
               <input type="email" id="email" name="Email" placeholder="your@email.com" required>
             </div>
             <div class="field">
-              <label for="phone">Phone</label>
+              <label for="phone">Telefon</label>
               <input type="tel" id="phone" name="Phone" placeholder="+41 xx xxx xx xx">
             </div>
           </div>
           <div class="field-row full">
             <div class="field">
-              <label for="age">Age</label>
-              <input type="number" id="age" name="Age" placeholder="Your age" min="5" max="99">
+              <label for="age">Alter</label>
+              <input type="number" id="age" name="Age" placeholder="Dein Alter" min="5" max="99">
             </div>
           </div>
           <div class="field-row full" style="margin-bottom:0">
             <div class="field">
-              <label for="message">Anything you'd like us to know? (optional)</label>
-              <textarea id="message" name="Message" placeholder="Injuries, goals, questions…"></textarea>
+              <label for="message">Gibt es etwas, das wir wissen sollten? (optional)</label>
+              <textarea id="message" name="Message" placeholder="Verletzungen, Ziele, Fragen…"></textarea>
             </div>
           </div>
         </div>
 
         <div class="reg-submit">
-          <button type="submit" class="btn btn-primary"><span>Send Registration</span></button>
-          <p class="reg-submit-note">We'll reply within 24 hours to confirm<br>your first training session.</p>
+          <button type="submit" class="btn btn-primary"><span>Registrierung senden</span></button>
+          <p class="reg-submit-note">Wir antworten innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.</p>
         </div>
       </form>
     </div>
@@ -356,32 +357,32 @@
     <div class="reg-info-panel">
 
       <div class="free-note">
-        <div class="free-note-head">First training is free</div>
-        <div class="free-note-body">Come in, meet the coaches, train with the team. No commitment, no sales pitch. Just show up and see if it fits.</div>
+        <div class="free-note-head">Das erste Training ist kostenlos</div>
+        <div class="free-note-body">Komm rein, triff die Trainer, trainiere mit dem Team. Keine Verpflichtung, kein Verkaufsgespräch. Einfach erscheinen.</div>
       </div>
 
       <div>
-        <div class="form-section-label" style="margin-bottom:20px">What happens next</div>
+        <div class="form-section-label" style="margin-bottom:20px">Was passiert als nächstes</div>
         <div class="what-next">
           <div class="wn-step">
             <div class="wn-num">1</div>
             <div class="wn-text">
-              <h5>We receive your registration</h5>
-              <p>Your details and selected trainings land directly with the coach.</p>
+              <h5>Wir erhalten deine Anmeldung</h5>
+              <p>Deine Daten und gewählten Trainings gehen direkt an den Trainer.</p>
             </div>
           </div>
           <div class="wn-step">
             <div class="wn-num">2</div>
             <div class="wn-text">
-              <h5>Confirmation within 24h</h5>
-              <p>We'll reply by email or phone to confirm your first session time.</p>
+              <h5>Bestätigung innerhalb von 24h</h5>
+              <p>Wir antworten per E-Mail oder Telefon, um deine erste Session zu bestätigen.</p>
             </div>
           </div>
           <div class="wn-step">
             <div class="wn-num">3</div>
             <div class="wn-text">
-              <h5>Show up &amp; train</h5>
-              <p>Bring comfortable training clothes. Equipment is available at the gym.</p>
+              <h5>Erscheinen &amp; trainieren</h5>
+              <p>Bring bequeme Trainingskleidung. Ausrüstung ist im Gym vorhanden.</p>
             </div>
           </div>
         </div>
@@ -389,11 +390,11 @@
 
       <div style="display:flex;flex-direction:column;gap:16px">
         <div class="info-block">
-          <div class="info-block-label">Location</div>
+          <div class="info-block-label">Standort</div>
           <div class="info-block-val">Pfeffingerring 201<br>4147 Aesch, Switzerland</div>
         </div>
         <div class="info-block">
-          <div class="info-block-label">Contact</div>
+          <div class="info-block-label">Kontakt</div>
           <div class="info-block-val">
             <a href="tel:+41788937929">+41 78 893 79 29</a><br>
             <a href="mailto:Nurmsoog@gmail.com">Nurmsoog@gmail.com</a>
@@ -410,25 +411,24 @@
   <div class="foot-bottom">
     <span>&copy; 2026 Power Fight Team</span>
     <div style="display:flex;gap:28px">
-      <a href="/" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Home</a>
-      <a href="index.html#system" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Schedule</a>
-      <a href="/gallery" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Gallery</a>
-      <a href="/contact" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Contact</a>
+      <a href="/" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Startseite</a>
+      <a href="index.html#system" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Stundenplan</a>
+      <a href="/gallery" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Galerie</a>
+      <a href="/contact" style="color:var(--ink-mute);transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-mute)'">Kontakt</a>
     </div>
   </div>
 </footer>
 
+<script src="components.js"></script>
 <script>
-  // Nav scroll
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 1));
+  initComponents('register');
 
   // Training pill selection (multi-select)
   const tps = document.querySelectorAll('.tp');
   const trainingsInput = document.getElementById('trainingsInput');
   function updateTrainings() {
     const selected = Array.from(tps).filter(t => t.classList.contains('active')).map(t => t.dataset.training);
-    trainingsInput.value = selected.join(', ') || 'Not specified';
+    trainingsInput.value = selected.join(', ') || 'Nicht angegeben';
   }
   tps.forEach(tp => {
     tp.addEventListener('click', () => {
@@ -470,9 +470,7 @@
     }
   }
 
-  // Hamburger (basic open/close)
-  const hamburger = document.getElementById('hamburger');
-  hamburger.addEventListener('click', () => hamburger.classList.toggle('open'));
+
 </script>
 </body>
 </html>

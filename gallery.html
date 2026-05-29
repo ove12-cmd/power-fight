@@ -1,19 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Gallery — Power Fight</title>
-<meta name="description" content="Photos and videos from training sessions, competitions, and events at Power Fight MMA gym in Aesch, Switzerland." />
-<meta property="og:title" content="Gallery — Power Fight" />
-<meta property="og:description" content="Photos and videos from training sessions, competitions, and events at Power Fight MMA gym." />
+<title>Galerie — Power Fight</title>
+<meta name="description" content="Fotos und Videos von Trainingseinheiten, Wettkämpfen und Events im Power Fight MMA Gym in Aesch, Schweiz." />
+<meta property="og:title" content="Galerie — Power Fight" />
+<meta property="og:description" content="Fotos und Videos von Trainingseinheiten, Wettkämpfen und Events im Power Fight MMA Gym." />
 <meta property="og:image" content="https://powerfight.ch/og-image.jpg" />
 <meta property="og:url" content="https://powerfight.ch/gallery" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Power Fight" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Gallery — Power Fight" />
-<meta name="twitter:description" content="Photos and videos from training, competitions and events at Power Fight MMA gym." />
+<meta name="twitter:title" content="Galerie — Power Fight" />
+<meta name="twitter:description" content="Fotos und Videos von Training, Wettkämpfen und Events im Power Fight MMA Gym." />
 <meta name="twitter:image" content="https://powerfight.ch/og-image.jpg" />
 <link rel="canonical" href="https://powerfight.ch/gallery" />
 <link rel="icon" type="image/png" href="favicon.png" />
@@ -375,10 +375,10 @@
   <div class="page-hero-inner">
     <div>
       <div class="page-eyebrow">Power Fight</div>
-      <h1>Our <em>Gallery</em></h1>
+      <h1>Unsere <em>Galerie</em></h1>
       <p id="galHeroCount" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute);margin-top:18px;display:none"></p>
     </div>
-    <p class="page-hero-meta">Training sessions, events, special guests and everyday life inside Power Fight.</p>
+    <p class="page-hero-meta">Trainingseinheiten, Events, besondere Gäste und der Alltag bei Power Fight.</p>
   </div>
 </header>
 
@@ -404,7 +404,7 @@
 <div class="gallery-type-tabs">
   <button class="gtt-btn active" data-type="photos">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    Photos <span class="gtt-count" id="photosCount"></span>
+    Fotos <span class="gtt-count" id="photosCount"></span>
   </button>
   <button class="gtt-btn" data-type="videos">
     <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -416,8 +416,8 @@
 <div class="gallery-filter">
   <div class="gf-sort">
     <select class="gs-select" id="sortSelect">
-      <option value="newest">Newest First</option>
-      <option value="oldest">Oldest First</option>
+      <option value="newest">Neueste zuerst</option>
+      <option value="oldest">Älteste zuerst</option>
     </select>
   </div>
 </div>
@@ -440,7 +440,7 @@
 <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
   <div class="load-more-bar"><div class="load-more-bar-fill" id="loadBar"></div></div>
   <div class="load-more-count" id="loadCount"></div>
-  <a class="btn" href="#" id="loadMoreBtn"><span>Load More</span></a>
+  <a class="btn" href="#" id="loadMoreBtn"><span>Mehr laden</span></a>
 </div>
 
 <!-- LIGHTBOX -->
@@ -482,7 +482,7 @@
   }
 
   function catLabel(slug) {
-    const map = { trainings:'Trainings', events:'Events', 'special-guests':'Special Guests', videos:'Videos' };
+    const map = { trainings:'Trainings', events:'Events', 'special-guests':'Besondere Gäste', videos:'Videos' };
     return map[slug] || slug.replace(/-/g,' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 
@@ -595,9 +595,9 @@
     const photos = allItems.filter(i => !i.dataset.video).length;
     const videos = allItems.filter(i =>  !!i.dataset.video).length;
     let txt = '';
-    if (photos && videos) txt = `${photos} photo${photos !== 1 ? 's' : ''} · ${videos} video${videos !== 1 ? 's' : ''}`;
-    else if (photos)      txt = `${photos} photo${photos !== 1 ? 's' : ''}`;
-    else if (videos)      txt = `${videos} video${videos !== 1 ? 's' : ''}`;
+    if (photos && videos) txt = `${photos} Foto${photos !== 1 ? 's' : ''} · ${videos} Video${videos !== 1 ? 's' : ''}`;
+    else if (photos)      txt = `${photos} Foto${photos !== 1 ? 's' : ''}`;
+    else if (videos)      txt = `${videos} Video${videos !== 1 ? 's' : ''}`;
     el.textContent = txt;
     el.style.display = '';
   }
@@ -627,7 +627,7 @@
 
   function updateLoadMore() {
     const total = getFiltered().length;
-    document.getElementById('loadCount').textContent = `Showing ${shown} of ${total}`;
+    document.getElementById('loadCount').textContent = `Zeige ${shown} von ${total}`;
     document.getElementById('loadBar').style.width = total ? (shown / total * 100) + '%' : '0%';
     document.getElementById('loadMoreWrap').style.display = shown >= total ? 'none' : '';
   }

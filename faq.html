@@ -1,19 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FAQ — Power Fight</title>
-<meta name="description" content="Frequently asked questions about Power Fight MMA gym — memberships, classes, scheduling, and everything you need to know before joining." />
+<meta name="description" content="Häufig gestellte Fragen zum Power Fight MMA Gym – Mitgliedschaften, Klassen, Stundenplan und alles, was du vor dem Beitritt wissen musst." />
 <meta property="og:title" content="FAQ — Power Fight" />
-<meta property="og:description" content="Everything you need to know about Power Fight MMA gym — memberships, classes, scheduling, and how to get started." />
+<meta property="og:description" content="Alles, was du über das Power Fight MMA Gym wissen musst – Mitgliedschaften, Klassen, Stundenplan und wie du anfängst." />
 <meta property="og:image" content="https://powerfight.ch/og-image.jpg" />
 <meta property="og:url" content="https://powerfight.ch/faq" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Power Fight" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="FAQ — Power Fight" />
-<meta name="twitter:description" content="Frequently asked questions about Power Fight MMA gym in Aesch, Switzerland." />
+<meta name="twitter:description" content="Häufig gestellte Fragen zum Power Fight MMA Gym in Aesch, Schweiz." />
 <meta name="twitter:image" content="https://powerfight.ch/og-image.jpg" />
 <link rel="canonical" href="https://powerfight.ch/faq" />
 <link rel="icon" type="image/png" href="favicon.png" />
@@ -136,23 +136,30 @@
 
   /* Mobile lang nav */
   .mob-lang-nav{display:none;align-items:center;gap:6px}
-  @media(max-width:640px){.mob-lang-nav{display:flex}}
+  @media(max-width:640px){.mob-lang-nav{display:flex;margin-left:auto;margin-right:1rem}}
 
   /* Mobile menu */
-  .mob-menu{position:fixed;inset:0;z-index:200;background:var(--bg);transform:translateX(100%);transition:transform .45s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;padding:24px 24px 40px;gap:0;overflow-y:auto}
-  .mob-menu.open{transform:translateX(0)}
-  .mob-menu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px}
-  .mob-menu-header img{height:40px;width:auto}
-  .mob-close{width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line-2);background:none;cursor:pointer}
-  .mob-close svg{width:14px;height:14px;stroke:var(--ink);fill:none;stroke-width:1.4;stroke-linecap:round}
-  .mob-link{font-family:var(--display);font-size:clamp(28px,7vw,42px);font-weight:700;letter-spacing:-0.02em;color:var(--ink);padding:10px 0;border-bottom:1px solid var(--line-2);text-transform:uppercase;display:block}
-  .mob-link:hover{color:var(--lime)}
-  .mob-cta{display:flex;flex-direction:column;gap:10px;margin-top:32px}
-  .mob-cta .btn{justify-content:center}
-  .mob-lang{margin-top:24px}
-  .mob-social{display:flex;gap:20px;margin-top:auto;padding-top:32px}
-  .mob-social a{color:var(--ink-dim);transition:color .3s}
+  .mob-menu{position:fixed;inset:0;z-index:55;background:#040505;display:flex;flex-direction:column;padding:0 28px 40px;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(0.22,1,0.36,1);overflow-y:auto}
+  .mob-menu.open{opacity:1;pointer-events:all}
+  .mob-menu-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 32px;flex-shrink:0}
+  .mob-menu-header img{height:72px;width:auto}
+  .mob-close{position:fixed;top:0;right:0;z-index:61;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;background:transparent;border:none;margin:calc((3.75rem - 44px)/2) 10px}
+  .mob-close svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:1.4;stroke-linecap:round}
+  .mob-menu nav{display:flex;flex-direction:column;gap:0;margin-bottom:40px;flex:1}
+  .mob-menu nav a{display:flex;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;transition:color .3s}
+  .mob-menu nav a:last-child{border-bottom:none}
+  .mob-menu nav a:hover .mob-link-text{color:var(--lime)}
+  .mob-link-icon{width:34px;flex-shrink:0;display:flex;align-items:center;color:var(--lime)}
+  .mob-link-icon svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mob-link-sep{color:var(--lime);font-size:20px;font-weight:300;opacity:0.55;margin:0 14px;flex-shrink:0;line-height:1}
+  .mob-link-text{font-family:var(--display);font-size:clamp(26px,7.5vw,38px);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;flex:1;line-height:1;transition:color .3s}
+  .mob-link-arr{width:9px;height:15px;flex-shrink:0;stroke:var(--lime);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .mob-menu .mob-cta{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+  .mob-menu .mob-cta .btn{justify-content:center}
+  .mob-social{display:flex;gap:20px;padding-top:24px;border-top:1px solid var(--line)}
+  .mob-social a{display:grid;place-items:center;color:var(--ink-dim);transition:color .3s}
   .mob-social a:hover{color:var(--lime)}
+  .mob-social svg{width:20px;height:20px;fill:currentColor}
   .mob-social svg{width:20px;height:20px;fill:currentColor}
 
   /* Info popup */
@@ -269,17 +276,17 @@
   <div class="page-hero-inner">
     <div>
       <div class="page-eyebrow">FAQ</div>
-      <h1>Got <em>Questions?</em></h1>
+      <h1>Hast du <em>Fragen?</em></h1>
     </div>
     <div class="page-hero-right">
-      <p class="page-hero-tag">Everything you need to know about training at Power Fight. Can't find what you're looking for? Just reach out.</p>
+      <p class="page-hero-tag">Alles, was du über das Training bei Power Fight wissen musst. Nicht gefunden was du suchst? Schreib uns einfach.</p>
     </div>
   </div>
 </header>
 
 <!-- FAQ FILTER -->
 <div class="faq-filter-bar">
-  <button class="fft-tab active" data-faq-filter="all">All</button>
+  <button class="fft-tab active" data-faq-filter="all">Alle</button>
   <button class="fft-tab" data-faq-filter="mma"><span class="fft-dot" style="background:#FF4D6D"></span>MMA</button>
   <button class="fft-tab" data-faq-filter="grappling"><span class="fft-dot" style="background:#5BE0FF"></span>Grappling</button>
   <button class="fft-tab" data-faq-filter="striking"><span class="fft-dot" style="background:#FF8C42"></span>Striking</button>
@@ -297,46 +304,46 @@
 
   <!-- Getting Started -->
   <div class="faq-category reveal" data-training="all">
-    <div class="faq-category-label">Getting Started</div>
+    <div class="faq-category-label">Einstieg</div>
     <div class="faq-list">
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>What experience do I need to join?</span>
+          <span>Welche Erfahrung brauche ich, um beizutreten?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">None. All programs accept complete beginners. Coaches adapt to your level.</div>
+          <div class="faq-a-inner">Keine. Alle Programme akzeptieren absolute Anfänger. Trainer passen sich deinem Niveau an.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Is the first training really free?</span>
+          <span>Ist das erste Training wirklich kostenlos?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Yes, 100% free. No credit card, no commitment. Just show up.</div>
+          <div class="faq-a-inner">Ja, 100% kostenlos. Keine Kreditkarte, keine Verpflichtung. Einfach erscheinen.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>What should I bring to my first session?</span>
+          <span>Was soll ich zu meiner ersten Session mitbringen?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Comfortable sportswear, water, and an open mind. We have gear available to borrow.</div>
+          <div class="faq-a-inner">Bequeme Sportkleidung, Wasser und Offenheit. Wir haben Ausrüstung zum Ausleihen.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>How do I sign up?</span>
+          <span>Wie melde ich mich an?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Fill in the contact form or send us a message. We'll reply within 24 hours to confirm your free trial.</div>
+          <div class="faq-a-inner">Fülle das Kontaktformular aus oder schreib uns. Wir antworten innerhalb von 24 Stunden, um deinen Gratis-Probetraining zu bestätigen.</div>
         </div>
       </div>
 
@@ -350,41 +357,41 @@
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>How often should I train per week?</span>
+          <span>Wie oft sollte ich pro Woche trainieren?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">2–3 times per week is ideal for steady progress. Even once a week is better than nothing.</div>
+          <div class="faq-a-inner">2–3 Mal pro Woche ist ideal für stetige Fortschritte. Einmal pro Woche ist besser als gar nicht.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Do I need my own equipment?</span>
+          <span>Brauche ich eigene Ausrüstung?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Not immediately. We have loaner gloves and gear. After a few weeks you'll want your own.</div>
+          <div class="faq-a-inner">Nicht sofort. Wir haben Leihhandschuhe und -ausrüstung. Nach einigen Wochen wirst du deine eigene wollen.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Can I train multiple disciplines at once?</span>
+          <span>Kann ich mehrere Disziplinen gleichzeitig trainieren?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Yes and we encourage it. MMA combines striking and grappling naturally.</div>
+          <div class="faq-a-inner">Ja, und wir empfehlen es. MMA kombiniert Striking und Grappling auf natürliche Weise.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Is sparring mandatory?</span>
+          <span>Ist Sparring Pflicht?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Never. You spar only when you feel ready and always with a coach present.</div>
+          <div class="faq-a-inner">Niemals. Du sparst nur, wenn du dich bereit fühlst, und immer mit einem anwesenden Trainer.</div>
         </div>
       </div>
 
@@ -393,36 +400,36 @@
 
   <!-- Kids Program -->
   <div class="faq-category reveal d2" data-training="kids">
-    <div class="faq-category-label">Kids Program</div>
+    <div class="faq-category-label">Kids-Programm</div>
     <div class="faq-list">
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>What age can kids start?</span>
+          <span>Ab welchem Alter können Kids starten?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">From 5 years old. Kids classes are specifically designed for that age group.</div>
+          <div class="faq-a-inner">Ab 5 Jahren. Kids-Klassen sind speziell für diese Altersgruppe konzipiert.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Is it safe for kids?</span>
+          <span>Ist es sicher für Kinder?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Absolutely. No contact sparring for kids. Focus is on movement, coordination, and discipline.</div>
+          <div class="faq-a-inner">Absolut. Kein Kontaktsparring für Kinder. Fokus liegt auf Bewegung, Koordination und Disziplin.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>What does a kids session look like?</span>
+          <span>Wie sieht eine Kids-Session aus?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Warm-up games, technique drills, partner pad work, cool-down stretching.</div>
+          <div class="faq-a-inner">Aufwärmspiele, Technikübungen, Partner-Pad-Arbeit, Cool-down-Stretching.</div>
         </div>
       </div>
 
@@ -431,36 +438,36 @@
 
   <!-- Membership & Pricing -->
   <div class="faq-category reveal d3" data-training="all">
-    <div class="faq-category-label">Membership &amp; Pricing</div>
+    <div class="faq-category-label">Mitgliedschaft &amp; Preise</div>
     <div class="faq-list">
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>How much does it cost?</span>
+          <span>Was kostet es?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">First session is free. Monthly memberships start from CHF 80. Contact us for current pricing.</div>
+          <div class="faq-a-inner">Erste Session ist kostenlos. Monatliche Mitgliedschaften ab CHF 80. Kontaktiere uns für aktuelle Preise.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Is there a contract?</span>
+          <span>Gibt es einen Vertrag?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">No long-term contracts. Month-to-month memberships.</div>
+          <div class="faq-a-inner">Keine Langzeitverträge. Monatliche Mitgliedschaften.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Can I freeze my membership?</span>
+          <span>Kann ich meine Mitgliedschaft pausieren?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Yes, up to 4 weeks per year for illness or holiday.</div>
+          <div class="faq-a-inner">Ja, bis zu 4 Wochen pro Jahr bei Krankheit oder Urlaub.</div>
         </div>
       </div>
 
@@ -469,36 +476,36 @@
 
   <!-- Facility -->
   <div class="faq-category reveal" data-training="all">
-    <div class="faq-category-label">Facility</div>
+    <div class="faq-category-label">Räumlichkeiten</div>
     <div class="faq-list">
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Where are you located?</span>
+          <span>Wo seid ihr?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Pfeffingerring 201, 4147 Aesch, Switzerland — about 10 min from Basel.</div>
+          <div class="faq-a-inner">Pfeffingerring 201, 4147 Aesch, Schweiz – ca. 10 Minuten von Basel.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>Is parking available?</span>
+          <span>Gibt es Parkplätze?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Yes, free parking directly in front of the facility.</div>
+          <div class="faq-a-inner">Ja, kostenlose Parkplätze direkt vor der Anlage.</div>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
-          <span>What are the training hours?</span>
+          <span>Was sind die Trainingszeiten?</span>
           <span class="faq-icon"></span>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Mon–Fri evenings from 17:00. Check the schedule for exact class times.</div>
+          <div class="faq-a-inner">Mo–Fr abends ab 17:00 Uhr. Schau in den Stundenplan für genaue Zeiten.</div>
         </div>
       </div>
 
@@ -511,20 +518,20 @@
     <div class="faq-category-label">Mixed Martial Arts</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What exactly is MMA training?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Mixed Martial Arts combines striking (punches, kicks, elbows, knees), wrestling (takedowns, clinch), and ground fighting (submissions, escapes) into one complete system. Classes at Power Fight cover all ranges — stand-up, clinch, and ground — so you develop a well-rounded game.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was genau ist MMA-Training?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Mixed Martial Arts kombiniert Striking (Schläge, Tritte, Ellbogen, Knie), Wrestling (Takedowns, Clinch) und Bodenkampf (Submissions, Escapes) zu einem vollständigen System. Klassen bei Power Fight decken alle Bereiche ab – Stand-up, Clinch und Boden – damit du ein vielseitiges Spiel entwickelst.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Do I need experience in another martial art first?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">No. Beginners are welcome. Prior boxing, BJJ, or wrestling experience helps but is absolutely not required. Coaches build fundamentals from zero and scale training to your level.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Brauche ich zuerst Erfahrung in einer anderen Kampfsportart?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Nein. Anfänger sind willkommen. Vorherige Boxen-, BJJ- oder Wrestling-Erfahrung hilft, ist aber absolut nicht erforderlich. Trainer bauen Grundlagen von null auf und passen das Training an dein Niveau an.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Is MMA dangerous?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Training is controlled and structured — it is not a street fight. Sparring is optional, always supervised, and only introduced when you're ready. The vast majority of class time is technique, drilling, and pad work.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Ist MMA gefährlich?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Training ist kontrolliert und strukturiert – es ist kein Straßenkampf. Sparring ist optional, immer beaufsichtigt und wird nur eingeführt, wenn du bereit bist. Der Großteil der Kurszeit besteht aus Technik, Drilling und Pad-Arbeit.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What gear do I need to start?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">For your first sessions: comfortable athletic wear and water. As you continue you'll want boxing gloves (14–16 oz), hand wraps, a mouthguard, and shin guards. We have loaner gear available while you get started.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was brauche ich, um anzufangen?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Für deine ersten Sessions: bequeme Sportkleidung und Wasser. Im Laufe der Zeit wirst du Boxhandschuhe (14–16 oz), Bandagen, einen Mundschutz und Schienbeinschützer wollen. Wir haben Leihausrüstung für den Anfang.</div></div>
       </div>
     </div>
   </div>
@@ -534,20 +541,20 @@
     <div class="faq-category-label">Grappling</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What does Grappling training cover?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Takedowns, control positions, submissions, and escapes — all no-gi. The curriculum draws from wrestling, BJJ, and Judo and applies them to MMA context: cage awareness, ground-and-pound defence, and stand-up transitions are all part of it.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was deckt das Grappling-Training ab?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Takedowns, Kontrollpositionen, Submissions und Escapes – alles No-Gi. Der Lehrplan schöpft aus Wrestling, BJJ und Judo und wendet sie im MMA-Kontext an: Cage-Awareness, Ground-and-Pound-Verteidigung und Stand-up-Übergänge sind alles Teil davon.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Do I need a gi?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">No. All classes are no-gi. Shorts and a rash guard or fitted t-shirt are all you need.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Brauche ich einen Gi?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Nein. Alle Klassen sind No-Gi. Shorts und ein Rash Guard oder eng anliegendes T-Shirt reichen aus.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How is Grappling different from BJJ?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Similar foundation, different focus. Grappling here prioritises MMA application — cage control, takedown defence, and submission awareness in a fight context — rather than a points-based sport ruleset.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie unterscheidet sich Grappling von BJJ?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Ähnliche Grundlage, unterschiedlicher Fokus. Grappling hier priorisiert MMA-Anwendung – Cage-Kontrolle, Takedown-Verteidigung und Submission-Bewusstsein im Kampfkontext – statt eines punktebasierten Sportregelwerks.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Is grappling too physically demanding for beginners?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">It's demanding but scalable. Coaches match beginners with suitable partners and intensity builds gradually. Your cardio and body awareness improve quickly once you start.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Ist Grappling für Anfänger zu körperlich anspruchsvoll?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Es ist anspruchsvoll, aber skalierbar. Trainer passen Anfänger mit geeigneten Partnern zusammen und die Intensität steigt schrittweise. Deine Kondition und Körperwahrnehmung verbessern sich schnell, sobald du anfängst.</div></div>
       </div>
     </div>
   </div>
@@ -557,20 +564,20 @@
     <div class="faq-category-label">Striking</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What does Striking cover?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Punches, kicks, elbows, and knees drawn from boxing, Muay Thai, and kickboxing — applied to MMA rules. Classes cover distance management, combinations, footwork, and how to create takedown opportunities from the stand-up.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was deckt Striking ab?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Schläge, Tritte, Ellbogen und Knie aus Boxen, Muay Thai und Kickboxen – angewendet auf MMA-Regeln. Klassen decken Distanzmanagement, Kombinationen, Footwork und das Schaffen von Takedown-Gelegenheiten aus dem Stand-up ab.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Do I need boxing or Muay Thai experience first?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">No. Technique is built from scratch. Beginners and experienced strikers train together — coaches scale the complexity per person.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Brauche ich zuerst Box- oder Muay-Thai-Erfahrung?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Nein. Technik wird von Grund auf aufgebaut. Anfänger und erfahrene Striker trainieren zusammen – Trainer passen die Komplexität pro Person an.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What gear do I need?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Boxing gloves (14–16 oz), hand wraps, and a mouthguard. Shin guards once you start pad work. We have loaners for your first sessions.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Welche Ausrüstung brauche ich?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Boxhandschuhe (14–16 oz), Bandagen und einen Mundschutz. Schienbeinschützer sobald du mit Pad-Arbeit anfängst. Wir haben Leihausrüstung für deine ersten Sessions.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How quickly will I see progress?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Most students develop solid fundamentals within 2–3 months of consistent training. Striking rewards repetition — the more you drill, the faster it clicks.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie schnell werde ich Fortschritte sehen?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Die meisten Schüler entwickeln solide Grundlagen innerhalb von 2–3 Monaten konsequentem Training. Striking belohnt Wiederholung – je mehr du drillst, desto schneller klappt es.</div></div>
       </div>
     </div>
   </div>
@@ -580,20 +587,20 @@
     <div class="faq-category-label">Wrestling</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What does Wrestling training involve?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Single and double-leg takedowns, level changes, clinch control, sprawls, and scrambles. Wrestling is the backbone of MMA positioning — it determines who decides where the fight happens.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was beinhaltet das Wrestling-Training?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Single- und Double-Leg-Takedowns, Level-Changes, Clinch-Kontrolle, Sprawls und Scrambles. Wrestling ist das Rückgrat der MMA-Positionierung – es bestimmt, wer entscheidet, wo der Kampf stattfindet.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Is wrestling only for competitive wrestlers?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Not at all. Most students come in with zero wrestling background. The skills taught here focus on practical MMA application, so no prior sport wrestling experience is needed.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Ist Wrestling nur für Wettkampf-Wrestler?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Überhaupt nicht. Die meisten Schüler kommen ohne Wrestling-Hintergrund. Die hier gelehrten Fähigkeiten fokussieren auf praktische MMA-Anwendung, daher ist keine vorherige Sport-Wrestling-Erfahrung erforderlich.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How is Wrestling different from Grappling?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Wrestling focuses on the stand-up and the transition to the ground — takedowns, clinch control, and cage work. Grappling takes over once you're on the mat, covering submissions and ground control. Both complement each other perfectly.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie unterscheidet sich Wrestling von Grappling?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Wrestling fokussiert auf Stand-up und den Übergang zum Boden – Takedowns, Clinch-Kontrolle und Cage-Arbeit. Grappling übernimmt sobald du auf der Matte bist und deckt Submissions und Bodenkontrolle ab. Beide ergänzen sich perfekt.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What do I need to wear?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Shorts and a fitted rash guard or t-shirt. Wrestling shoes are optional — most train barefoot. A mouthguard is recommended once you start live drilling.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was soll ich tragen?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Shorts und ein eng anliegendes Rash Guard oder T-Shirt. Wrestling-Schuhe sind optional – die meisten trainieren barfuß. Ein Mundschutz wird empfohlen, sobald du mit Live-Drilling anfängst.</div></div>
       </div>
     </div>
   </div>
@@ -603,20 +610,20 @@
     <div class="faq-category-label">Les Mills Bodycombat</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What is Les Mills Bodycombat?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Bodycombat is a high-energy group fitness class inspired by martial arts — boxing, karate, Muay Thai, and more — set to motivating music. It's non-contact, follows a choreographed programme, and delivers a full-body cardio workout.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was ist Les Mills Bodycombat?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Bodycombat ist eine hochenergetische Gruppen-Fitnesskurs, inspiriert von Kampfsportarten – Boxen, Karate, Muay Thai und mehr – zu motivierender Musik. Es ist kontaktlos, folgt einem choreografierten Programm und liefert ein Ganzkörper-Cardio-Training.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Do I need any martial arts experience?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">None at all. The moves are taught step by step as part of the class. It's designed for everyone, regardless of fitness level or fighting background.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Brauche ich Kampfsporterfahrung?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Überhaupt nicht. Die Bewegungen werden Schritt für Schritt als Teil des Kurses gelehrt. Es ist für alle konzipiert, unabhängig von Fitnessniveau oder Kampfsport-Hintergrund.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How intense is a Bodycombat session?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">It's a proper cardio workout — expect to sweat. The intensity is self-regulated, so you push as hard as you choose. Most people leave feeling energised rather than broken.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie intensiv ist eine Bodycombat-Session?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Es ist ein richtiges Cardio-Training – erwarte zu schwitzen. Die Intensität ist selbstreguliert, du pushst so hart wie du möchtest. Die meisten gehen energiegeladen statt erschöpft nach Hause.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What do I need to bring?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Comfortable training shoes (cross-trainers or gym shoes work well), athletic clothes, and water. No gloves or pads required — this is non-contact.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was soll ich mitbringen?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Bequeme Trainingsschuhe (Cross-Trainer oder Hallenschuhe funktionieren gut), Sportkleidung und Wasser. Keine Handschuhe oder Pads erforderlich – dies ist kontaktlos.</div></div>
       </div>
     </div>
   </div>
@@ -626,20 +633,20 @@
     <div class="faq-category-label">Strength &amp; Conditioning</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What is Strength &amp; Conditioning?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Gym training designed specifically for combat sports. Every exercise targets the explosiveness, endurance, and injury resistance that fighting demands. Not a standard fitness class — everything has a purpose for athletic performance.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was ist Strength &amp; Conditioning?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Gym-Training speziell für Kampfsport konzipiert. Jede Übung zielt auf die Explosivität, Ausdauer und Verletzungsresistenz ab, die Kämpfen verlangt. Kein Standard-Fitnesskurs – alles hat einen Zweck für die athletische Leistung.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Do I need gym experience?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">No. Load and intensity are individually scaled. Beginners are coached on movement quality before any weight is added.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Brauche ich Gym-Erfahrung?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Nein. Last und Intensität werden individuell skaliert. Anfänger werden auf Bewegungsqualität trainiert, bevor irgendein Gewicht hinzugefügt wird.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Should I combine S&amp;C with technical classes?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Yes — that's the intent. S&amp;C is designed to make you better at everything else. Athletes who combine it with striking or grappling progress significantly faster than those who only train one or the other.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Soll ich S&amp;C mit technischen Klassen kombinieren?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Ja – das ist die Absicht. S&amp;C ist darauf ausgelegt, dich in allem anderen besser zu machen. Athleten, die es mit Striking oder Grappling kombinieren, machen deutlich schnellere Fortschritte als jene, die nur eines von beidem trainieren.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What do I need to bring?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Comfortable training clothes and athletic shoes. No special equipment required — everything you need is in the gym.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was soll ich mitbringen?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Bequeme Trainingskleidung und Sportschuhe. Keine Spezialausrüstung erforderlich – alles, was du brauchst, ist im Gym.</div></div>
       </div>
     </div>
   </div>
@@ -649,20 +656,20 @@
     <div class="faq-category-label">Performance Training</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What is Performance Training?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Advanced training sessions built for athletes who compete or want to push to the next level. Structured sparring, fight simulation, pad rounds, and high-intensity drills — all coach-led and designed to peak performance.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was ist Performance Training?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Fortgeschrittene Trainingseinheiten für Athleten, die Wettkämpfe bestreiten oder auf das nächste Level pushen wollen. Strukturiertes Sparring, Kampfsimulation, Pad-Runden und hochintensive Drills – alles trainergeführt und auf Spitzenleistung ausgelegt.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Who is it for?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Athletes preparing for competition or those who have a strong foundation and want to train at a higher intensity. It's not for absolute beginners — a solid technical base across striking and/or grappling is expected.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Für wen ist es?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Athleten, die sich auf Wettkämpfe vorbereiten, oder jene, die eine solide Grundlage haben und mit höherer Intensität trainieren möchten. Es ist nichts für absolute Anfänger – eine solide technische Basis in Striking und/oder Grappling wird erwartet.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How is it different from regular MMA classes?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Higher intensity, more live rounds, and a focus on putting everything together under pressure. Regular MMA classes build the tools; Performance Training sharpens them for real use.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie unterscheidet es sich von regulären MMA-Klassen?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Höhere Intensität, mehr Live-Runden und Fokus darauf, alles unter Druck zusammenzufügen. Reguläre MMA-Klassen bauen die Werkzeuge; Performance Training schärft sie für den echten Einsatz.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How do I know if I'm ready?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Talk to your coach. If you've been training consistently for 6+ months and feel solid in your fundamentals, it's worth discussing. The coaches will tell you honestly when you're ready to step up.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Woher weiß ich, ob ich bereit bin?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Sprich mit deinem Trainer. Wenn du seit 6+ Monaten konsequent trainierst und dich in deinen Grundlagen sicher fühlst, lohnt es sich zu besprechen. Die Trainer sagen dir ehrlich, wann du bereit bist aufzusteigen.</div></div>
       </div>
     </div>
   </div>
@@ -672,20 +679,20 @@
     <div class="faq-category-label">Personal Training</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What does Personal Training include?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">One-on-one sessions tailored entirely to your goals — whether that's learning a specific discipline, accelerating progress in an area, preparing for competition, weight loss, or general fitness. The coach focuses 100% on you.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was beinhaltet Personal Training?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Einzelsessions, vollständig auf deine Ziele zugeschnitten – ob das Erlernen einer bestimmten Disziplin, Fortschrittsbeschleunigung in einem Bereich, Wettkampfvorbereitung, Gewichtsabnahme oder allgemeine Fitness. Der Trainer fokussiert sich 100% auf dich.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How many sessions per week do I need?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">It depends on your goals and schedule. One session per week combined with group classes is a great starting point for most people. Your coach will help you plan the right frequency.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie viele Sessions pro Woche brauche ich?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Das hängt von deinen Zielen und deinem Zeitplan ab. Eine Session pro Woche kombiniert mit Gruppenklassen ist ein guter Ausgangspunkt für die meisten Menschen. Dein Trainer hilft dir bei der Planung der richtigen Häufigkeit.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Can I combine PT with group classes?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Absolutely — and this is the most effective approach. Group classes build your skills alongside training partners; PT sessions let you drill weak points and get individual feedback at a much deeper level.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Kann ich PT mit Gruppenklassen kombinieren?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Absolut – und das ist der effektivste Ansatz. Gruppenklassen bauen deine Fähigkeiten mit Trainingspartnern auf; PT-Sessions erlauben dir, Schwachstellen zu drillen und individuelles Feedback auf einem viel tieferen Niveau zu bekommen.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How do I book a PT session?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Contact us via the contact page or speak directly to a coach after any group class. We'll match you with the right coach and find a time that works for you.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie buche ich eine PT-Session?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Kontaktiere uns über die Kontaktseite oder sprich nach einer Gruppenklasse direkt mit einem Trainer. Wir passen dich mit dem richtigen Trainer zusammen und finden eine Zeit, die für dich passt.</div></div>
       </div>
     </div>
   </div>
@@ -695,20 +702,20 @@
     <div class="faq-category-label">Kettlebell Training</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What is Kettlebell Training?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Structured training with kettlebells covering swings, cleans, presses, snatches, and carries. It builds functional strength, explosive power, grip endurance, and full-body conditioning — all highly transferable to martial arts.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was ist Kettlebell Training?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Strukturiertes Training mit Kettlebells, das Swings, Cleans, Presses, Snatches und Carries abdeckt. Es baut funktionelle Stärke, explosive Kraft, Griffausdauer und Ganzkörperkonditionierung auf – alles gut auf Kampfsport übertragbar.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Do I need kettlebell experience?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">No. The class starts with technique fundamentals. The hip hinge and swing are taught in detail before any load is added, so you build correct movement patterns from day one.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Brauche ich Kettlebell-Erfahrung?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Nein. Der Kurs beginnt mit Technikgrundlagen. Hip Hinge und Swing werden detailliert gelehrt, bevor irgendeine Last hinzugefügt wird, sodass du von Tag eins an korrekte Bewegungsmuster aufbaust.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>How is it different from regular gym training?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Kettlebell training combines strength and conditioning in the same movement. You're working power, endurance, and stability simultaneously — it's more athletic and dynamic than machine-based gym work, and directly complements fighting training.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie unterscheidet es sich von regulärem Gym-Training?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Kettlebell-Training kombiniert Kraft und Konditionierung in derselben Bewegung. Du arbeitest gleichzeitig an Kraft, Ausdauer und Stabilität – es ist athletischer und dynamischer als maschinenbasiertes Gym-Training und ergänzt das Kampftraining direkt.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What weight should I start with?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Your coach will recommend the right starting weight after seeing your movement. Most beginners start lighter than they expect — technique matters far more than load at the start.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Mit welchem Gewicht soll ich anfangen?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Dein Trainer empfiehlt das richtige Startgewicht, nachdem er deine Bewegung gesehen hat. Die meisten Anfänger starten leichter als erwartet – Technik ist am Anfang viel wichtiger als Last.</div></div>
       </div>
     </div>
   </div>
@@ -718,20 +725,20 @@
     <div class="faq-category-label">Kids Training</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What age can kids start?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">From 5 years old. Kids classes are specifically designed for that age group with age-appropriate drills, games, and structure.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Ab welchem Alter können Kids starten?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Ab 5 Jahren. Kids-Klassen sind speziell für diese Altersgruppe konzipiert, mit altersgerechten Drills, Spielen und Struktur.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>Is it safe?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Absolutely. No contact sparring for kids. The focus is on movement, coordination, discipline, and fun — not fighting.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Ist es sicher?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Absolut. Kein Kontaktsparring für Kinder. Der Fokus liegt auf Bewegung, Koordination, Disziplin und Spaß – nicht auf Kämpfen.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What does a kids session look like?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Warm-up games, technique drills, partner pad work, and cool-down stretching. Sessions are designed to keep kids engaged and moving, not standing in a line waiting their turn.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Wie sieht eine Kids-Session aus?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Aufwärmspiele, Technikübungen, Partner-Pad-Arbeit und Cool-down-Stretching. Sessions sind darauf ausgelegt, Kinder engagiert und in Bewegung zu halten, nicht in einer Reihe stehend auf ihren Zug zu warten.</div></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" aria-expanded="false"><span>What will my child learn beyond martial arts?</span><span class="faq-icon"></span></button>
-        <div class="faq-a" role="region"><div class="faq-a-inner">Focus, respect, listening, perseverance, and confidence. The life skills that come from structured martial arts training tend to show up at school and at home — parents notice the difference quickly.</div></div>
+        <button class="faq-q" aria-expanded="false"><span>Was lernt mein Kind über Kampfsport hinaus?</span><span class="faq-icon"></span></button>
+        <div class="faq-a" role="region"><div class="faq-a-inner">Fokus, Respekt, Zuhören, Ausdauer und Selbstvertrauen. Die Lebenskompetenzen, die aus strukturiertem Kampfsporttraining entstehen, zeigen sich oft in der Schule und zu Hause – Eltern bemerken den Unterschied schnell.</div></div>
       </div>
     </div>
   </div>
@@ -740,9 +747,9 @@
 
 <!-- FREE SESSION BANNER -->
 <div class="free-banner">
-  <h3>Still have questions?</h3>
-  <p>Come in for a free session, meet the coaches, and see the gym for yourself. No commitment needed.</p>
-  <a class="btn" href="/contact"><span>Contact Us</span></a>
+  <h3>Noch Fragen?</h3>
+  <p>Komm für eine kostenlose Session, triff die Trainer und sieh das Gym selbst. Keine Verpflichtung.</p>
+  <a class="btn" href="/contact"><span>Kontakt</span></a>
 </div>
 
 <div id="footer-root"></div>
