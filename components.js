@@ -469,7 +469,7 @@
     // ── Bottom row: sticky CTA + WhatsApp side by side ─────────────
     const stickyStyle = document.createElement('style');
     stickyStyle.textContent = `
-      #bottomRow{position:fixed;bottom:20px;left:32px;right:32px;z-index:8888;display:flex;align-items:center;gap:12px;pointer-events:none;transform:translateY(calc(100% + 28px));opacity:0;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .45s ease}
+      #bottomRow{position:fixed;bottom:20px;left:32px;right:96px;z-index:8888;display:flex;align-items:center;gap:12px;pointer-events:none;transform:translateY(calc(100% + 28px));opacity:0;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .45s ease}
       #bottomRow.visible{transform:translateY(0);opacity:1;pointer-events:all}
       #stickyCta{flex:1;min-width:0;background:rgba(4,5,5,0.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line-2);border-radius:0;padding:14px 20px 14px 28px;transition:opacity .3s ease,transform .3s ease}
       #stickyCta.dismissed{opacity:0;transform:scale(.95);pointer-events:none}
@@ -481,11 +481,11 @@
       .sticky-cta-close{background:none;border:1px solid var(--line-2);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-dim);flex-shrink:0;transition:color .2s,border-color .2s}
       .sticky-cta-close:hover{color:var(--ink);border-color:rgba(255,255,255,0.25)}
       .sticky-cta-close svg{width:10px;height:10px;stroke:currentColor;stroke-width:2;overflow:visible}
-      #waFloat{flex-shrink:0}
+      #waFloat{position:fixed;bottom:20px;right:32px;z-index:9000}
       .wa-btn{width:52px;height:52px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);transition:transform .2s,box-shadow .2s;text-decoration:none}
       .wa-btn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(37,211,102,.6)}
       .wa-btn svg{width:28px;height:28px;fill:#fff;display:block}
-      @media(max-width:640px){.sticky-cta-text{display:none}#bottomRow{left:0;right:0;bottom:0;gap:0}#stickyCta{border:none;border-top:1px solid var(--line-2)}#waFloat{padding:0 14px}}
+      @media(max-width:640px){.sticky-cta-text{display:none}#bottomRow{left:0;right:0;bottom:0;gap:0}#stickyCta{border:none;border-top:1px solid var(--line-2)}#waFloat{bottom:80px;right:16px}#schedFab{display:flex;bottom:80px;right:auto;left:16px}}
       footer{padding-bottom:calc(40px + 6rem)!important}
       @media(max-width:640px){footer{padding-bottom:calc(32px + 6rem)!important}}
       h1,h2,h3,h4,h5,h6{text-wrap:balance}
@@ -493,7 +493,6 @@
       #schedFab{display:none;position:fixed;bottom:90px;right:20px;z-index:54;width:52px;height:52px;border-radius:50%;background:var(--lime);align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(199,255,63,.45);transition:transform .2s,box-shadow .2s}
       #schedFab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(199,255,63,.65)}
       #schedFab svg{width:26px;height:26px;display:block}
-      @media(max-width:640px){#schedFab{display:flex}}
     `;
     document.head.appendChild(stickyStyle);
 
@@ -510,11 +509,13 @@
             <button class="sticky-cta-close" id="stickyCtaClose" aria-label="Dismiss"><svg viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>
           </div>
         </div>
-      </div>
-      <div id="waFloat">
-        <a class="wa-btn" href="https://wa.me/41788937929" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">${WA_SVG}</a>
       </div>`;
     document.body.appendChild(bottomRow);
+
+    const waFloatEl = document.createElement('div');
+    waFloatEl.id = 'waFloat';
+    waFloatEl.innerHTML = `<a class="wa-btn" href="https://wa.me/41788937929" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">${WA_SVG}</a>`;
+    document.body.appendChild(waFloatEl);
 
     const stickyCta = document.getElementById('stickyCta');
     const CTA_KEY = 'pf_cta_dismissed';
