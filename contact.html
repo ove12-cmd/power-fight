@@ -302,13 +302,13 @@
   <div class="page-hero-inner">
     <div>
       <div class="page-eyebrow">Power Fight</div>
-      <h1>Lass uns in <em>Kontakt treten.</em></h1>
+      <h1 data-pi18n="hero.h1">Lass uns in <em>Kontakt treten.</em></h1>
     </div>
     <div class="page-hero-right">
-      <p class="page-hero-tag">Komm rein, triff die Trainer, trainiere mit dem Team. Keine Verpflichtung. Kein Verkaufsgespräch. Einfach erscheinen.</p>
+      <p class="page-hero-tag" data-pi18n="hero.tag">Komm rein, triff die Trainer, trainiere mit dem Team. Keine Verpflichtung. Kein Verkaufsgespräch. Einfach erscheinen.</p>
       <div class="free-badge">
         <span class="free-badge-dot"></span>
-        <span class="free-badge-text">Das erste Training ist immer kostenlos</span>
+        <span class="free-badge-text" data-pi18n="badge">Das erste Training ist immer kostenlos</span>
       </div>
     </div>
   </div>
@@ -320,8 +320,8 @@
 
   <!-- FORM -->
   <div class="contact-form-wrap reveal">
-    <h2>Schreib uns <em>eine Nachricht</em></h2>
-    <p class="sub">Füllt das Formular aus und wir melden uns innerhalb von 24 Stunden.</p>
+    <h2 data-pi18n="form.h2">Schreib uns <em>eine Nachricht</em></h2>
+    <p class="sub" data-pi18n="form.sub">Füllt das Formular aus und wir melden uns innerhalb von 24 Stunden.</p>
     <form name="contact" method="POST" netlify netlify-honeypot="bot-field">
       <input type="hidden" name="form-name" value="contact">
       <input type="hidden" name="source" value="Contact Form">
@@ -375,7 +375,7 @@
       </div>
 
       <div class="form-submit">
-        <button type="submit" class="btn btn-primary" id="contactSubmitBtn"><span id="contactBtnLabel">Nachricht senden</span></button>
+        <button type="submit" class="btn btn-primary" id="contactSubmitBtn"><span id="contactBtnLabel" data-pi18n="form.submit">Nachricht senden</span></button>
         <p class="form-note">Oder direkt an uns wenden: <a href="mailto:Nurmsoog@gmail.com" style="color:var(--ink-dim);text-decoration:underline">Nurmsoog@gmail.com</a></p>
       </div>
 
@@ -588,6 +588,35 @@
       alert('Etwas ist schiefgelaufen. Bitte versuche es erneut oder schreib uns direkt.');
     }
   });
+
+  // ── Page i18n ────────────────────────────────────────────────────────
+  const PAGE_T = {
+    en: {
+      'hero.h1':'Get in <em>Touch.</em>',
+      'hero.tag':'Come in, meet the coaches, train with the team. No commitment. No sales pitch. Just show up.',
+      'badge':'First training is always free',
+      'form.h2':'Send us <em>a Message</em>',
+      'form.sub':'Fill out the form and we\'ll get back to you within 24 hours.',
+      'form.submit':'Send Message',
+    },
+    de: {
+      'hero.h1':'Lass uns in <em>Kontakt treten.</em>',
+      'hero.tag':'Komm rein, triff die Trainer, trainiere mit dem Team. Keine Verpflichtung. Kein Verkaufsgespräch. Einfach erscheinen.',
+      'badge':'Das erste Training ist immer kostenlos',
+      'form.h2':'Schreib uns <em>eine Nachricht</em>',
+      'form.sub':'Füllt das Formular aus und wir melden uns innerhalb von 24 Stunden.',
+      'form.submit':'Nachricht senden',
+    }
+  };
+  function _applyPageLang(lang) {
+    const t = PAGE_T[lang] || PAGE_T.de;
+    document.querySelectorAll('[data-pi18n]').forEach(el => {
+      const key = el.dataset.pi18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+  }
+  _applyPageLang(localStorage.getItem('pf_lang') || 'de');
+  document.addEventListener('pfLangChange', e => _applyPageLang(e.detail));
 </script>
 </body>
 </html>

@@ -213,9 +213,9 @@
   <div class="page-hero-inner">
     <div>
       <div class="page-eyebrow">Power Fight</div>
-      <h1>Private <em>Buchungen</em></h1>
+      <h1 data-pi18n="hero.h1">Private <em>Buchungen</em></h1>
     </div>
-    <p class="page-hero-meta">Einzelsessions, Kleingruppentraining und privates Coaching, angepasst an deinen Zeitplan und deine Ziele.</p>
+    <p class="page-hero-meta" data-pi18n="hero.meta">Einzelsessions, Kleingruppentraining und privates Coaching, angepasst an deinen Zeitplan und deine Ziele.</p>
   </div>
 </header>
 
@@ -335,7 +335,7 @@
           <label for="bkMessage">Ziele / Anmerkungen</label>
           <textarea id="bkMessage" name="message" placeholder="Woran arbeitest du? Gibt es Verletzungen oder Einschränkungen, die wir wissen sollten?"></textarea>
         </div>
-        <button class="btn btn-primary bk-submit" id="bkSubmitBtn" type="submit"><span id="bkBtnLabel">Anfrage senden</span></button>
+        <button class="btn btn-primary bk-submit" id="bkSubmitBtn" type="submit"><span id="bkBtnLabel" data-pi18n="form.submit">Anfrage senden</span></button>
         <p class="bk-form-note">Keine Vorauszahlung erforderlich. Wir bestätigen die Details, bevor etwas gebucht wird.</p>
       </form>
 
@@ -386,6 +386,29 @@
       alert('Etwas ist schiefgelaufen. Bitte versuche es erneut oder kontaktiere uns direkt.');
     }
   });
+
+  // ── Page i18n ────────────────────────────────────────────────────────
+  const PAGE_T = {
+    en: {
+      'hero.h1':'Private <em>Bookings</em>',
+      'hero.meta':'1-on-1 sessions, small group training and private coaching, tailored to your schedule and goals.',
+      'form.submit':'Send Request',
+    },
+    de: {
+      'hero.h1':'Private <em>Buchungen</em>',
+      'hero.meta':'Einzelsessions, Kleingruppentraining und privates Coaching, angepasst an deinen Zeitplan und deine Ziele.',
+      'form.submit':'Anfrage senden',
+    }
+  };
+  function _applyPageLang(lang) {
+    const t = PAGE_T[lang] || PAGE_T.de;
+    document.querySelectorAll('[data-pi18n]').forEach(el => {
+      const key = el.dataset.pi18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+  }
+  _applyPageLang(localStorage.getItem('pf_lang') || 'de');
+  document.addEventListener('pfLangChange', e => _applyPageLang(e.detail));
 </script>
 </body>
 </html>

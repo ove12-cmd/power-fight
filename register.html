@@ -224,11 +224,11 @@
   <div class="page-hero-inner">
     <div>
       <div class="page-eyebrow">Power Fight</div>
-      <h1>Tritt dem <em>Team</em> bei.</h1>
+      <h1 data-pi18n="hero.h1">Tritt dem <em>Team</em> bei.</h1>
     </div>
     <div>
-      <div class="hero-badge">Das erste Training ist immer kostenlos</div>
-      <p class="page-hero-meta" style="margin-top:16px">Wähle dein Training, fülle deine Daten aus – wir bestätigen und bereiten dich auf deine erste Session vor.</p>
+      <div class="hero-badge" data-pi18n="hero.badge">Das erste Training ist immer kostenlos</div>
+      <p class="page-hero-meta" style="margin-top:16px" data-pi18n="hero.meta">Wähle dein Training, fülle deine Daten aus – wir bestätigen und bereiten dich auf deine erste Session vor.</p>
     </div>
   </div>
 </header>
@@ -348,8 +348,8 @@
         </div>
 
         <div class="reg-submit">
-          <button type="submit" class="btn btn-primary"><span>Registrierung senden</span></button>
-          <p class="reg-submit-note">Wir antworten innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.</p>
+          <button type="submit" class="btn btn-primary"><span data-pi18n="form.submit">Registrierung senden</span></button>
+          <p class="reg-submit-note" data-pi18n="form.note">Wir antworten innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.</p>
         </div>
       </form>
     </div>
@@ -471,7 +471,32 @@
     }
   }
 
-
+  // ── Page i18n ────────────────────────────────────────────────────────
+  const PAGE_T = {
+    en: {
+      'hero.h1':'Join the <em>Team.</em>',
+      'hero.badge':'First training is always free',
+      'hero.meta':'Choose your training, fill in your details — we\'ll confirm and get you ready for your first session.',
+      'form.submit':'Send Registration',
+      'form.note':'We\'ll reply within 24 hours to confirm your first training session.',
+    },
+    de: {
+      'hero.h1':'Tritt dem <em>Team</em> bei.',
+      'hero.badge':'Das erste Training ist immer kostenlos',
+      'hero.meta':'Wähle dein Training, fülle deine Daten aus – wir bestätigen und bereiten dich auf deine erste Session vor.',
+      'form.submit':'Registrierung senden',
+      'form.note':'Wir antworten innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.',
+    }
+  };
+  function _applyPageLang(lang) {
+    const t = PAGE_T[lang] || PAGE_T.de;
+    document.querySelectorAll('[data-pi18n]').forEach(el => {
+      const key = el.dataset.pi18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+  }
+  _applyPageLang(localStorage.getItem('pf_lang') || 'de');
+  document.addEventListener('pfLangChange', e => _applyPageLang(e.detail));
 </script>
 </body>
 </html>

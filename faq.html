@@ -277,10 +277,10 @@
   <div class="page-hero-inner">
     <div>
       <div class="page-eyebrow">FAQ</div>
-      <h1>Hast du <em>Fragen?</em></h1>
+      <h1 data-pi18n="hero.h1">Hast du <em>Fragen?</em></h1>
     </div>
     <div class="page-hero-right">
-      <p class="page-hero-tag">Alles, was du über das Training bei Power Fight wissen musst. Nicht gefunden was du suchst? Schreib uns einfach.</p>
+      <p class="page-hero-tag" data-pi18n="hero.tag">Alles, was du über das Training bei Power Fight wissen musst. Nicht gefunden was du suchst? Schreib uns einfach.</p>
     </div>
   </div>
 </header>
@@ -799,6 +799,27 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); }});
   }, {threshold:0.1});
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ── Page i18n ────────────────────────────────────────────────────────
+  const PAGE_T = {
+    en: {
+      'hero.h1':'Got <em>Questions?</em>',
+      'hero.tag':'Everything you need to know about training at Power Fight. Didn\'t find what you\'re looking for? Just write to us.',
+    },
+    de: {
+      'hero.h1':'Hast du <em>Fragen?</em>',
+      'hero.tag':'Alles, was du über das Training bei Power Fight wissen musst. Nicht gefunden was du suchst? Schreib uns einfach.',
+    }
+  };
+  function _applyPageLang(lang) {
+    const t = PAGE_T[lang] || PAGE_T.de;
+    document.querySelectorAll('[data-pi18n]').forEach(el => {
+      const key = el.dataset.pi18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+  }
+  _applyPageLang(localStorage.getItem('pf_lang') || 'de');
+  document.addEventListener('pfLangChange', e => _applyPageLang(e.detail));
 </script>
 </body>
 </html>
