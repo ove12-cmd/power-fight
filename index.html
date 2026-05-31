@@ -2583,8 +2583,8 @@
             <div class="af-stat"><div class="af-stat-num">` + _escHtml(a.s2n) + `</div><div class="af-stat-label">` + _escHtml(a.s2l) + `</div></div>
           </div>
           <div class="af-ctas">
-            <a class="btn btn-primary" href="/contact"><span>Trainiere mit uns</span></a>
-            <a class="btn btn-ghost" href="#programs"><span>Programme ansehen</span></a>
+            <a class="btn btn-primary" href="/contact"><span data-i18n="athletes.cta1">Trainiere mit uns</span></a>
+            <a class="btn btn-ghost" href="#programs"><span data-i18n="athletes.cta2">Programme ansehen</span></a>
           </div>
         </div>
       </div>`;
@@ -2658,7 +2658,7 @@
       const { data } = await _sb.from('settings').select('value').eq('key','pf_athletes').maybeSingle();
       if (data?.value) {
         const athletes = JSON.parse(data.value);
-        if (athletes && athletes.length) _rebuildAfSlider(athletes);
+        if (athletes && athletes.length) { _rebuildAfSlider(athletes); applyLang(currentLang); }
       }
     } catch(e) {}
     _afInit();
