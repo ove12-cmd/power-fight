@@ -2159,7 +2159,7 @@
       'hero.desk1':'Train. Fight.','hero.mob1':'Train.','hero.mob2':'Fight.','hero.win':'Win.',
       'hero.tag':'Built for fighters who want more than fitness.<br>Striking, grappling and discipline engineered into <b>one system.</b>',
       'hero.join':'Join the Team',
-      'prog.join':'Join',
+      'prog.join':'Join','prog.read':'Read more',
       'prog.c1.desc':'Stand-up combat refined over decades. Elbows, knees, footwork, and ring IQ — the complete striking game from the ground up.','prog.c1.freq':'3× per week',
       'prog.c2.desc':'Control, takedowns, and submission chains. Whether you\'re wrestling to keep the fight standing or finishing on the mat, we build it all.','prog.c2.freq':'2× per week',
       'prog.c3.title':'Combat Strength','prog.c3.desc':'Not just gym strong — fight strong. Power, explosiveness, and structural durability built for the demands of full-contact sport.','prog.c3.freq':'2× per week',
@@ -2207,7 +2207,7 @@
       'hero.desk1':'Trainieren. Kämpfen.','hero.mob1':'Trainieren.','hero.mob2':'Kämpfen.','hero.win':'Gewinnen.',
       'hero.tag':'Für Kämpfer, die mehr wollen als Fitness.<br>Schlag, Grappling und Disziplin – entwickelt zu <b>einem System.</b>',
       'hero.join':'Dem Team beitreten',
-      'prog.join':'Beitreten',
+      'prog.join':'Beitreten','prog.read':'Mehr lesen',
       'prog.c1.desc':'Stehkampf, über Jahrzehnte verfeinert. Ellbogen, Knie, Fußarbeit und Ring-IQ — das komplette Schlagspiel von Grund auf.','prog.c1.freq':'3× pro Woche',
       'prog.c2.desc':'Kontrolle, Takedowns und Submission-Ketten. Egal ob du den Kampf stehend hältst oder auf der Matte beendest — wir bauen beides.','prog.c2.freq':'2× pro Woche',
       'prog.c3.title':'Kampfkraft','prog.c3.desc':'Nicht nur Gym-stark — kampfstark. Kraft, Explosivität und strukturelle Belastbarkeit für die Anforderungen des Vollkontaktsports.','prog.c3.freq':'2× pro Woche',
@@ -2267,6 +2267,9 @@
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
+    // Class-based elements without data-i18n attrs
+    if (dict['prog.join'])  document.querySelectorAll('.disc-join-btn').forEach(el => el.textContent = dict['prog.join']);
+    if (dict['prog.read'])  document.querySelectorAll('.disc-read-more').forEach(el => el.textContent = dict['prog.read']);
   }
 
   // Lang buttons are wired by components.js (which dispatches pfLangChange).
