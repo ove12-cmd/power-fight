@@ -319,6 +319,10 @@
     line-height: 0.92; letter-spacing:-0.03em;
     margin: 3vh 0 2vh;
   }
+  /* German words are longer — scale down so "Trainieren. Kämpfen." fits on one line */
+  @media(min-width:641px){
+    html[lang="de"] .hero h1{font-size:clamp(36px,9vw,115px)}
+  }
   .hero h1 .line{display:block; overflow:hidden; padding-bottom:0.12em}
   .hero h1 .mob-line{display:none}
   .hero h1 .desk-line{display:block}
