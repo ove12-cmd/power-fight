@@ -1524,9 +1524,9 @@
     <p data-i18n="sched.desc">Komm jederzeit vorbei. Alle Niveaus willkommen – wir finden die richtige Klasse für dich.</p>
   </div>
   <div class="sched-filter">
-    <button class="sf-tab active" data-sched-filter="all">Alle</button>
+    <button class="sf-tab active" data-sched-filter="all" data-i18n="sched.all">Alle</button>
     <button class="sf-tab" data-sched-filter="kids">Kids & Teens</button>
-    <button class="sf-tab" data-sched-filter="adults">Erwachsene</button>
+    <button class="sf-tab" data-sched-filter="adults" data-i18n="sched.adults">Erwachsene</button>
   </div>
   <div class="sched-cols" id="schedGrid"></div>
 </section>
@@ -1966,6 +1966,11 @@
     } catch(e) { console.warn('Gallery:', e); }
   })();
 
+  // ── Schedule i18n state (mutated by applyLang) ───────────────────────
+  const _SCHED_DAYS = {1:'Montag',2:'Dienstag',3:'Mittwoch',4:'Donnerstag',5:'Freitag',6:'Samstag',7:'Sonntag'};
+  let _schedLang = 'de';
+  let _schedNowLabel = 'JETZT';
+
   // ── Schedule: fixed class definitions (source of truth) ─────────────
   const FIXED_SCHEDULE_SITE = [
     {id:'1-17', day:1, dayName:'Montag',    name:'MMA Striking',         level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00', hlClass:'hl-youngs',  nameClass:'scard-strike'},
@@ -1977,7 +1982,7 @@
     {id:'3-17', day:3, dayName:'Mittwoch', name:'MMA Striking',         level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00', hlClass:'hl-youngs',  nameClass:'scard-strike'},
     {id:'3-18', day:3, dayName:'Mittwoch', name:'MMA Striking',         level:'Amateur',        defStart:'18:00', defEnd:'19:00', hlClass:'hl-amateur', nameClass:'scard-strike'},
     {id:'3-19', day:3, dayName:'Mittwoch', name:'MMA Grappling',        level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-grapple'},
-    {id:'4-16', day:4, dayName:'Donnerstag',  name:'Kids MMA',             level:'5–9 Jahre',       defStart:'16:00', defEnd:'17:00', hlClass:'hl-kids',    nameClass:'scard-kids'},
+    {id:'4-16', day:4, dayName:'Donnerstag',  name:'Kids MMA',             level:'5–9 Jahre', levelEn:'5–9 Years', defStart:'16:00', defEnd:'17:00', hlClass:'hl-kids',    nameClass:'scard-kids'},
     {id:'4-17', day:4, dayName:'Donnerstag',  name:'MMA Striking',         level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00', hlClass:'hl-youngs',  nameClass:'scard-strike'},
     {id:'4-18', day:4, dayName:'Donnerstag',  name:'Fight S&C',            level:'',               defStart:'18:00', defEnd:'19:00', hlClass:'',           nameClass:'scard-sc'},
     {id:'4-19', day:4, dayName:'Donnerstag',  name:'MMA Striking',         level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-strike'},
@@ -2006,7 +2011,7 @@
     [1,2,3,4,5,6,7].filter(d => byDay[d]).forEach((d, idx) => {
       const col = document.createElement('div');
       col.className = `reveal${instant ? ' in' : ''} ${revCls[ci++ % 3]}`;
-      col.innerHTML = `<div class="sched-col-head">${dayNames[d]}</div>`;
+      col.innerHTML = `<div class="sched-col-head">${_SCHED_DAYS[d] || dayNames[d]}</div>`;
       byDay[d].forEach(s => {
         const card = document.createElement('div');
         card.className = `sched-card${s.hlClass ? ' ' + s.hlClass : ''}`;
@@ -2016,7 +2021,7 @@
         card.innerHTML = `
           <div class="sched-card-time">${s.timeStart} – ${s.timeEnd}</div>
           <div class="sched-card-name ${s.nameClass}">${s.name}</div>
-          ${s.level ? `<div class="sched-card-badge">${s.level}</div>` : ''}`;
+          ${s.level ? `<div class="sched-card-badge">${(_schedLang === 'en' && s.levelEn) ? s.levelEn : s.level}</div>` : ''}`;
         col.appendChild(card);
       });
       if (masonry) (idx % 2 === 0 ? leftWrap : rightWrap).appendChild(col);
@@ -2129,7 +2134,7 @@
           card.classList.add('is-next');
           const badge = document.createElement('div');
           badge.className = 'sched-next-badge';
-          badge.textContent = 'JETZT';
+          badge.textContent = _schedNowLabel;
           card.prepend(badge);
         }
         return;
@@ -2208,6 +2213,7 @@
       'class.kids':'Kids Trainings','class.pro':'Professional Trainings',
       'sched.heading':'Weekly <em>Schedule</em>','sched.desc':'Drop in any time. All levels welcome — we\'ll put you in the right class.',
       'sched.mon':'Monday','sched.tue':'Tuesday','sched.wed':'Wednesday','sched.thu':'Thursday','sched.fri':'Friday',
+      'sched.all':'All','sched.adults':'Adults','sched.now':'NOW',
     },
     de: {
       'nav.schedules':'Trainingsplan','nav.trainings':'Trainings','nav.register':'Anmelden',
@@ -2266,6 +2272,7 @@
       'class.kids':'Kinder-Training','class.pro':'Profi-Training',
       'sched.heading':'Wöchentlicher <em>Trainingsplan</em>','sched.desc':'Komm jederzeit vorbei. Alle Niveaus willkommen — wir platzieren dich in der richtigen Klasse.',
       'sched.mon':'Montag','sched.tue':'Dienstag','sched.wed':'Mittwoch','sched.thu':'Donnerstag','sched.fri':'Freitag',
+      'sched.all':'Alle','sched.adults':'Erwachsene','sched.now':'JETZT',
     }
   };
 
@@ -2294,6 +2301,12 @@
       const val = dict[`prog.${row.dataset.disc}.desc`];
       if (val) { const p = row.querySelector('.disc-desc'); if (p) p.textContent = val; }
     });
+    // Schedule grid
+    _schedLang = lang;
+    _schedNowLabel = dict['sched.now'] || (lang === 'en' ? 'NOW' : 'JETZT');
+    const _dm = {1:dict['sched.mon'],2:dict['sched.tue'],3:dict['sched.wed'],4:dict['sched.thu'],5:dict['sched.fri']};
+    Object.assign(_SCHED_DAYS, _dm);
+    if (window._pfSlots) _renderSchedSlots(window._pfSlots, true);
   }
 
   // Lang buttons are wired by components.js (which dispatches pfLangChange).
