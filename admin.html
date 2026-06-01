@@ -403,6 +403,20 @@
   .adm-cat-select{width:100%;background:var(--bg-3);border:1px solid var(--line-2);color:var(--ink-dim);padding:4px 8px;font-size:10px;letter-spacing:.04em;cursor:pointer;outline:none;appearance:none;font-family:var(--sans);border-radius:3px;margin-top:5px;transition:border-color .2s,color .2s}
   .adm-cat-select:hover,.adm-cat-select:focus{border-color:rgba(199,255,63,.4);color:var(--ink)}
   .adm-img-card-actions{display:flex;justify-content:space-between;padding:4px 8px 10px}
+  /* ── Skeleton loading ───────────────────────────────────────────── */
+  @keyframes skel-shine{0%{background-position:-200% 0}100%{background-position:200% 0}}
+  .skel-pulse{
+    background:linear-gradient(90deg,var(--bg-3) 0%,#1c1d1e 50%,var(--bg-3) 100%) !important;
+    background-size:200% 100% !important;
+    animation:skel-shine 1.5s ease-in-out infinite;
+  }
+  .skel-card{background:var(--bg-2);border:1px solid var(--line-2);border-radius:10px;overflow:hidden;pointer-events:none}
+  .skel-card-thumb{aspect-ratio:4/3;width:100%}
+  .skel-card-info{padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+  .skel-card-line{height:11px;border-radius:3px}
+  .adm-img-grid.list-view .skel-card{flex-direction:row;align-items:center}
+  .adm-img-grid.list-view .skel-card-thumb{aspect-ratio:unset;width:72px;height:52px;flex-shrink:0;border-radius:0}
+
   .adm-video-badge{position:absolute;top:6px;left:6px;font-size:8px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:2px 7px;background:rgba(4,5,5,.8);border:1px solid var(--line-2);color:var(--lime);border-radius:3px}
   .adm-type-badge{position:absolute;top:6px;right:6px;display:flex;align-items:center;gap:3px;background:rgba(4,5,5,.7);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:3px 6px}
   .adm-type-badge svg{width:10px;height:10px;stroke:var(--ink-dim);fill:none;stroke-width:1.5}
@@ -2082,7 +2096,24 @@
     return slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
   }
 
+  function _skelGrid(n) {
+    return Array(n).fill(0).map(() =>
+      `<div class="skel-card">
+        <div class="skel-card-thumb skel-pulse"></div>
+        <div class="skel-card-info">
+          <div class="skel-card-line skel-pulse" style="width:68%"></div>
+          <div class="skel-card-line skel-pulse" style="width:42%"></div>
+        </div>
+      </div>`).join('');
+  }
+
   async function renderGallery(items, cats) {
+    // Show skeleton grid immediately while data is fetching
+    if (!items || !cats) {
+      const g = document.getElementById('galleryGrid');
+      const e = document.getElementById('galleryEmpty');
+      if (g && e) { e.style.display = 'none'; g.style.display = ''; g.innerHTML = _skelGrid(12); }
+    }
     if (!items) items = await sbLoadGallery();
     if (!cats)  cats  = await sbLoadCategories();
     // Ensure all cats actually used by items are present in the list
@@ -2231,6 +2262,15 @@
           </button>
         </div>`;
       grid.appendChild(card);
+
+      // Per-image skeleton: shimmer until the thumbnail image finishes loading
+      const thumb = card.querySelector('.adm-img-card-thumb');
+      const thumbImg = thumb?.querySelector('img');
+      if (thumb && thumbImg) {
+        const rmSkel = () => thumb.classList.remove('skel-pulse');
+        if (thumbImg.complete) { rmSkel(); }
+        else { thumb.classList.add('skel-pulse'); thumbImg.addEventListener('load', rmSkel, {once:true}); thumbImg.addEventListener('error', rmSkel, {once:true}); }
+      }
     });
 
     // Render pagination
