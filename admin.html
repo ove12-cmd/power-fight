@@ -2148,7 +2148,10 @@
 
     // Update filter tabs
     const filterEl = document.getElementById('galleryFilter');
-    filterEl.innerHTML = `<button class="adm-gf-tab active" data-gf="all">All <span style="font-size:9px;opacity:.55">${items.length}</span></button>` +
+    const pinnedCount = items.filter(i => i.featured).length;
+    filterEl.innerHTML =
+      `<button class="adm-gf-tab" data-gf="all">All <span style="font-size:9px;opacity:.55">${items.length}</span></button>` +
+      `<button class="adm-gf-tab" data-gf="__featured__" style="gap:5px">★ Pinned <span style="font-size:9px;opacity:.55">${pinnedCount}</span></button>` +
       cats.map(c => {
         const n = items.filter(i => i.cat === c).length;
         return `<button class="adm-gf-tab" data-gf="${escHtml(c)}">${escHtml(catLabel(c))} <span style="font-size:9px;opacity:.55">${n}</span></button>`;
@@ -2194,7 +2197,11 @@
     }
 
     // Filter + sort
-    let filtered = galleryFilter === 'all' ? [...items] : items.filter(i => i.cat === galleryFilter);
+    let filtered = galleryFilter === 'all'
+      ? [...items]
+      : galleryFilter === '__featured__'
+        ? items.filter(i => i.featured)
+        : items.filter(i => i.cat === galleryFilter);
     filtered.sort((a, b) => {
       const da = a.date || '', db = b.date || '';
       return galSortOrder === 'newest' ? db.localeCompare(da) : da.localeCompare(db);
