@@ -2903,51 +2903,65 @@
 
   // ── Discipline modal ─────────────────────────────────────────────────
   const DISC_INFO = {
-    mma:         { title:'Mixed Martial Arts',       color:'#FF4D6D', tag:'MMA',       level:'All Levels',
+    mma:         { title:'Mixed Martial Arts',       color:'#FF4D6D', tag:'MMA',       level:'All Levels',       levelDe:'Alle Niveaus',
       desc:'Mixed Martial Arts is the ultimate test of a complete fighter. At Power Fight we train all ranges — striking on the feet, clinch work, takedowns and the ground game. Sessions cover fight-specific conditioning, sparring rounds and tactical game-plan work. Whether you\'re a beginner stepping onto the mat for the first time or preparing for competition, our MMA classes build you into a complete martial artist.',
+      descDe:'Mixed Martial Arts ist der ultimative Test für einen kompletten Kämpfer. Bei Power Fight trainieren wir alle Bereiche – Stehkampf, Clincharbeit, Takedowns und das Bodenspiel. Einheiten umfassen kampfspezifische Kondition, Sparring und taktische Spielplanarbeit. Ob du zum ersten Mal auf die Matte steigst oder dich auf Wettkämpfe vorbereitest – unsere MMA-Klassen formen dich zum kompletten Kampfkünstler.',
       filter: s => s.name.toLowerCase().includes('mma') && !s.name.toLowerCase().includes('kids') },
-    grappling:   { title:'Grappling',                color:'#5BE0FF', tag:'Grappling', level:'All Levels',
+    grappling:   { title:'Grappling',                color:'#5BE0FF', tag:'Grappling', level:'All Levels',       levelDe:'Alle Niveaus',
       desc:'Grappling at Power Fight covers the full ground game — BJJ fundamentals, submission wrestling and positional training. Classes focus on takedowns into dominant positions, escapes and submission chains. Drilling, positional sparring and live rolling are all part of each session. Suitable for beginners building a solid base as well as experienced grapplers looking to sharpen their game.',
+      descDe:'Grappling bei Power Fight umfasst das vollständige Bodenspiel – BJJ-Grundlagen, Submission Wrestling und positionelles Training. Klassen konzentrieren sich auf Takedowns in dominante Positionen, Befreiungen und Submission-Ketten. Drilling, positionelles Sparring und Live-Rolling sind Teil jeder Einheit. Geeignet für Anfänger, die eine solide Basis aufbauen, sowie erfahrene Grappler, die ihr Spiel schärfen wollen.',
       filter: s => s.name.toLowerCase().includes('grappling') },
-    striking:    { title:'Striking',                 color:'#C7FF3F', tag:'Striking',  level:'All Levels',
+    striking:    { title:'Striking',                 color:'#C7FF3F', tag:'Striking',  level:'All Levels',       levelDe:'Alle Niveaus',
       desc:'Our striking classes cover the full stand-up toolkit — punches, kicks, elbows, knees and footwork. Coaches focus on technical precision, combination flow and ring intelligence. Pad work, bag work and partner drilling are rotated each session. Open to all levels, with clear progressions so beginners and experienced strikers train together safely and productively.',
+      descDe:'Unsere Striking-Klassen umfassen das vollständige Stehkampf-Werkzeug – Fäuste, Kicks, Ellbogen, Knie und Fussarbeit. Trainer legen den Fokus auf technische Präzision, Kombinationsfluss und Ring-Intelligenz. Pad-Arbeit, Sandsackarbeit und Partner-Drilling wechseln sich jede Einheit ab. Offen für alle Niveaus, mit klaren Progressionen damit Anfänger und erfahrene Striker sicher und produktiv zusammen trainieren.',
       filter: s => s.nameClass === 'scard-strike' || s.name.toLowerCase().includes('striking') },
-    wrestling:   { title:'Wrestling',                color:'#FACC15', tag:'Wrestling', level:'Intermediate',
+    wrestling:   { title:'Wrestling',                color:'#FACC15', tag:'Wrestling', level:'Intermediate',     levelDe:'Mittelstufe',
       desc:'Wrestling is the backbone of any complete MMA game. Sessions cover shot technique, chain wrestling, cage control, scrambles and top pressure. Strong wrestling makes your striking safer, your grappling deeper and your MMA game complete. Includes drilling, situational sparring and conditioning built around wrestling-specific movement patterns.',
+      descDe:'Wrestling ist das Rückgrat eines kompletten MMA-Spiels. Einheiten umfassen Schusstechnik, Chain Wrestling, Käfigkontrolle, Scrambles und Druckspiel von oben. Starkes Wrestling macht deinen Stehkampf sicherer, dein Grappling tiefer und dein MMA-Spiel vollständiger. Beinhaltet Drilling, situationelles Sparring und auf Wrestling-spezifische Bewegungsmuster ausgerichtete Kondition.',
       filter: s => s.name.toLowerCase().includes('wrestling') },
-    bodycombat:  { title:'Les Mills Bodycombat',     color:'#FF8C42', tag:'Fitness',   level:'All Levels',
+    bodycombat:  { title:'Les Mills Bodycombat',     color:'#FF8C42', tag:'Fitness',   level:'All Levels',       levelDe:'Alle Niveaus',
       desc:'Les Mills Bodycombat is a high-energy, non-contact cardio workout inspired by martial arts. Combining movements from boxing, karate, taekwondo and muay thai, each session pushes your cardiovascular fitness and full-body coordination. No experience or equipment needed — just the drive to move. Perfect as a standalone class or cross-training alongside your martial arts sessions.',
+      descDe:'Les Mills Bodycombat ist ein energiegeladenes, kontaktfreies Kardio-Training inspiriert von Kampfkünsten. Kombiniert Bewegungen aus Boxen, Karate, Taekwondo und Muay Thai und treibt in jeder Einheit deine kardiovaskuläre Fitness und Ganzkörperkoordination an. Keine Erfahrung oder Ausrüstung nötig – nur der Antrieb, dich zu bewegen. Perfekt als eigenständige Klasse oder als Ergänzungstraining zu deinen Kampfkünste-Einheiten.',
       filter: s => s.name.toLowerCase().includes('bodycombat') || s.name.toLowerCase().includes('les mills') },
-    sc:          { title:'Strength & Conditioning',  color:'#A78BFA', tag:'S&C',       level:'All Levels',
+    sc:          { title:'Strength & Conditioning',  color:'#A78BFA', tag:'S&C',       level:'All Levels',       levelDe:'Alle Niveaus',
       desc:'Sport-specific strength and conditioning designed for martial artists. Sessions target the energy systems and movement patterns used in MMA — explosive power, hip drive, core strength and anaerobic capacity. Programming cycles through strength blocks and conditioning phases. All levels welcome; scaling is built into every session.',
+      descDe:'Sportspezifisches Kraft- und Konditionstraining für Kampfkünstler. Einheiten zielen auf die Energiesysteme und Bewegungsmuster im MMA – explosive Kraft, Hüftantrieb, Rumpfstärke und anaerobe Kapazität. Das Programm wechselt zwischen Kraftblöcken und Konditionsphasen. Alle Niveaus willkommen; Skalierung ist in jede Einheit eingebaut.',
       filter: s => s.nameClass === 'scard-sc' || s.name.toLowerCase().includes('s&c') || s.name.toLowerCase().includes('conditioning') },
-    performance: { title:'Performance Training',     color:'#FF4D6D', tag:'Pro',        level:'Advanced',
+    performance: { title:'Performance Training',     color:'#FF4D6D', tag:'Pro',        level:'Advanced',         levelDe:'Fortgeschritten',
       desc:'Performance training is reserved for competitive fighters and serious amateurs preparing for bouts. Small-group sessions allow for individual attention, video analysis and competition-specific game planning. Load and intensity are periodised around fight camp timelines. Entry is by assessment — coaches ensure the group stays at the right level for every member.',
+      descDe:'Performance-Training ist für Wettkampfkämpfer und ernsthafte Amateure reserviert, die sich auf Kämpfe vorbereiten. Kleine Gruppen ermöglichen individuelle Betreuung, Videoanalyse und wettkampfspezifische Spielplanung. Belastung und Intensität werden um Fight-Camp-Zeitpläne periodisiert. Zugang erfolgt per Assessment – Trainer stellen sicher, dass die Gruppe für jedes Mitglied das richtige Niveau hat.',
       filter: s => s.nameClass === 'scard-sparring' || s.name.toLowerCase().includes('sparring') || s.name.toLowerCase().includes('performance') },
-    personal:    { title:'Personal Training',        color:'#5BE0FF', tag:'Personal',  level:'All Levels',
+    personal:    { title:'Personal Training',        color:'#5BE0FF', tag:'Personal',  level:'All Levels',       levelDe:'Alle Niveaus',
       desc:'One-on-one sessions with one of our coaches, built entirely around your goals and timeline. Whether you want to accelerate your martial arts development, improve fitness or prepare for a specific event, personal training gives you direct coach attention with no distractions. Sessions are flexible and can combine technical work with conditioning.',
+      descDe:'Eins-zu-eins-Einheiten mit einem unserer Trainer, vollständig auf deine Ziele und deinen Zeitplan ausgerichtet. Ob du deine Kampfkünste-Entwicklung beschleunigen, die Fitness verbessern oder dich auf ein bestimmtes Event vorbereiten möchtest – Personal Training gibt dir direkte Trainer-Aufmerksamkeit ohne Ablenkung. Einheiten sind flexibel und können technische Arbeit mit Kondition kombinieren.',
       filter: s => s.name.toLowerCase().includes('personal') },
-    kettlebell:  { title:'Kettlebell Training',      color:'#FACC15', tag:'Fitness',   level:'All Levels',
+    kettlebell:  { title:'Kettlebell Training',      color:'#FACC15', tag:'Fitness',   level:'All Levels',       levelDe:'Alle Niveaus',
       desc:'Kettlebell training builds functional strength and grip that carries over directly to martial arts. Classes cover the foundational movements — swing, clean, press, snatch and Turkish get-up — progressing methodically so technique is solid before loads increase. The format combines skill practice with conditioning circuits, suitable for all levels.',
+      descDe:'Kettlebell-Training baut funktionale Kraft und Griff, die sich direkt auf Kampfkünste übertragen. Klassen umfassen die grundlegenden Bewegungen – Swing, Clean, Press, Snatch und Turkish Get-Up – mit methodischem Fortschritt, sodass die Technik solide ist, bevor die Lasten steigen. Das Format kombiniert Übungspraxis mit Konditionsschaltkreisen, geeignet für alle Niveaus.',
       filter: s => s.name.toLowerCase().includes('kettlebell') },
-    kids:        { title:'Kids Training',            color:'#FF8C42', tag:'Kids',      level:'Ages 5–14',
+    kids:        { title:'Kids Training',            color:'#FF8C42', tag:'Kids',      level:'Ages 5–14',        levelDe:'Alter 5–14',
       desc:'Martial arts training for children aged 5–14. Classes focus on discipline, respect, coordination and confidence alongside age-appropriate technique from MMA and wrestling. Our coaches create a safe, structured and fun environment where kids develop real skills. Training builds the physical literacy and mental resilience that benefits children in sport and everyday life.',
+      descDe:'Kampfkünste-Training für Kinder von 5–14 Jahren. Klassen legen den Fokus auf Disziplin, Respekt, Koordination und Selbstvertrauen neben altersgerechter Technik aus MMA und Wrestling. Unsere Trainer schaffen eine sichere, strukturierte und spaßige Umgebung, in der Kinder echte Fähigkeiten entwickeln. Das Training fördert körperliche Grundkompetenz und mentale Belastbarkeit, die Kindern im Sport und im Alltag zugutekommen.',
       filter: s => s.hlClass === 'hl-kids' || s.name.toLowerCase().includes('kids') }
   };
 
   // Discipline modal — HTML is above the script so getElementById works immediately
-  const _DAY_SHORT   = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+  const _DAY_SHORT_EN = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+  const _DAY_SHORT_DE = {1:'Mo', 2:'Di', 3:'Mi', 4:'Do', 5:'Fr', 6:'Sa', 7:'So'};
   const _discOverlay = document.getElementById('discModal');
   const _discClose   = document.getElementById('discModalClose');
   const _discCloseBtn= document.getElementById('discModalCloseBtn');
 
   function _openDisc(key) {
     const info = DISC_INFO[key]; if (!info) return;
+    const _lang = currentLang || 'de';
+    const _de = _lang === 'de';
+    const _dayShort = _de ? _DAY_SHORT_DE : _DAY_SHORT_EN;
     document.getElementById('discModalTag').textContent   = info.tag;
     document.getElementById('discModalTag').style.color   = info.color;
     document.getElementById('discModalTitle').textContent = info.title;
-    document.getElementById('discModalDesc').textContent  = info.desc;
-    document.getElementById('discModalLevel').textContent = info.level;
+    document.getElementById('discModalDesc').textContent  = (_de && info.descDe) ? info.descDe : info.desc;
+    document.getElementById('discModalLevel').textContent = (_de && info.levelDe) ? info.levelDe : info.level;
     document.getElementById('discModalJoin').href = 'contact.html?t=' + encodeURIComponent(info.title);
 
     // Filter live slots first — used for both Frequency and "When we train"
@@ -2957,18 +2971,20 @@
     // Frequency: count unique days that have this discipline scheduled
     const uniqueDays = [...new Set(slots.map(s => s.day))];
     document.getElementById('discModalFreq').textContent =
-      uniqueDays.length === 0 ? 'By arrangement'
-      : uniqueDays.length === 1 ? '1× per week'
-      : `${uniqueDays.length}× per week`;
+      uniqueDays.length === 0
+        ? (_de ? 'Nach Absprache' : 'By arrangement')
+        : uniqueDays.length === 1
+          ? (_de ? '1× pro Woche' : '1× per week')
+          : `${uniqueDays.length}× ${_de ? 'pro Woche' : 'per week'}`;
 
     document.getElementById('discModalSlots').innerHTML = slots.length
       ? slots.map(s => `<div class="disc-slot">
-          <span class="disc-slot-day">${_DAY_SHORT[s.day] || s.dayName || ''}</span>
+          <span class="disc-slot-day">${_dayShort[s.day] || s.dayName || ''}</span>
           <span class="disc-slot-time">${s.timeStart||''}${s.timeEnd ? ' – '+s.timeEnd : ''}</span>
           <span class="disc-slot-name">${s.name||''}</span>
-          <span class="disc-slot-badge">${s.level||''}</span>
+          <span class="disc-slot-badge">${(!_de && s.levelEn) ? s.levelEn : (s.level||'')}</span>
         </div>`).join('')
-      : '<p class="disc-no-slots">No dedicated session yet — contact us to arrange.</p>';
+      : `<p class="disc-no-slots">${_de ? 'Noch keine feste Einheit – kontaktiere uns für eine Vereinbarung.' : 'No dedicated session yet — contact us to arrange.'}</p>`;
     _discOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
