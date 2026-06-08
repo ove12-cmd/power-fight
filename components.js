@@ -1,24 +1,7 @@
 (function () {
   'use strict';
 
-  /* ── Schedule baseline (mirrors FIXED_SCHEDULE_SITE in index.html) ── */
-  const _PF_FIXED = [
-    {id:'1-17',day:1,name:'MMA Striking',         start:'17:00',end:'18:00'},
-    {id:'1-18',day:1,name:'Striking / Grappling', start:'18:00',end:'19:00'},
-    {id:'1-19',day:1,name:'MMA Grappling',         start:'19:00',end:'20:30'},
-    {id:'2-17',day:2,name:'MMA Striking',          start:'17:00',end:'18:00'},
-    {id:'2-18',day:2,name:'MMA Striking',          start:'18:00',end:'19:00'},
-    {id:'2-19',day:2,name:'MMA Striking',          start:'19:00',end:'20:30'},
-    {id:'3-17',day:3,name:'MMA Striking',          start:'17:00',end:'18:00'},
-    {id:'3-18',day:3,name:'MMA Striking',          start:'18:00',end:'19:00'},
-    {id:'3-19',day:3,name:'MMA Grappling',         start:'19:00',end:'20:30'},
-    {id:'4-16',day:4,name:'Kids MMA',              start:'16:00',end:'17:00'},
-    {id:'4-17',day:4,name:'MMA Striking',          start:'17:00',end:'18:00'},
-    {id:'4-18',day:4,name:'Fight S&C',             start:'18:00',end:'19:00'},
-    {id:'4-19',day:4,name:'MMA Striking',          start:'19:00',end:'20:30'},
-    {id:'5-18',day:5,name:'MMA Striking Sparring', start:'18:00',end:'19:00'},
-    {id:'5-19',day:5,name:'MMA Sparring',          start:'19:00',end:'20:30'},
-  ];
+  /* Schedule is fully dynamic — loaded from pf_schedule_v2 settings key */
 
   /* Pill colour from class name */
   function _pillCol(name) {
@@ -73,36 +56,26 @@
   /* ── Shared schedule data (one fetch, reused by popup + footer) ──── */
   const SB_URL = 'https://nzfqsgdzbainfijbhwag.supabase.co';
   const SB_KEY = 'sb_publishable_OPR8hTocm9g1T79HTW3Qvg_y-0yj2Al';
-  const _FIXED_SLOTS = _PF_FIXED.map(s => ({...s, timeStart: s.start, timeEnd: s.end, hidden: false, archived: false}));
   let _slotsPromise = null;
 
   function _getScheduleSlots() {
     if (_slotsPromise) return _slotsPromise;
-    // Homepage: _pfSlots already merged & ready — wrap in a resolved promise
+    // Homepage: _pfSlots already loaded from DB — reuse directly
     if (window._pfSlots && window._pfSlots.length) {
       return (_slotsPromise = Promise.resolve(window._pfSlots));
     }
-    // Other pages: fetch overrides from Supabase, merge with baseline
-    _slotsPromise = fetch(`${SB_URL}/rest/v1/schedule_overrides?select=*`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
-    })
+    // All other pages: fetch from settings table (pf_schedule_v2)
+    _slotsPromise = fetch(
+      `${SB_URL}/rest/v1/settings?key=eq.pf_schedule_v2&select=value`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+    )
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(rows => {
-      const hiddenIds = new Set((rows||[]).filter(r => r.hidden || r.archived).map(r => r.id));
-      const ov = {};
-      (rows||[]).forEach(r => { if (!r.hidden && !r.archived) ov[r.id] = r; });
-      const merged = _PF_FIXED
-        .filter(s => !hiddenIds.has(s.id))
-        .map(s => {
-          const o = ov[s.id];
-          return { day: s.day, name: s.name,
-            timeStart: o?.time_start ?? s.start,
-            timeEnd:   o?.time_end   ?? s.end,
-            hidden: false, archived: false };
-        });
-      return merged.length ? merged : _FIXED_SLOTS;
+      if (!rows || !rows.length || !rows[0].value) return [];
+      const slots = JSON.parse(rows[0].value) || [];
+      return slots.filter(s => !s.hidden && !s.archived && s.name);
     })
-    .catch(() => _FIXED_SLOTS);
+    .catch(() => []);
     return _slotsPromise;
   }
 
