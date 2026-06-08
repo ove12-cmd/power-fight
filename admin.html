@@ -566,12 +566,15 @@
     </div>
     <form class="login-form" id="loginForm" novalidate>
       <div class="login-field">
-        <input type="password" id="loginPwd" placeholder="Enter password" autocomplete="current-password" autofocus>
+        <input type="email" id="loginEmail" placeholder="Email address" autocomplete="email" autofocus>
+      </div>
+      <div class="login-field">
+        <input type="password" id="loginPwd" placeholder="Password" autocomplete="current-password">
         <button type="button" class="login-eye" id="togglePwd" aria-label="Show password" tabindex="-1">
           <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
-      <div class="login-err" id="loginErr">Incorrect password. Try again.</div>
+      <div class="login-err" id="loginErr">Invalid email or password.</div>
       <button class="login-btn" type="submit">Enter</button>
     </form>
     <p style="font-size:11px;color:var(--ink-mute);text-align:center">Power Fight · Admin Panel</p>
@@ -1180,7 +1183,7 @@
 
 <script>
   // ── CONFIG ────────────────────────────────────────────────────────
-  const PASSWORD = 'PF-trainfightwin';   // ← change this to your preferred password
+  // Auth is handled via Supabase Auth — no hardcoded password
 
   // ── Progress bar ─────────────────────────────────────────────────────
   const Progress = (() => {
@@ -1394,26 +1397,37 @@
   const loginBox = document.getElementById('loginBox');
   const loginErr = document.getElementById('loginErr');
 
-  if (sessionStorage.getItem('pf_admin') === '1') {
-    loginScreen.style.display = 'none';
-    dashboard.classList.add('visible');
-    renderAll();
-  }
-
-  document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const pwd = document.getElementById('loginPwd').value;
-    if (pwd === PASSWORD) {
-      sessionStorage.setItem('pf_admin', '1');
+  // Check existing session on load
+  (async () => {
+    const { data: { session } } = await _sb.auth.getSession();
+    if (session) {
       loginScreen.style.display = 'none';
       dashboard.classList.add('visible');
       renderAll();
-    } else {
+    }
+  })();
+
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const pwd   = document.getElementById('loginPwd').value;
+    const btn   = this.querySelector('.login-btn');
+    btn.textContent = '…';
+    btn.disabled = true;
+    const { error } = await _sb.auth.signInWithPassword({ email, password: pwd });
+    btn.textContent = 'Enter';
+    btn.disabled = false;
+    if (error) {
+      loginErr.textContent = 'Invalid email or password.';
       loginErr.classList.add('show');
       loginBox.classList.remove('shake');
       void loginBox.offsetWidth;
       loginBox.classList.add('shake');
       document.getElementById('loginPwd').value = '';
+    } else {
+      loginScreen.style.display = 'none';
+      dashboard.classList.add('visible');
+      renderAll();
     }
   });
 
@@ -1427,8 +1441,8 @@
     inp.focus();
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.removeItem('pf_admin');
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await _sb.auth.signOut();
     location.reload();
   });
 
