@@ -1296,23 +1296,27 @@
   async function sbSaveCategories(cats) {
     await sbSetSetting('gallery_categories', JSON.stringify(cats));
   }
+  // name+level are packed into day_name as JSON so no extra DB columns needed
+  // format: JSON.stringify({n: name, l: level, d: dayName})
+  function _schedPack(it) {
+    return JSON.stringify({n: it.name || '', l: it.level || '', d: it.dayName || ''});
+  }
+  function _schedUnpack(r) {
+    let name = '', level = '', dayName = r.day_name || '';
+    try { const p = JSON.parse(r.day_name); name = p.n || ''; level = p.l || ''; dayName = p.d || ''; } catch(e) {}
+    return { id: r.id, day: r.day, dayName, timeStart: r.time_start, timeEnd: r.time_end, name, level, hidden: !!r.hidden, archived: !!r.archived };
+  }
   async function sbLoadSchedule() {
     if (_cache.schedule) return _cache.schedule;
     const { data } = await _sb.from('schedule_overrides').select('*');
-    return (_cache.schedule = (data || []).map(r => ({
-      id: r.id, day: r.day, dayName: r.day_name,
-      timeStart: r.time_start, timeEnd: r.time_end,
-      name: r.name || '', level: r.level || '',
-      hidden: !!r.hidden, archived: !!r.archived
-    })));
+    return (_cache.schedule = (data || []).map(_schedUnpack));
   }
   async function sbSaveSchedule(items) {
     await _sb.from('schedule_overrides').delete().neq('id', 'x');
     if (items.length) await _sb.from('schedule_overrides').insert(
       items.map(it => ({
-        id: it.id, day: it.day, day_name: it.dayName,
+        id: it.id, day: it.day, day_name: _schedPack(it),
         time_start: it.timeStart, time_end: it.timeEnd,
-        name: it.name || '', level: it.level || '',
         hidden: !!it.hidden, archived: !!it.archived
       }))
     );

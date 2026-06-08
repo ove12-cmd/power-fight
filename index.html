@@ -2019,17 +2019,19 @@
   }
 
   // Async: fetch all trainings from DB
+  // day_name stores JSON {n: name, l: level, d: dayName} (packed by admin)
   window._pfSlots = [];
   (async function() {
     try {
       const { data: schedData } = await _sb.from('schedule_overrides').select('*');
       const slots = (schedData || [])
         .filter(r => !r.hidden && !r.archived)
-        .map(r => ({
-          id: r.id, day: r.day, dayName: r.day_name,
-          timeStart: r.time_start, timeEnd: r.time_end,
-          name: r.name || '', level: r.level || ''
-        }));
+        .map(r => {
+          let name = '', level = '', dayName = r.day_name || '';
+          try { const p = JSON.parse(r.day_name); name = p.n || ''; level = p.l || ''; dayName = p.d || ''; } catch(e) {}
+          return { id: r.id, day: r.day, dayName, timeStart: r.time_start, timeEnd: r.time_end, name, level };
+        })
+        .filter(s => s.name); // skip blank-name rows (stale legacy entries)
       window._pfSlots = slots;
       _renderSchedSlots(slots, true);
     } catch(e) { console.warn('Schedule render (DB):', e); }
