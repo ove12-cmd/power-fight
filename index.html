@@ -254,7 +254,7 @@
     .hero{ height:auto; padding:160px 32px 100px; }
   }
   @media(max-width:640px){
-    .hero{ min-height:100svh; overflow:visible; padding:9rem 20px 60px; justify-content:flex-start; }
+    .hero{ min-height:100svh; overflow:visible; padding:calc(9rem + env(safe-area-inset-top)) 20px 60px; justify-content:flex-start; }
   }
 
   .hero-portrait{
