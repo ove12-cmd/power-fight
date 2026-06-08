@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Admin — Power Fight</title>
 <link rel="icon" type="image/png" href="favicon.png" />
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
@@ -473,6 +473,7 @@
       border-right:none;border-top:1px solid var(--line-2);border-bottom:none;
       overflow-x:auto;overflow-y:hidden;
       scrollbar-width:none;-webkit-overflow-scrolling:touch;
+      padding-bottom:env(safe-area-inset-bottom);
     }
     #sidebar::-webkit-scrollbar{display:none}
     .sb-logo,.sb-label,.sb-footer{display:none}
@@ -496,7 +497,7 @@
     .sb-badge{margin:0;font-size:9px;padding:1px 5px}
 
     /* Content area fills remaining height */
-    #content{height:calc(100vh - 68px);overflow-y:auto}
+    #content{height:calc(100vh - 68px - env(safe-area-inset-bottom));overflow-y:auto}
 
     /* Panel */
     .panel-head{padding:14px 16px 12px;gap:10px}
