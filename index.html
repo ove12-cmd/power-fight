@@ -2030,6 +2030,7 @@
       const visible = slots.filter(s => !s.hidden && !s.archived && s.name);
       window._pfSlots = visible;
       _renderSchedSlots(visible, true);
+      if (typeof _buildSchedule === 'function') { _buildSchedule(); nextTraining(); }
     } catch(e) { console.warn('Schedule render:', e); }
   })();
 
@@ -2080,13 +2081,30 @@
   });
 
   // Meta: date, live time, next training — built from effective schedule
-  const _nc = n => n.includes('Sparring') ? '#FF4D6D' : n.includes('Grappling') ? '#5BE0FF' : n.includes('S&C') ? '#A78BFA' : n.includes('Kids') ? '#FF8C42' : '#FACC15';
-  const SCHEDULE = {};
-  (window._pfSlots || []).forEach(s => {
-    const h = parseInt(s.timeStart);
-    (SCHEDULE[s.day] = SCHEDULE[s.day] || []).push({name: s.name, hour: h, color: _nc(s.name)});
-  });
-  Object.values(SCHEDULE).forEach(arr => arr.sort((a, b) => a.hour - b.hour));
+  const _nc = n => {
+    const nl = (n || '').toLowerCase();
+    if (nl.includes('sparring'))                                                    return '#FF4D6D';
+    if (nl.includes('grappling') || nl.includes('bjj') || nl.includes('wrestling')) return '#5BE0FF';
+    if (nl.includes('s&c') || nl.includes('conditioning') || nl.includes('strength')) return '#A78BFA';
+    if (nl.includes('kid') || nl.includes('junior'))                               return '#FF8C42';
+    if (nl.includes('striking') || nl.includes('boxing') || nl.includes('kickboxing') || nl.includes('muay')) return 'var(--lime)';
+    if (nl.includes('mma') || nl.includes('mixed martial') || nl.includes('performance')) return '#FF4D6D';
+    if (nl.includes('bodycombat') || nl.includes('les mills') || nl.includes('kettlebell')) return '#FF8C42';
+    if (nl.includes('personal'))                                                    return '#5BE0FF';
+    return '#FACC15';
+  };
+  let SCHEDULE = {};
+  function _buildSchedule() {
+    Object.keys(SCHEDULE).forEach(k => delete SCHEDULE[k]);
+    (window._pfSlots || []).forEach(s => {
+      if (!s.timeStart) return;
+      const parts = s.timeStart.split(':').map(Number);
+      const h = parts[0] || 0, m = parts[1] || 0;
+      (SCHEDULE[s.day] = SCHEDULE[s.day] || []).push({name: s.name, hour: h, minute: m, timeStart: s.timeStart, color: _nc(s.name)});
+    });
+    Object.values(SCHEDULE).forEach(arr => arr.sort((a, b) => (a.hour * 60 + a.minute) - (b.hour * 60 + b.minute)));
+  }
+  _buildSchedule();
 
   function nextTraining() {
     const now = new Date();
@@ -2103,10 +2121,10 @@
       const sessions = SCHEDULE[day];
       if (!sessions) continue;
       for (const s of sessions) {
-        if (i === 0 && s.hour <= now.getHours()) continue;
+        if (i === 0 && (s.hour * 60 + s.minute) <= (now.getHours() * 60 + now.getMinutes())) continue;
         const dayName = d.toLocaleDateString('en-US', {weekday:'short'});
         document.getElementById('metaNext').innerHTML =
-          `<span style="color:${s.color};text-transform:uppercase">${s.name}</span><span class="ntb-sep">|</span><span style="color:var(--ink-dim)">${dayName.toUpperCase()} ${String(s.hour).padStart(2,'0')}:00</span>`;
+          `<span style="color:${s.color};text-transform:uppercase">${s.name}</span><span class="ntb-sep">|</span><span style="color:var(--ink-dim)">${dayName.toUpperCase()} ${s.timeStart}</span>`;
         // Highlight matching card
         const card = document.querySelector(`.sched-card[data-day="${day}"][data-hour="${s.hour}"]`);
         if (card) {
