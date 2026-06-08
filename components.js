@@ -85,20 +85,40 @@
     _renderInfoHours(slots);
   }
 
-  /* Render unique training names → footer Trainings column */
-  async function _loadFooterTrainings() {
+  /* Render training names → footer Trainings column (fixed list from Our Classes) */
+  const _FOOTER_TRAININGS = [
+    'Mixed Martial Arts','Grappling','Striking','Wrestling',
+    'Les Mills Bodycombat','Strength & Conditioning','Performance Training',
+    'Personal Training','Kettlebell Training','Kids Training'
+  ];
+  function _loadFooterTrainings() {
     const list = document.getElementById('footTrainingList');
     if (!list) return;
+    const privLink = `<li><a href="/booking" style="color:var(--lime)"><span data-ci18n="foot.priv">${_uiLang === 'en' ? 'Private Bookings →' : 'Private Buchungen →'}</span></a></li>`;
+    list.innerHTML = _FOOTER_TRAININGS.map(n => `<li><a href="${pr}">${n}</a></li>`).join('') + privLink;
+  }
+
+  /* Populate #fbTraining select with unique class names from schedule */
+  async function _loadFbTrainingOptions() {
+    const sel = document.getElementById('fbTraining');
+    if (!sel) return;
     const slots = await _getScheduleSlots();
     const seen = new Set();
     const names = slots.filter(s => s.name && !seen.has(s.name) && seen.add(s.name)).map(s => s.name);
-    const privLink = `<li><a href="/booking" style="color:var(--lime)"><span data-ci18n="foot.priv">${_uiLang === 'en' ? 'Private Bookings →' : 'Private Buchungen →'}</span></a></li>`;
-    if (!names.length) {
-      list.innerHTML = privLink;
-      return;
-    }
-    list.innerHTML = names.map(n => `<li><a href="${pr}">${n}</a></li>`).join('') + privLink;
+    // Keep first placeholder option, rebuild the rest
+    const placeholder = sel.options[0];
+    sel.innerHTML = '';
+    sel.appendChild(placeholder);
+    names.forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = n;
+      opt.textContent = n;
+      sel.appendChild(opt);
+    });
   }
+
+  /* Expose schedule fetch for use on other pages (e.g. contact.html) */
+  window._pfGetScheduleSlots = _getScheduleSlots;
 
   /* Render slots → footer schedule list */
   async function _loadFooterSchedule() {
@@ -637,14 +657,14 @@
     fbStyle.textContent = '.fb-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:7777;opacity:0;pointer-events:none;transition:opacity .3s ease;display:flex;align-items:center;justify-content:center;padding:24px}.fb-modal-overlay.open{opacity:1;pointer-events:all}.fb-modal-inner{background:var(--bg-2,#0a0b0c);border:1px solid var(--line-2,rgba(255,255,255,0.06));border-radius:16px;width:100%;max-width:560px;padding:36px;position:relative;transform:translateY(20px);transition:transform .35s cubic-bezier(.16,1,.3,1);max-height:90vh;overflow-y:auto}.fb-modal-overlay.open .fb-modal-inner{transform:translateY(0)}.fb-modal-close{position:absolute;top:16px;right:16px;background:none;border:1px solid var(--line-2,rgba(255,255,255,0.06));border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-dim,#8a8c86);transition:color .2s,border-color .2s}.fb-modal-close:hover{color:var(--ink,#e8e8e4);border-color:rgba(255,255,255,0.25)}.fb-modal-close svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.8;overflow:visible}.fb-modal-title{font-size:26px;font-family:"Clash Display",ui-sans-serif,system-ui,sans-serif;font-weight:700;color:var(--ink,#e8e8e4);margin-bottom:6px}.fb-modal-sub{font-size:14px;color:var(--ink-dim,#8a8c86);margin-bottom:28px;line-height:1.55}.fb-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}.fb-form .fb-full{grid-column:1/-1}.fb-field{display:flex;flex-direction:column;gap:7px}.fb-field label{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-dim,#8a8c86)}.fb-field input,.fb-field textarea,.fb-field select{background:var(--bg,#040505);border:1px solid var(--line-2,rgba(255,255,255,0.06));border-radius:10px;padding:12px 14px;font-family:"General Sans",ui-sans-serif,system-ui,sans-serif;font-size:14px;color:var(--ink,#e8e8e4);outline:none;transition:border-color .25s}.fb-field input:focus,.fb-field textarea:focus,.fb-field select:focus{border-color:rgba(199,255,63,.4)}.fb-field textarea{resize:vertical;min-height:90px}.fb-field select{appearance:none;-webkit-appearance:none;cursor:pointer}.fb-stars{display:flex;gap:6px;margin-bottom:4px}.fb-star{font-size:22px;cursor:pointer;filter:grayscale(1);opacity:.35;background:none;border:none;padding:0;line-height:1;transition:opacity .15s,filter .15s}.fb-star.active{filter:none;opacity:1}.fb-submit-row{grid-column:1/-1;display:flex;align-items:center;gap:16px;margin-top:4px}.fb-success-screen{display:none;flex-direction:column;align-items:center;text-align:center;padding:12px 0 8px;gap:20px}.fb-success-screen.show{display:flex}.fb-success-icon svg{width:72px;height:72px}.fb-success-title{font-family:"Clash Display",ui-sans-serif,system-ui,sans-serif;font-size:clamp(22px,5vw,28px);font-weight:700;color:var(--ink,#e8e8e4)}.fb-success-sub{font-size:14px;color:var(--ink-dim,#8a8c86);line-height:1.6;max-width:320px}.fb-success-close-btn{min-width:160px;margin-top:8px;justify-content:center}@media(max-width:600px){.fb-modal-inner{padding:24px 20px}.fb-form{grid-template-columns:1fr}}';
     document.head.appendChild(fbStyle);
 
-    document.body.insertAdjacentHTML('beforeend', '<div class="fb-modal-overlay" id="fbModal"><div class="fb-modal-inner"><button class="fb-modal-close" id="fbModalClose" aria-label="Close"><svg viewBox="0 0 16 16"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg></button><div class="fb-modal-title" data-ci18n="fb.title">Feedback hinterlassen</div><p class="fb-modal-sub" data-ci18n="fb.sub">Hast du bei uns trainiert? Deine Erfahrung erscheint direkt in den Testimonials.</p><form class="fb-form" id="fbForm" novalidate><div class="fb-field"><label for="fbName" data-ci18n="fb.lbl.name">Dein Name</label><input type="text" id="fbName" placeholder="Jonas Lie" autocomplete="name"></div><div class="fb-field"><label for="fbTraining" data-ci18n="fb.lbl.training">Trainingsart</label><select id="fbTraining"><option value="" data-ci18n="fb.ph.training">Disziplin wählen</option><option>MMA Striking</option><option>MMA Grappling</option><option>Kids MMA</option><option>Les Mills Bodycombat</option><option>Professional</option><option>Sparring</option><option>S&C</option></select></div><div class="fb-field fb-full"><label for="fbText" data-ci18n="fb.lbl.text">Deine Erfahrung</label><textarea id="fbText" placeholder="Wie war dein Training bei Power Fight?" data-ci18n-ph="fb.ph.text"></textarea></div><div class="fb-field fb-full"><label data-ci18n="fb.lbl.rating">Bewertung</label><div class="fb-stars" id="fbStars" role="group" aria-label="Rating"><button class="fb-star" type="button" data-val="1" aria-label="1 star">★</button><button class="fb-star" type="button" data-val="2" aria-label="2 stars">★</button><button class="fb-star" type="button" data-val="3" aria-label="3 stars">★</button><button class="fb-star" type="button" data-val="4" aria-label="4 stars">★</button><button class="fb-star" type="button" data-val="5" aria-label="5 stars">★</button></div></div><div class="fb-submit-row"><button class="btn btn-primary" type="submit"><span data-ci18n="fb.submit">Feedback einreichen</span></button></div></form><div class="fb-success-screen" id="fbSuccessScreen"><div class="fb-success-icon"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="#C7FF3F" stroke-width="1.5"/><path d="M13 24.5l8 8 14-16" stroke="#C7FF3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="fb-success-title" data-ci18n="fb.success.title">Danke für dein Feedback!</div><p class="fb-success-sub" data-ci18n="fb.success.sub">Deine Bewertung ist nun im Testimonials-Bereich sichtbar.</p><button class="btn btn-primary fb-success-close-btn" id="fbSuccessDone"><span data-ci18n="fb.success.close">Schliessen</span></button></div></div></div>');
+    document.body.insertAdjacentHTML('beforeend', '<div class="fb-modal-overlay" id="fbModal"><div class="fb-modal-inner"><button class="fb-modal-close" id="fbModalClose" aria-label="Close"><svg viewBox="0 0 16 16"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg></button><div class="fb-modal-title" data-ci18n="fb.title">Feedback hinterlassen</div><p class="fb-modal-sub" data-ci18n="fb.sub">Hast du bei uns trainiert? Deine Erfahrung erscheint direkt in den Testimonials.</p><form class="fb-form" id="fbForm" novalidate><div class="fb-field"><label for="fbName" data-ci18n="fb.lbl.name">Dein Name</label><input type="text" id="fbName" placeholder="Jonas Lie" autocomplete="name"></div><div class="fb-field"><label for="fbTraining" data-ci18n="fb.lbl.training">Trainingsart</label><select id="fbTraining"><option value="" data-ci18n="fb.ph.training">Disziplin wählen</option></select></div><div class="fb-field fb-full"><label for="fbText" data-ci18n="fb.lbl.text">Deine Erfahrung</label><textarea id="fbText" placeholder="Wie war dein Training bei Power Fight?" data-ci18n-ph="fb.ph.text"></textarea></div><div class="fb-field fb-full"><label data-ci18n="fb.lbl.rating">Bewertung</label><div class="fb-stars" id="fbStars" role="group" aria-label="Rating"><button class="fb-star" type="button" data-val="1" aria-label="1 star">★</button><button class="fb-star" type="button" data-val="2" aria-label="2 stars">★</button><button class="fb-star" type="button" data-val="3" aria-label="3 stars">★</button><button class="fb-star" type="button" data-val="4" aria-label="4 stars">★</button><button class="fb-star" type="button" data-val="5" aria-label="5 stars">★</button></div></div><div class="fb-submit-row"><button class="btn btn-primary" type="submit"><span data-ci18n="fb.submit">Feedback einreichen</span></button></div></form><div class="fb-success-screen" id="fbSuccessScreen"><div class="fb-success-icon"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="#C7FF3F" stroke-width="1.5"/><path d="M13 24.5l8 8 14-16" stroke="#C7FF3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="fb-success-title" data-ci18n="fb.success.title">Danke für dein Feedback!</div><p class="fb-success-sub" data-ci18n="fb.success.sub">Deine Bewertung ist nun im Testimonials-Bereich sichtbar.</p><button class="btn btn-primary fb-success-close-btn" id="fbSuccessDone"><span data-ci18n="fb.success.close">Schliessen</span></button></div></div></div>');
 
     // Apply language after ALL dynamic elements are in the DOM
     _compApplyLang(_initLang);
 
     const fbModalEl = document.getElementById('fbModal');
 
-    window.openFeedbackModal = function () { fbModalEl.classList.add('open'); window.lockScroll(); };
+    window.openFeedbackModal = function () { fbModalEl.classList.add('open'); window.lockScroll(); _loadFbTrainingOptions(); };
 
     function closeFeedbackModal() {
       fbModalEl.classList.remove('open');

@@ -353,19 +353,7 @@
 
       <div class="form-group">
         <label class="form-label">Ich interessiere mich für <span style="font-size:10px;letter-spacing:.06em;color:var(--ink-mute);text-transform:none;font-weight:400">(optional)</span></label>
-        <div class="interest-pills" id="interestPills">
-          <span class="interest-pill" data-val="Mixed Martial Arts">Mixed Martial Arts</span>
-          <span class="interest-pill" data-val="Grappling">Grappling</span>
-          <span class="interest-pill" data-val="Striking">Striking</span>
-          <span class="interest-pill" data-val="Wrestling">Wrestling</span>
-          <span class="interest-pill" data-val="Les Mills Bodycombat">Les Mills Bodycombat</span>
-          <span class="interest-pill" data-val="Strength &amp; Conditioning">Strength &amp; Conditioning</span>
-          <span class="interest-pill" data-val="Performance Training">Performance Training</span>
-          <span class="interest-pill" data-val="Personal Training">Personal Training</span>
-          <span class="interest-pill" data-val="Kettlebell Training">Kettlebell Training</span>
-          <span class="interest-pill" data-val="Kids Training">Kids Training</span>
-          <span class="interest-pill" data-val="Free Trial">Gratis Probetraining</span>
-        </div>
+        <div class="interest-pills" id="interestPills"></div>
         <input type="hidden" name="interest" id="interestInput">
       </div>
 
@@ -468,51 +456,49 @@
   const today = new Date().getDay();
   if (dayMap[today]) document.getElementById(dayMap[today])?.classList.add('today');
 
-  // Interest pills
-  const pills = document.querySelectorAll('.interest-pill');
+  // Interest pills — populated dynamically from admin schedule
   const interestInput = document.getElementById('interestInput');
+  const pillsContainer = document.getElementById('interestPills');
   const selected = new Set();
-  pills.forEach(pill => {
+  const urlT = new URLSearchParams(window.location.search).get('t');
+
+  function _bindPill(pill) {
     pill.addEventListener('click', () => {
       pill.classList.toggle('active');
       if (pill.classList.contains('active')) selected.add(pill.dataset.val);
       else selected.delete(pill.dataset.val);
       interestInput.value = [...selected].join(', ');
     });
-  });
+  }
 
-  // Pre-select interest from URL param (?t=MMA+Grappling etc.)
-  const urlT = new URLSearchParams(window.location.search).get('t');
-  if (urlT) {
-    // Map register-style training names to contact pill data-val values
-    const tMap = {
-      // current discipline names
-      'Mixed Martial Arts':      'Mixed Martial Arts',
-      'Grappling':               'Grappling',
-      'Striking':                'Striking',
-      'Wrestling':               'Wrestling',
-      'Les Mills Bodycombat':    'Les Mills Bodycombat',
-      'Strength & Conditioning': 'Strength & Conditioning',
-      'Performance Training':    'Performance Training',
-      'Personal Training':       'Personal Training',
-      'Kettlebell Training':     'Kettlebell Training',
-      'Kids Training':           'Kids Training',
-      // legacy / alternate spellings
-      'MMA':                     'Mixed Martial Arts',
-      'MMA Striking':            'Striking',
-      'MMA Grappling':           'Grappling',
-      'Kids MMA':                'Kids Training',
-      'Professional Trainings':  'Performance Training',
-      'Professional':            'Performance Training',
-    };
-    const val = tMap[urlT] || urlT;
-    const match = Array.from(pills).find(p => p.dataset.val === val);
-    if (match) {
-      match.classList.add('active');
-      selected.add(match.dataset.val);
-      interestInput.value = [...selected].join(', ');
-      setTimeout(() => match.scrollIntoView({behavior:'smooth', block:'center'}), 300);
+  function _renderPills(names) {
+    if (!names.length) return;
+    pillsContainer.innerHTML = names.map(n =>
+      `<span class="interest-pill" data-val="${n.replace(/"/g,'&quot;')}">${n}</span>`
+    ).join('');
+    pillsContainer.querySelectorAll('.interest-pill').forEach(_bindPill);
+
+    // Pre-select from URL param ?t=
+    if (urlT) {
+      const val = urlT;
+      const match = Array.from(pillsContainer.querySelectorAll('.interest-pill'))
+        .find(p => p.dataset.val === val || p.dataset.val.toLowerCase() === val.toLowerCase());
+      if (match) {
+        match.classList.add('active');
+        selected.add(match.dataset.val);
+        interestInput.value = [...selected].join(', ');
+        setTimeout(() => match.scrollIntoView({behavior:'smooth', block:'center'}), 300);
+      }
     }
+  }
+
+  // Fetch schedule names via components.js helper (available after initComponents)
+  if (window._pfGetScheduleSlots) {
+    window._pfGetScheduleSlots().then(slots => {
+      const seen = new Set();
+      const names = slots.filter(s => s.name && !seen.has(s.name) && seen.add(s.name)).map(s => s.name);
+      _renderPills(names);
+    }).catch(() => {});
   }
 
   // Button sweep
