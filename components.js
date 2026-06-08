@@ -85,6 +85,21 @@
     _renderInfoHours(slots);
   }
 
+  /* Render unique training names → footer Trainings column */
+  async function _loadFooterTrainings() {
+    const list = document.getElementById('footTrainingList');
+    if (!list) return;
+    const slots = await _getScheduleSlots();
+    const seen = new Set();
+    const names = slots.filter(s => s.name && !seen.has(s.name) && seen.add(s.name)).map(s => s.name);
+    const privLink = `<li><a href="/booking" style="color:var(--lime)"><span data-ci18n="foot.priv">${_uiLang === 'en' ? 'Private Bookings →' : 'Private Buchungen →'}</span></a></li>`;
+    if (!names.length) {
+      list.innerHTML = privLink;
+      return;
+    }
+    list.innerHTML = names.map(n => `<li><a href="${pr}">${n}</a></li>`).join('') + privLink;
+  }
+
   /* Render slots → footer schedule list */
   async function _loadFooterSchedule() {
     const list = document.getElementById('footSchedList');
@@ -235,13 +250,8 @@
     </div>
     <div class="foot-col">
       <h5 data-ci18n="foot.h2">Training</h5>
-      <ul>
-        <li><a href="/#programs">MMA Striking</a></li>
-        <li><a href="/#programs">MMA Grappling</a></li>
-        <li><a href="/#programs">Les Mills Bodycombat</a></li>
-        <li><a href="/#programs">Kids MMA</a></li>
-        <li><a href="/#programs">Professional</a></li>
-        <li><a href="/booking" style="color:var(--lime)"><span data-ci18n="foot.priv">Private Buchungen →</span></a></li>
+      <ul id="footTrainingList" style="gap:10px">
+        <li><span style="opacity:.35;font-size:12px;color:var(--ink-mute)">Lädt…</span></li>
       </ul>
     </div>
     <div class="foot-col">
@@ -329,7 +339,8 @@
     if (footRoot) {
       footRoot.insertAdjacentHTML('beforebegin', FOOTER_HTML + POPUP_HTML);
       footRoot.remove();
-      _loadFooterSchedule(); // populate schedule pills from live admin data
+      _loadFooterSchedule();   // populate schedule pills from live admin data
+      _loadFooterTrainings();  // populate training names from live admin data
     }
 
     // Mark active nav link
@@ -541,6 +552,7 @@
       // Re-render schedule lists if already loaded (day names are language-dependent)
       if (_slotsPromise) {
         _loadFooterSchedule();
+        _loadFooterTrainings();
         const grid = document.getElementById('infoHoursGrid');
         if (grid && grid.children.length > 0 && !grid.querySelector('[data-ci18n]')) {
           _loadInfoHours();
