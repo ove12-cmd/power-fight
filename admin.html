@@ -566,7 +566,7 @@
     </div>
     <form class="login-form" id="loginForm" novalidate>
       <div class="login-field">
-        <input type="email" id="loginEmail" placeholder="Email address" autocomplete="email" autofocus>
+        <input type="text" id="loginEmail" placeholder="Username" autocomplete="username" autofocus spellcheck="false" autocapitalize="none">
       </div>
       <div class="login-field">
         <input type="password" id="loginPwd" placeholder="Password" autocomplete="current-password">
@@ -1409,9 +1409,10 @@
 
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const pwd   = document.getElementById('loginPwd').value;
-    const btn   = this.querySelector('.login-btn');
+    const username = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const email    = username + '@powerfight.admin';
+    const pwd      = document.getElementById('loginPwd').value;
+    const btn      = this.querySelector('.login-btn');
     btn.textContent = '…';
     btn.disabled = true;
     const { error } = await _sb.auth.signInWithPassword({ email, password: pwd });
