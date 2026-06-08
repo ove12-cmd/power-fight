@@ -1296,30 +1296,16 @@
   async function sbSaveCategories(cats) {
     await sbSetSetting('gallery_categories', JSON.stringify(cats));
   }
-  // name+level are packed into day_name as JSON so no extra DB columns needed
-  // format: JSON.stringify({n: name, l: level, d: dayName})
-  function _schedPack(it) {
-    return JSON.stringify({n: it.name || '', l: it.level || '', d: it.dayName || ''});
-  }
-  function _schedUnpack(r) {
-    let name = '', level = '', dayName = r.day_name || '';
-    try { const p = JSON.parse(r.day_name); name = p.n || ''; level = p.l || ''; dayName = p.d || ''; } catch(e) {}
-    return { id: r.id, day: r.day, dayName, timeStart: r.time_start, timeEnd: r.time_end, name, level, hidden: !!r.hidden, archived: !!r.archived };
-  }
+  // Schedule stored as JSON blob in settings table — avoids schema issues entirely
   async function sbLoadSchedule() {
     if (_cache.schedule) return _cache.schedule;
-    const { data } = await _sb.from('schedule_overrides').select('*');
-    return (_cache.schedule = (data || []).map(_schedUnpack));
+    const raw = await sbGetSetting('pf_schedule_v2', '[]');
+    try { _cache.schedule = JSON.parse(raw) || []; } catch(e) { _cache.schedule = []; }
+    return _cache.schedule;
   }
   async function sbSaveSchedule(items) {
-    await _sb.from('schedule_overrides').delete().neq('id', 'x');
-    if (items.length) await _sb.from('schedule_overrides').insert(
-      items.map(it => ({
-        id: it.id, day: it.day, day_name: _schedPack(it),
-        time_start: it.timeStart, time_end: it.timeEnd,
-        hidden: !!it.hidden, archived: !!it.archived
-      }))
-    );
+    _cache.schedule = items;
+    await sbSetSetting('pf_schedule_v2', JSON.stringify(items));
   }
   async function sbLoadInstagram() {
     if (_cache.instagram) return _cache.instagram;

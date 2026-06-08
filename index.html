@@ -2018,23 +2018,16 @@
     });
   }
 
-  // Async: fetch all trainings from DB
-  // day_name stores JSON {n: name, l: level, d: dayName} (packed by admin)
+  // Async: fetch schedule from settings table (stored as JSON by admin)
   window._pfSlots = [];
   (async function() {
     try {
-      const { data: schedData } = await _sb.from('schedule_overrides').select('*');
-      const slots = (schedData || [])
-        .filter(r => !r.hidden && !r.archived)
-        .map(r => {
-          let name = '', level = '', dayName = r.day_name || '';
-          try { const p = JSON.parse(r.day_name); name = p.n || ''; level = p.l || ''; dayName = p.d || ''; } catch(e) {}
-          return { id: r.id, day: r.day, dayName, timeStart: r.time_start, timeEnd: r.time_end, name, level };
-        })
-        .filter(s => s.name); // skip blank-name rows (stale legacy entries)
-      window._pfSlots = slots;
-      _renderSchedSlots(slots, true);
-    } catch(e) { console.warn('Schedule render (DB):', e); }
+      const { data } = await _sb.from('settings').select('value').eq('key','pf_schedule_v2').maybeSingle();
+      const slots = data ? (JSON.parse(data.value) || []) : [];
+      const visible = slots.filter(s => !s.hidden && !s.archived && s.name);
+      window._pfSlots = visible;
+      _renderSchedSlots(visible, true);
+    } catch(e) { console.warn('Schedule render:', e); }
   })();
 
   // ── Gallery skeleton shimmer ──────────────────────────────────────
