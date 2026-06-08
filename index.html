@@ -1958,31 +1958,31 @@
   let _schedLang = 'de';
   let _schedNowLabel = 'JETZT';
 
-  // ── Schedule: fixed class definitions (source of truth) ─────────────
-  const FIXED_SCHEDULE_SITE = [
-    {id:'1-17', day:1, dayName:'Montag',    name:'MMA Striking',         level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00', hlClass:'hl-youngs',  nameClass:'scard-strike'},
-    {id:'1-18', day:1, dayName:'Montag',    name:'Striking / Grappling', level:'Amateur',        defStart:'18:00', defEnd:'19:00', hlClass:'hl-amateur', nameClass:'scard-strike'},
-    {id:'1-19', day:1, dayName:'Montag',    name:'MMA Grappling',        level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-grapple'},
-    {id:'2-17', day:2, dayName:'Dienstag',   name:'MMA Striking',         level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00', hlClass:'hl-youngs',  nameClass:'scard-strike'},
-    {id:'2-18', day:2, dayName:'Dienstag',   name:'MMA Striking',         level:'Amateur',        defStart:'18:00', defEnd:'19:00', hlClass:'hl-amateur', nameClass:'scard-strike'},
-    {id:'2-19', day:2, dayName:'Dienstag',   name:'MMA Striking',         level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-strike'},
-    {id:'3-17', day:3, dayName:'Mittwoch', name:'MMA Striking',         level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00', hlClass:'hl-youngs',  nameClass:'scard-strike'},
-    {id:'3-18', day:3, dayName:'Mittwoch', name:'MMA Striking',         level:'Amateur',        defStart:'18:00', defEnd:'19:00', hlClass:'hl-amateur', nameClass:'scard-strike'},
-    {id:'3-19', day:3, dayName:'Mittwoch', name:'MMA Grappling',        level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-grapple'},
-    {id:'4-16', day:4, dayName:'Donnerstag',  name:'Kids MMA',             level:'5–9 Jahre', levelEn:'5–9 Years', defStart:'16:00', defEnd:'17:00', hlClass:'hl-kids',    nameClass:'scard-kids'},
-    {id:'4-17', day:4, dayName:'Donnerstag',  name:'MMA Striking',         level:'Youngs · 10–14', defStart:'17:00', defEnd:'18:00', hlClass:'hl-youngs',  nameClass:'scard-strike'},
-    {id:'4-18', day:4, dayName:'Donnerstag',  name:'Fight S&C',            level:'',               defStart:'18:00', defEnd:'19:00', hlClass:'',           nameClass:'scard-sc'},
-    {id:'4-19', day:4, dayName:'Donnerstag',  name:'MMA Striking',         level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-strike'},
-    {id:'5-18', day:5, dayName:'Freitag',    name:'MMA Striking Sparring',level:'',               defStart:'18:00', defEnd:'19:00', hlClass:'',           nameClass:'scard-sparring'},
-    {id:'5-19', day:5, dayName:'Freitag',    name:'MMA Sparring',         level:'',               defStart:'19:00', defEnd:'20:30', hlClass:'',           nameClass:'scard-sparring'},
-  ];
+  // ── Schedule: fully DB-driven (trainings managed in admin panel) ─────
+  // Derive card style classes from name/level
+  function _schedHlClass(level) {
+    if (!level) return '';
+    const lv = level.toLowerCase();
+    if (lv.includes('10') || lv.includes('young') || lv.includes('teen')) return 'hl-youngs';
+    if (lv.includes('amateur')) return 'hl-amateur';
+    if (lv.includes('5') || lv.includes('kid') || lv.includes('junior')) return 'hl-kids';
+    return '';
+  }
+  function _schedNameClass(name) {
+    const n = (name || '').toLowerCase();
+    if (n.includes('grappling') || n.includes('bjj') || n.includes('wrestling')) return 'scard-grapple';
+    if (n.includes('sparring')) return 'scard-sparring';
+    if (n.includes('s&c') || n.includes('conditioning') || n.includes('strength')) return 'scard-sc';
+    if (n.includes('kid') || n.includes('junior')) return 'scard-kids';
+    return 'scard-strike';
+  }
 
-  // ── Schedule render helper (called synchronously + after async fetch) ──
-  // instant=true skips scroll-reveal so async re-render never flickers invisible
+  // ── Schedule render helper (called after async fetch) ──────────────
   function _renderSchedSlots(slots, instant) {
     const grid = document.getElementById('schedGrid');
     if (!grid) return;
     grid.innerHTML = '';
+    if (!slots || !slots.length) return;
     const byDay = {}, dayNames = {};
     slots.forEach(s => { (byDay[s.day] = byDay[s.day] || []).push(s); dayNames[s.day] = s.dayName; });
     Object.values(byDay).forEach(arr => arr.sort((a, b) => a.timeStart.localeCompare(b.timeStart)));
@@ -2001,14 +2001,16 @@
       col.innerHTML = `<div class="sched-col-head">${_SCHED_DAYS[d] || dayNames[d]}</div>`;
       byDay[d].forEach(s => {
         const card = document.createElement('div');
-        card.className = `sched-card${s.hlClass ? ' ' + s.hlClass : ''}`;
+        const hlCls = s.hlClass || _schedHlClass(s.level);
+        const nameCls = s.nameClass || _schedNameClass(s.name);
+        card.className = `sched-card${hlCls ? ' ' + hlCls : ''}`;
         card.dataset.id   = s.id;
         card.dataset.day  = String(s.day);
         card.dataset.hour = String(parseInt(s.timeStart));
         card.innerHTML = `
           <div class="sched-card-time">${s.timeStart} – ${s.timeEnd}</div>
-          <div class="sched-card-name ${s.nameClass}">${s.name}</div>
-          ${s.level ? `<div class="sched-card-badge">${(_schedLang === 'en' && s.levelEn) ? s.levelEn : s.level}</div>` : ''}`;
+          <div class="sched-card-name ${nameCls}">${s.name}</div>
+          ${s.level ? `<div class="sched-card-badge">${s.level}</div>` : ''}`;
         col.appendChild(card);
       });
       if (masonry) (idx % 2 === 0 ? leftWrap : rightWrap).appendChild(col);
@@ -2016,29 +2018,21 @@
     });
   }
 
-  // Render defaults immediately so the schedule is never blank
-  window._pfSlots = FIXED_SCHEDULE_SITE.map(s => ({...s, timeStart: s.defStart, timeEnd: s.defEnd}));
-  _renderSchedSlots(window._pfSlots);
-
-  // Async: fetch DB overrides and re-render if anything changed
+  // Async: fetch all trainings from DB
+  window._pfSlots = [];
   (async function() {
     try {
-      const ov = {};
       const { data: schedData } = await _sb.from('schedule_overrides').select('*');
-      (schedData || []).forEach(o => { if (o.hidden || o.archived) return; ov[o.id] = { id: o.id, day: o.day, dayName: o.day_name, timeStart: o.time_start, timeEnd: o.time_end }; });
-      const _hiddenIds = new Set((schedData || []).filter(o => o.hidden || o.archived).map(o => o.id));
-
-      const overridden = FIXED_SCHEDULE_SITE.filter(s => !_hiddenIds.has(s.id)).map(s => {
-        const o = ov[s.id];
-        return o ? {...s, day: o.day ?? s.day, dayName: o.dayName ?? s.dayName,
-                       timeStart: o.timeStart ?? s.defStart, timeEnd: o.timeEnd ?? s.defEnd}
-                 : {...s, timeStart: s.defStart, timeEnd: s.defEnd};
-      });
-      // If all hidden in DB, keep showing defaults
-      window._pfSlots = overridden.length ? overridden
-                                          : FIXED_SCHEDULE_SITE.map(s => ({...s, timeStart: s.defStart, timeEnd: s.defEnd}));
-      _renderSchedSlots(window._pfSlots, true);
-    } catch(e) { console.warn('Schedule render (DB):', e); /* defaults remain */ }
+      const slots = (schedData || [])
+        .filter(r => !r.hidden && !r.archived)
+        .map(r => ({
+          id: r.id, day: r.day, dayName: r.day_name,
+          timeStart: r.time_start, timeEnd: r.time_end,
+          name: r.name || '', level: r.level || ''
+        }));
+      window._pfSlots = slots;
+      _renderSchedSlots(slots, true);
+    } catch(e) { console.warn('Schedule render (DB):', e); }
   })();
 
   // ── Gallery skeleton shimmer ──────────────────────────────────────
@@ -2090,7 +2084,7 @@
   // Meta: date, live time, next training — built from effective schedule
   const _nc = n => n.includes('Sparring') ? '#FF4D6D' : n.includes('Grappling') ? '#5BE0FF' : n.includes('S&C') ? '#A78BFA' : n.includes('Kids') ? '#FF8C42' : '#FACC15';
   const SCHEDULE = {};
-  (window._pfSlots || FIXED_SCHEDULE_SITE.map(s => ({...s, timeStart:s.defStart}))).forEach(s => {
+  (window._pfSlots || []).forEach(s => {
     const h = parseInt(s.timeStart);
     (SCHEDULE[s.day] = SCHEDULE[s.day] || []).push({name: s.name, hour: h, color: _nc(s.name)});
   });
