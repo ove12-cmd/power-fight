@@ -503,14 +503,18 @@
       .wa-btn{width:52px;height:52px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);transition:transform .2s,box-shadow .2s;text-decoration:none}
       .wa-btn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(37,211,102,.6)}
       .wa-btn svg{width:28px;height:28px;fill:#fff;display:block}
-      @media(max-width:640px){.sticky-cta-text{display:none}#bottomRow{left:0;right:0;bottom:0;gap:0}#stickyCta{border:none;border-top:1px solid var(--line-2)}#waFloat{bottom:80px;right:16px}#schedFab{display:flex;bottom:80px;right:auto;left:16px}}
+      #schedFab{display:none;position:fixed;z-index:8999;width:52px;height:52px;border-radius:50%;background:var(--lime);align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(199,255,63,.45);transition:transform .2s,box-shadow .2s}
+      #schedFab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(199,255,63,.65)}
+      #schedFab svg{width:26px;height:26px;display:block;fill:none;stroke:#040505;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+      @media(max-width:640px){
+        #bottomRow{display:none!important}
+        #waFloat{bottom:80px;right:16px}
+        #schedFab{display:flex;bottom:20px;right:16px}
+      }
       footer{padding-bottom:calc(40px + 6rem)!important}
       @media(max-width:640px){footer{padding-bottom:calc(32px + 6rem)!important}}
       h1,h2,h3,h4,h5,h6{text-wrap:balance}
       p,li,blockquote,.faq-a-inner,.sched-card-name,.page-hero-tag{text-wrap:pretty}
-      #schedFab{display:none;position:fixed;bottom:90px;right:20px;z-index:54;width:52px;height:52px;border-radius:50%;background:var(--lime);align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(199,255,63,.45);transition:transform .2s,box-shadow .2s}
-      #schedFab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(199,255,63,.65)}
-      #schedFab svg{width:26px;height:26px;display:block}
     `;
     document.head.appendChild(stickyStyle);
 
@@ -611,6 +615,14 @@
     waFloatEl.id = 'waFloat';
     waFloatEl.innerHTML = `<a class="wa-btn" href="https://wa.me/41788937929" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">${WA_SVG}</a>`;
     document.body.appendChild(waFloatEl);
+
+    const SCHED_CAL_SVG = `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+    const schedFabEl = document.createElement('a');
+    schedFabEl.id = 'schedFab';
+    schedFabEl.href = sh;
+    schedFabEl.setAttribute('aria-label', 'Schedules');
+    schedFabEl.innerHTML = SCHED_CAL_SVG;
+    document.body.appendChild(schedFabEl);
 
     const stickyCta = document.getElementById('stickyCta');
     const CTA_KEY = 'pf_cta_dismissed';
