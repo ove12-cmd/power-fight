@@ -87,9 +87,8 @@
 
   /* Render training names → footer Trainings column (fixed list from Our Classes) */
   const _FOOTER_TRAININGS = [
-    'Mixed Martial Arts','Grappling','Striking','Wrestling',
-    'Les Mills Bodycombat','Strength & Conditioning','Performance Training',
-    'Personal Training','Kettlebell Training','Kids Training'
+    'Striking for MMA','Grappling','Kettlebell Group Training',
+    'Les Mills BodyCombat','Personal Training','Kids Training'
   ];
   function _loadFooterTrainings() {
     const list = document.getElementById('footTrainingList');
@@ -182,10 +181,10 @@
       <span class="lang-sep">|</span>
       <button class="lang-btn active" data-lang="de">DE</button>
     </div>
-    <button class="btn btn-ghost" id="infoBtn" onclick="openInfoPopup()">
-      <span style="display:inline-flex;align-items:center;gap:0.5rem"><span>Info</span><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;position:relative;z-index:1"><circle cx="7" cy="7" r="6"/><line x1="7" y1="6" x2="7" y2="10"/><circle cx="7" cy="4" r="0.5" fill="currentColor" stroke="none"/></svg></span>
+    <a class="btn btn-ghost" href="${sh}"><span data-ci18n="cta">Stundenplan ansehen</span></a>
+    <button class="btn btn-primary" id="infoBtn" onclick="openInfoPopup()">
+      <span style="display:inline-flex;align-items:center;gap:0.5rem"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;position:relative;z-index:1"><path d="M7 1C4.79 1 3 2.79 3 5c0 3.5 4 8 4 8s4-4.5 4-8c0-2.21-1.79-4-4-4z"/><circle cx="7" cy="5" r="1.5"/></svg><span data-ci18n="nav.info">Find Us</span></span>
     </button>
-    <a class="btn btn-primary" href="${sh}"><span data-ci18n="cta">Stundenplan ansehen</span></a>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Open menu">
     <span></span><span></span>
@@ -220,12 +219,12 @@
       <span class="mob-link-text">FAQ</span>
       <svg class="mob-link-arr" viewBox="0 0 9 15"><polyline points="1,1 8,7.5 1,14"/></svg>
     </a>
-    <a href="#voices" class="mob-link">
-      <span class="mob-link-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="none"/></svg></span>
+    <button class="mob-link" style="display:flex;align-items:center;width:100%;padding:18px 0;border:none;border-bottom:1px solid var(--line);background:none;cursor:pointer;color:var(--ink);text-align:left" onclick="openInfoPopup()">
+      <span class="mob-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.69 2 6 4.69 6 8c0 5.25 6 13 6 13s6-7.75 6-13c0-3.31-2.69-6-6-6z"/><circle cx="12" cy="8" r="2.5"/></svg></span>
       <span class="mob-link-sep">|</span>
-      <span class="mob-link-text">Info</span>
+      <span class="mob-link-text" data-ci18n="nav.info">Find Us</span>
       <svg class="mob-link-arr" viewBox="0 0 9 15"><polyline points="1,1 8,7.5 1,14"/></svg>
-    </a>
+    </button>
   </nav>
   <div class="mob-cta">
     <a class="btn btn-primary" href="${sh}"><span data-ci18n="cta">Stundenplan ansehen</span></a>
@@ -506,10 +505,15 @@
       #schedFab{display:none;position:fixed;z-index:8999;width:52px;height:52px;border-radius:50%;background:var(--lime);align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 20px rgba(199,255,63,.45);transition:transform .2s,box-shadow .2s}
       #schedFab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(199,255,63,.65)}
       #schedFab svg{width:26px;height:26px;display:block;fill:none;stroke:#040505;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+      #trialFab{display:none;position:fixed;z-index:9000;align-items:center;justify-content:center;gap:9px;text-decoration:none;background:var(--lime);color:#040505;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.03em;text-transform:uppercase;height:52px;padding:0 18px;border-radius:30px;box-shadow:0 4px 20px rgba(199,255,63,.45);opacity:0;transform:translateY(16px);transition:opacity .4s ease,transform .4s ease,box-shadow .2s}
+      #trialFab.visible{opacity:1;transform:translateY(0)}
+      #trialFab:active{box-shadow:0 2px 12px rgba(199,255,63,.5)}
+      #trialFab svg{width:19px;height:19px;flex-shrink:0;fill:none;stroke:#040505;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
       @media(max-width:640px){
         #bottomRow{display:none!important}
         #waFloat{bottom:80px;right:16px}
         #schedFab{display:flex;bottom:20px;right:16px}
+        #trialFab{display:flex;bottom:20px;left:16px;right:80px}
       }
       footer{padding-bottom:calc(40px + 6rem)!important}
       @media(max-width:640px){footer{padding-bottom:calc(32px + 6rem)!important}}
@@ -521,10 +525,10 @@
     // ── Component translations ──────────────────────────────────────
     const COMP_T = {
       en: {
-        'nav.sched':'Schedules','nav.train':'Trainings','nav.cont':'Contact',
-        'cta':'See Schedules',
+        'nav.sched':'Schedules','nav.train':'Programs','nav.cont':'Contact','nav.info':'Find Us',
+        'cta':'See Schedules','trial.book':'Book a Free Trial Week',
         'foot.brand':'A serious training environment for fighters who are serious about getting better. Open to all levels — built for those who want to compete.',
-        'foot.h1':'Schedule','foot.h2':'Trainings','foot.h3':'Follow Us',
+        'foot.h1':'Schedule','foot.h2':'Programs','foot.h3':'Follow Us',
         'foot.priv':'Private Bookings →','foot.contact':'Contact Us',
         'foot.fb':'Leave Feedback →','foot.maps':'Open in Maps',
         'pop.addr':'Address','pop.phone':'Phone','pop.email':'Email',
@@ -538,10 +542,10 @@
         'fb.success.close':'Close',
       },
       de: {
-        'nav.sched':'Stundenplan','nav.train':'Training','nav.cont':'Kontakt',
-        'cta':'Stundenplan ansehen',
+        'nav.sched':'Stundenplan','nav.train':'Programme','nav.cont':'Kontakt','nav.info':'Finde uns',
+        'cta':'Stundenplan ansehen','trial.book':'Gratis Probewoche buchen',
         'foot.brand':'Ein ernsthaftes Trainingsumfeld für Kämpfer, die besser werden wollen. Offen für alle Niveaus – gebaut für alle, die kämpfen wollen.',
-        'foot.h1':'Stundenplan','foot.h2':'Training','foot.h3':'Folge uns',
+        'foot.h1':'Stundenplan','foot.h2':'Programme','foot.h3':'Folge uns',
         'foot.priv':'Private Buchungen →','foot.contact':'Kontaktiere uns',
         'foot.fb':'Feedback hinterlassen →','foot.maps':'In Maps öffnen',
         'pop.addr':'Adresse','pop.phone':'Telefon','pop.email':'E-Mail',
@@ -621,8 +625,29 @@
     schedFabEl.id = 'schedFab';
     schedFabEl.href = sh;
     schedFabEl.setAttribute('aria-label', 'Schedules');
-    schedFabEl.innerHTML = SCHED_CAL_SVG;
+    schedFabEl.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`;
     document.body.appendChild(schedFabEl);
+
+    // ── Mobile "Book a Free Trial Week" floating pill (next to WhatsApp) ──
+    const _noTrialFabPage = /\/(contact|booking)(\.html)?(\?.*)?$/.test(window.location.pathname);
+    if (!_noTrialFabPage) {
+      const trialFabEl = document.createElement('a');
+      trialFabEl.id = 'trialFab';
+      trialFabEl.href = '/contact';
+      trialFabEl.innerHTML = `${SCHED_CAL_SVG}<span data-ci18n="trial.book">Gratis Probewoche buchen</span>`;
+      document.body.appendChild(trialFabEl);
+
+      const heroTrialBtn = document.getElementById('heroTrialBtn');
+      if (heroTrialBtn) {
+        new IntersectionObserver(entries => {
+          trialFabEl.classList.toggle('visible', !entries[0].isIntersecting);
+        }, { threshold: 0 }).observe(heroTrialBtn);
+      } else {
+        window.addEventListener('scroll', () => {
+          trialFabEl.classList.toggle('visible', window.scrollY > 300);
+        }, { passive: true });
+      }
+    }
 
     const stickyCta = document.getElementById('stickyCta');
     const CTA_KEY = 'pf_cta_dismissed';

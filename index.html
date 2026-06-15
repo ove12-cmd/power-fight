@@ -320,18 +320,13 @@
 
   .hero h1{
     font-family:var(--display); font-weight:600;
-    font-size: clamp(36px, 12.5vw, 160px);
+    font-size: clamp(36px, 5vw, 120px);
     line-height: 0.92; letter-spacing:-0.03em;
     margin: 3vh 0 2vh;
-  }
-  /* German words are longer — scale down so "Trainieren. Kämpfen." fits on one line */
-  @media(min-width:641px){
-    html[lang="de"] .hero h1{font-size:clamp(36px,9vw,115px)}
-  }
-  @media(max-width:640px){
-    html[lang="de"] .hero h1{font-size:clamp(32px,14vw,60px)}
+    text-transform: uppercase;
   }
   .hero h1 .line{display:block; overflow:hidden; padding-bottom:0.12em}
+  .hero h1 .mob-line:has(>span:empty){display:none!important}
   .hero h1 .mob-line{display:none}
   .hero h1 .desk-line{display:block}
   .hero h1 .line > span{
@@ -341,13 +336,17 @@
     transition: transform 1.4s cubic-bezier(0.22,1,0.36,1), opacity 1s ease;
   }
   .hero.lit h1 .line > span{transform:translateY(0); opacity:1}
-  .hero h1 .line:nth-child(2) > span{transition-delay:.22s}
+  .hero h1 .line:nth-child(2) > span{transition-delay:.18s}
+  .hero h1 .line:nth-child(3) > span{transition-delay:.34s}
+  .hero h1 .line:nth-child(4) > span{transition-delay:.50s}
   .hero h1 em{font-style:normal; color:var(--lime); position:relative}
 
   .hero-bottom{
     display:grid; grid-template-columns: 1fr auto; gap:60px; align-items:flex-end;
     padding-top:36px; border-top:1px solid var(--line);
   }
+  .hero-loc-link{color:var(--lime);text-decoration:none;border-bottom:1px solid rgba(199,255,63,.35);transition:border-color .2s}
+  .hero-loc-link:hover{border-color:var(--lime)}
   .hero-tag{
     font-size:15px; line-height:1.55; color:var(--ink-dim); max-width:480px; margin:0;
     padding-left:16px; border-left:1px solid var(--lime);
@@ -418,11 +417,7 @@
   .discipline-row:hover .disc-name{color:var(--lime)}
   .disc-desc{font-size:13px; color:var(--ink-dim); line-height:1.55; margin:0}
   .disc-right{display:flex; align-items:center; gap:16px; flex-shrink:0}
-  .disc-tag{
-    font-size:9px; letter-spacing:0.18em; text-transform:uppercase; font-weight:700;
-    padding:4px 14px; border-radius:20px; border:1px solid currentColor;
-    background:color-mix(in srgb, currentColor 10%, transparent); white-space:nowrap;
-  }
+  .disc-tag{display:none}
   .disc-join{
     display:inline-flex; align-items:center; gap:7px;
     font-size:10px; letter-spacing:0.2em; text-transform:uppercase; font-weight:600;
@@ -439,14 +434,13 @@
     transition:background .2s,box-shadow .2s;
   }
   .disc-join-btn:hover{background:#d8ff5a; box-shadow:0 0 18px rgba(199,255,63,.3)}
-  .disc-read-more{
-    font-size:9px; letter-spacing:0.18em; text-transform:uppercase; font-weight:700;
-    color:var(--ink-dim); background:none; border:1px solid var(--line-2);
-    padding:7px 15px; cursor:pointer; font-family:var(--sans); white-space:nowrap;
-    transition:color .2s,border-color .2s,background .2s;
-  }
-  .discipline-row:hover .disc-read-more,.disc-read-more:hover{
-    color:var(--lime); border-color:rgba(199,255,63,.35); background:rgba(199,255,63,.04);
+  .disc-subs{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+  .disc-sub{
+    font-size:9px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;
+    padding:3px 10px;border-radius:20px;white-space:nowrap;
+    color:var(--dc,var(--lime));
+    border:1px solid color-mix(in srgb,var(--dc,var(--lime)) 35%,transparent);
+    background:color-mix(in srgb,var(--dc,var(--lime)) 10%,transparent);
   }
   @media(max-width:900px){
     .discipline-row{gap:0 20px; padding:24px 24px}
@@ -478,10 +472,10 @@
       -webkit-box-orient:vertical; overflow:hidden;
       font-size:12px; line-height:1.5; margin-top:3px;
     }
-    /* Buttons: full-width row 2, true 50/50 via flex */
+    /* Button: full-width row 2 */
     .disc-right{grid-column:1/-1; grid-row:2; display:flex; gap:8px; margin-top:12px}
     .disc-join-btn{flex:1; justify-content:center; padding:10px 16px}
-    .disc-read-more{flex:1; padding:9px 14px; font-size:9px; justify-content:center; text-align:center}
+    .disc-subs{margin-top:6px}
   }
 
   /* ── Discipline modal ───────────────────────────────────────────────── */
@@ -1145,7 +1139,8 @@
     .hero-meta{flex-direction:column; gap:0; align-items:flex-start}
     .hero-meta .left{flex-direction:column; gap:16px}
     .hero-meta .right{text-align:left; flex-direction:column; gap:16px}
-    .hero h1{font-size: clamp(32px, 16vw, 80px); text-transform:uppercase}
+    .hero h1{font-size: clamp(22px, 10vw, 80px); text-transform:uppercase}
+    .hero-subtitle{font-size:10px;margin:0 0 24px;letter-spacing:.13em}
     .mob-line{display:block}
     .desk-line{display:none}
     .hero-ctas{width:100%; display:flex; flex-direction:column; gap:10px}
@@ -1373,16 +1368,17 @@
     </div>
 
     <h1>
-      <span class="line desk-line"><span data-i18n="hero.desk1">Trainiere. Kämpfe.</span></span>
-      <span class="line mob-line"><span data-i18n="hero.mob1">Trainiere.</span></span>
-      <span class="line mob-line"><span data-i18n="hero.mob2">Kämpfe.</span></span>
-      <span class="line"><span><em data-i18n="hero.win">Gewinne.</em></span></span>
+      <span class="line desk-line"><span data-i18n-html="hero.desk1">Martial Arts <em>&</em></span></span>
+      <span class="line desk-line"><span data-i18n-html="hero.desk2">Physical Performance Gym</span></span>
+      <span class="line mob-line"><span data-i18n-html="hero.mob1">Martial Arts <em>&</em></span></span>
+      <span class="line mob-line"><span data-i18n-html="hero.mob2">Physical</span></span>
+      <span class="line mob-line"><span data-i18n-html="hero.mob3">Performance</span></span>
+      <span class="line mob-line"><span data-i18n-html="hero.mob4">Gym</span></span>
     </h1>
-
     <div class="hero-bottom">
       <p class="hero-tag" data-i18n-html="hero.tag">Gebaut für Kämpfer, die mehr als Fitness wollen.<br>Schlag, Grappling und Disziplin zu <b>einem System.</b></p>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="/contact"><span data-i18n="hero.join">Dem Team beitreten</span></a>
+        <a class="btn btn-primary" href="/contact" id="heroTrialBtn"><span data-i18n="hero.join">Gratis Probewoche buchen</span></a>
         <button class="btn btn-ghost hero-watch-btn" id="heroWatchBtn" type="button">
           <span style="display:inline-flex;align-items:center;gap:8px">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;position:relative;z-index:1"><path d="M4 2.5l10 5.5-10 5.5V2.5z"/></svg>
@@ -1404,124 +1400,100 @@
     <p data-i18n="prog.desc">Zehn Disziplinen. Ein Team. Von MMA und Grappling bis Kettlebell und Kids – alles unter einem Dach.</p>
   </div>
   <div class="disciplines-list">
-    <div class="discipline-row reveal" data-disc="mma">
+    <div class="discipline-row reveal" data-disc="striking-mma">
       <span class="disc-num">01</span>
       <div class="disc-body">
-        <span class="disc-name">Mixed Martial Arts</span>
-        <p class="disc-desc">Schlag, Grappling, Käfigarbeit und Übergänge – alle Disziplinen in einem kompletten Kampfsystem.</p>
+        <span class="disc-name" data-i18n="disc.striking.name">Striking for MMA</span>
+        <p class="disc-desc" data-i18n="disc.striking.desc">Kombinationen und Schlagtechniken aus den Stand-Up-Disziplinen – Muay Thai, Kickboxen und Boxen. Entwickle scharfe Hände, kraftvolle Kicks und die Beinarbeit eines kompletten Strikers.</p>
+        <div class="disc-subs" style="--dc:var(--lime)">
+          <span class="disc-sub">Muay Thai</span>
+          <span class="disc-sub">Kickboxing</span>
+          <span class="disc-sub">Boxing</span>
+        </div>
       </div>
-      <span class="disc-tag" style="color:#FF4D6D">MMA</span>
       <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Mixed%20Martial%20Arts">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
+        <a class="disc-join-btn" href="contact.html?t=Striking%20for%20MMA" data-i18n="prog.join">Beitreten</a>
       </div>
     </div>
     <div class="discipline-row reveal" data-disc="grappling">
       <span class="disc-num">02</span>
       <div class="disc-body">
-        <span class="disc-name">Grappling</span>
-        <p class="disc-desc">Klinkenarbeit, Takedowns, Submissions und Mattenkontrolle. Baue dein Bodenspiel von Grund auf.</p>
+        <span class="disc-name" data-i18n="disc.grappling.name">Grappling</span>
+        <p class="disc-desc" data-i18n="disc.grappling.desc">Takedowns, Kontrolle, Submissions und Bodenkampf. Baue dein Wrestling- und BJJ-Spiel von Grund auf oder verfeinere das, was du bereits hast.</p>
+        <div class="disc-subs" style="--dc:#5BE0FF">
+          <span class="disc-sub">Wrestling</span>
+          <span class="disc-sub">BJJ</span>
+          <span class="disc-sub">No-Gi</span>
+          <span class="disc-sub">Submissions</span>
+        </div>
       </div>
-      <span class="disc-tag" style="color:#5BE0FF">Grappling</span>
       <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Grappling">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
-      </div>
-    </div>
-    <div class="discipline-row reveal" data-disc="striking">
-      <span class="disc-num">03</span>
-      <div class="disc-body">
-        <span class="disc-name">Striking</span>
-        <p class="disc-desc">Schläge, Kicks, Ellbogen und Fussarbeit. Entwickle das Stand-up-Spiel eines kompletten Kampfkünstlers.</p>
-      </div>
-      <span class="disc-tag" style="color:var(--lime)">Striking</span>
-      <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Striking">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
-      </div>
-    </div>
-    <div class="discipline-row reveal" data-disc="wrestling">
-      <span class="disc-num">04</span>
-      <div class="disc-body">
-        <span class="disc-name">Wrestling</span>
-        <p class="disc-desc">Takedowns, Scrambles und dominante Positionen. Die Grundlage jedes grossen MMA-Spielplans.</p>
-      </div>
-      <span class="disc-tag" style="color:#FACC15">Wrestling</span>
-      <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Wrestling">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
-      </div>
-    </div>
-    <div class="discipline-row reveal" data-disc="bodycombat">
-      <span class="disc-num">05</span>
-      <div class="disc-body">
-        <span class="disc-name">Les Mills Bodycombat</span>
-        <p class="disc-desc">Hochenergetisches, kampfkünstlerisches Fitness. Ganzkörper-Konditionierung auf Basis von Schlagmustern – kein Kontakt, volle Intensität.</p>
-      </div>
-      <span class="disc-tag" style="color:#FF8C42">Fitness</span>
-      <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Les%20Mills%20Bodycombat">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
-      </div>
-    </div>
-    <div class="discipline-row reveal" data-disc="sc">
-      <span class="disc-num">06</span>
-      <div class="disc-body">
-        <span class="disc-name">Strength &amp; Conditioning</span>
-        <p class="disc-desc">Baue den Motor hinter deinem Kampfspiel auf. Sportspezifische Kraft, Power und Ausdauer für Kampfkünstler.</p>
-      </div>
-      <span class="disc-tag" style="color:#A78BFA">S&amp;C</span>
-      <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Strength%20%26%20Conditioning">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
-      </div>
-    </div>
-    <div class="discipline-row reveal" data-disc="performance">
-      <span class="disc-num">07</span>
-      <div class="disc-body">
-        <span class="disc-name">Performance Training</span>
-        <p class="disc-desc">Elite-Vorbereitung für Wettkampfsportler. Hochintensive Sessions mit wettkampforientierten Plänen.</p>
-      </div>
-      <span class="disc-tag" style="color:#FF4D6D">Pro</span>
-      <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Performance%20Training">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
-      </div>
-    </div>
-    <div class="discipline-row reveal" data-disc="personal">
-      <span class="disc-num">08</span>
-      <div class="disc-body">
-        <span class="disc-name">Personal Training</span>
-        <p class="disc-desc">1-zu-1-Coaching auf deine Ziele zugeschnitten. Schnellerer Fortschritt, direktes Feedback und ein Programm, das um dich herum aufgebaut ist.</p>
-      </div>
-      <span class="disc-tag" style="color:#5BE0FF">Personal</span>
-      <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Personal%20Training">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
+        <a class="disc-join-btn" href="contact.html?t=Grappling" data-i18n="prog.join">Beitreten</a>
       </div>
     </div>
     <div class="discipline-row reveal" data-disc="kettlebell">
-      <span class="disc-num">09</span>
+      <span class="disc-num">03</span>
       <div class="disc-body">
-        <span class="disc-name">Kettlebell Training</span>
-        <p class="disc-desc">Funktionale Kraft und Konditionierung mit Kettlebells. Rohe Power, Griff und Ausdauer für Sport und Leben.</p>
+        <span class="disc-name" data-i18n="disc.kettlebell.name">Kettlebell Group Training</span>
+        <p class="disc-desc" data-i18n="disc.kettlebell.desc">Funktionale Kraft und Konditionierung mit Kettlebells in der Gruppe. Power, Griffstärke und Ausdauer – gebaut für Kämpfer, offen für alle.</p>
+        <div class="disc-subs" style="--dc:#FACC15">
+          <span class="disc-sub">Strength</span>
+          <span class="disc-sub">Conditioning</span>
+          <span class="disc-sub">Endurance</span>
+          <span class="disc-sub">All Levels</span>
+        </div>
       </div>
-      <span class="disc-tag" style="color:#FACC15">Fitness</span>
       <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Kettlebell%20Training">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
+        <a class="disc-join-btn" href="contact.html?t=Kettlebell%20Group%20Training" data-i18n="prog.join">Beitreten</a>
+      </div>
+    </div>
+    <div class="discipline-row reveal" data-disc="bodycombat">
+      <span class="disc-num">04</span>
+      <div class="disc-body">
+        <span class="disc-name" data-i18n="disc.bodycombat.name">Les Mills BodyCombat</span>
+        <p class="disc-desc" data-i18n="disc.bodycombat.desc">Hochenergetisches, kampfkünstlerisches Fitness. Ganzkörper-Konditionierung auf Basis von Schlagmustern – kein Kontakt, volle Intensität. Alle Niveaus willkommen.</p>
+        <div class="disc-subs" style="--dc:#FF8C42">
+          <span class="disc-sub">No Contact</span>
+          <span class="disc-sub">All Levels</span>
+          <span class="disc-sub">Group Class</span>
+        </div>
+      </div>
+      <div class="disc-right">
+        <a class="disc-join-btn" href="contact.html?t=Les%20Mills%20BodyCombat" data-i18n="prog.join">Beitreten</a>
+      </div>
+    </div>
+    <div class="discipline-row reveal" data-disc="personal">
+      <span class="disc-num">05</span>
+      <div class="disc-body">
+        <span class="disc-name" data-i18n="disc.personal.name">Personal Training</span>
+        <p class="disc-desc" data-i18n="disc.personal.desc">1-zu-1-Coaching auf deine Ziele zugeschnitten. Kraft, Muskelaufbau, Gewichtsabnahme, Power, Kampfkünste oder Grappling – wir bauen ein Programm um dich herum.</p>
+        <div class="disc-subs" style="--dc:#A78BFA">
+          <span class="disc-sub">Strength</span>
+          <span class="disc-sub">Muscle Building</span>
+          <span class="disc-sub">Weight Loss</span>
+          <span class="disc-sub">Power</span>
+          <span class="disc-sub">Martial Arts</span>
+          <span class="disc-sub">Grappling</span>
+        </div>
+      </div>
+      <div class="disc-right">
+        <a class="disc-join-btn" href="contact.html?t=Personal%20Training" data-i18n="prog.join">Beitreten</a>
       </div>
     </div>
     <div class="discipline-row reveal" data-disc="kids">
-      <span class="disc-num">10</span>
+      <span class="disc-num">06</span>
       <div class="disc-body">
-        <span class="disc-name">Kids Training</span>
-        <p class="disc-desc">Kampfkünste für 5–14-Jährige. Disziplin, Selbstvertrauen und Technik in einem sicheren, betreuten Umfeld.</p>
+        <span class="disc-name" data-i18n="disc.kids.name">Kids Training</span>
+        <p class="disc-desc" data-i18n="disc.kids.desc">Kampfkünste für 5–14-Jährige. Disziplin, Selbstvertrauen und Technik in einem sicheren, strukturierten Umfeld.</p>
+        <div class="disc-subs" style="--dc:#FF4D6D">
+          <span class="disc-sub">Ages 5–14</span>
+          <span class="disc-sub">MMA</span>
+          <span class="disc-sub">Discipline</span>
+          <span class="disc-sub">Confidence</span>
+        </div>
       </div>
-      <span class="disc-tag" style="color:#FF8C42">Kids</span>
       <div class="disc-right">
-        <a class="disc-join-btn" href="contact.html?t=Kids%20Training">Beitreten</a>
-        <button class="disc-read-more">Mehr lesen</button>
+        <a class="disc-join-btn" href="contact.html?t=Kids%20Training" data-i18n="prog.join">Beitreten</a>
       </div>
     </div>
   </div>
@@ -2159,13 +2131,14 @@
   // ── i18n ──────────────────────────────────────────────────────────
   const T = {
     en: {
-      'nav.schedules':'Schedules','nav.trainings':'Trainings','nav.register':'Register',
+      'nav.schedules':'Schedules','nav.trainings':'Programs','nav.register':'Register',
       'nav.contact':'Contact','nav.info':'Info','nav.cta':'First Training Free',
       'meta.next':'Next Training','meta.date':'Date','meta.time':'Time',
       'hero.watch':'Watch Us Train',
-      'hero.desk1':'Train. Fight.','hero.mob1':'Train.','hero.mob2':'Fight.','hero.win':'Win.',
-      'hero.tag':'Built for fighters who want more than fitness.<br>Striking, grappling and discipline engineered into <b>one system.</b>',
-      'hero.join':'Join the Team',
+      'hero.desk1':'Martial Arts <em>&</em>','hero.desk2':'Physical Performance Gym',
+      'hero.mob1':'Martial Arts <em>&</em>','hero.mob2':'Physical','hero.mob3':'Performance','hero.mob4':'Gym',
+      'hero.tag':'Combat Sport / Fitness Gym<br>in <a href="https://maps.google.com/?q=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" class="hero-loc-link">Aesch, Switzerland ↗</a>',
+      'hero.join':'Book a Free Trial Week',
       'prog.join':'Join','prog.read':'Read more',
       'prog.mma.desc':'Strikes, grappling, cage work, and transitions — all disciplines combined into one complete fighting system.',
       'prog.grappling.desc':'Clinch work, takedowns, submissions, and mat control. Build your ground game from the ground up.',
@@ -2224,20 +2197,33 @@
       'final.desc':'Come in, meet the coaches, train with the team. No commitment. No sales pitch. Just show up and see if it fits.',
       'final.cta1':'See Schedules','final.cta2':'View Programs',
       'foot.brand':'A serious training environment for fighters who are serious about getting better. Open to all levels — built for those who want to compete.',
-      'prog.eyebrow':'Classes','prog.heading':'Our <em>Classes</em>','prog.desc':'Ten disciplines. One team. Everything from MMA and grappling to kettlebells and kids — all under one roof.',
-      'class.kids':'Kids Trainings','class.pro':'Professional Trainings',
+      'prog.eyebrow':'Programs','prog.heading':'Our <em>Programs</em>','prog.desc':'Six programs. One team. From MMA striking and grappling to kettlebells, group fitness and personal coaching — all under one roof.',
+      'class.kids':'Kids Programs','class.pro':'Professional Programs',
+      'disc.striking.name':'Striking for MMA',
+      'disc.striking.desc':'Combinations and striking elements from stand-up fighting disciplines — Muay Thai, kickboxing and boxing. Develop sharp hands, powerful kicks and the footwork of a complete striker.',
+      'disc.grappling.name':'Grappling',
+      'disc.grappling.desc':'Takedowns, control, submissions and ground work. Build your wrestling and BJJ game from scratch or sharpen what you already have.',
+      'disc.kettlebell.name':'Kettlebell Group Training',
+      'disc.kettlebell.desc':'Functional strength and conditioning built around kettlebell movements in a group setting. Power, grip strength and endurance — built for fighters, open to everyone.',
+      'disc.bodycombat.name':'Les Mills BodyCombat',
+      'disc.bodycombat.desc':'High-energy, martial arts-inspired fitness. Full-body conditioning based on striking patterns — no contact, full intensity. All levels welcome.',
+      'disc.personal.name':'Personal Training',
+      'disc.personal.desc':'1-on-1 coaching built around your goals. Strength, muscle building, weight loss, power, martial arts or grappling — we build the program around you.',
+      'disc.kids.name':'Kids Training',
+      'disc.kids.desc':'Martial arts for ages 5–14. Discipline, confidence and technique in a safe, structured environment.',
       'sched.heading':'Weekly <em>Schedule</em>','sched.desc':'Drop in any time. All levels welcome — we\'ll put you in the right class.',
       'sched.mon':'Monday','sched.tue':'Tuesday','sched.wed':'Wednesday','sched.thu':'Thursday','sched.fri':'Friday',
       'sched.all':'All','sched.adults':'Adults','sched.now':'NOW',
     },
     de: {
-      'nav.schedules':'Trainingsplan','nav.trainings':'Trainings','nav.register':'Anmelden',
+      'nav.schedules':'Trainingsplan','nav.trainings':'Programme','nav.register':'Anmelden',
       'nav.contact':'Kontakt','nav.info':'Info','nav.cta':'Erstes Training gratis',
       'meta.next':'Nächstes Training','meta.date':'Datum','meta.time':'Zeit',
       'hero.watch':'Sieh uns beim Training',
-      'hero.desk1':'Trainieren. Kämpfen.','hero.mob1':'Trainieren.','hero.mob2':'Kämpfen.','hero.win':'Gewinnen.',
-      'hero.tag':'Für Kämpfer, die mehr wollen als Fitness.<br>Schlag, Grappling und Disziplin – entwickelt zu <b>einem System.</b>',
-      'hero.join':'Dem Team beitreten',
+      'hero.desk1':'Kampfsport <em>&</em>','hero.desk2':'Physical Performance Gym',
+      'hero.mob1':'Kampfsport <em>&</em>','hero.mob2':'Physical','hero.mob3':'Performance','hero.mob4':'Gym',
+      'hero.tag':'Kampfsport / Fitness Gym<br>in <a href="https://maps.google.com/?q=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" class="hero-loc-link">Aesch, Schweiz ↗</a>',
+      'hero.join':'Gratis Probewoche buchen',
       'prog.join':'Beitreten','prog.read':'Mehr lesen',
       'prog.mma.desc':'Schlag, Grappling, Käfigarbeit und Übergänge – alle Disziplinen in einem kompletten Kampfsystem.',
       'prog.grappling.desc':'Klinkenarbeit, Takedowns, Submissions und Mattenkontrolle. Baue dein Bodenspiel von Grund auf.',
@@ -2296,8 +2282,20 @@
       'final.desc':'Komm vorbei, lern die Trainer kennen, trainiere mit dem Team. Keine Verpflichtung. Kein Verkaufsgespräch. Komm einfach und schau, ob es passt.',
       'final.cta1':'Trainingsplan ansehen','final.cta2':'Programme ansehen',
       'foot.brand':'Eine ernste Trainingsumgebung für Kämpfer, die ernsthaft besser werden wollen. Offen für alle Niveaus — gebaut für die, die wettkämpfen wollen.',
-      'prog.eyebrow':'Klassen','prog.heading':'Unsere <em>Klassen</em>','prog.desc':'Zehn Disziplinen. Ein Team. Von MMA und Grappling bis Kettlebell und Kids — alles unter einem Dach.',
-      'class.kids':'Kinder-Training','class.pro':'Profi-Training',
+      'prog.eyebrow':'Programme','prog.heading':'Unsere <em>Programme</em>','prog.desc':'Sechs Programme. Ein Team. Von MMA-Striking und Grappling bis Kettlebell, Gruppenfitness und Personal Coaching – alles unter einem Dach.',
+      'class.kids':'Kinder-Programme','class.pro':'Profi-Programme',
+      'disc.striking.name':'Striking for MMA',
+      'disc.striking.desc':'Kombinationen und Schlagtechniken aus den Stand-Up-Disziplinen – Muay Thai, Kickboxen und Boxen. Entwickle scharfe Hände, kraftvolle Kicks und die Beinarbeit eines kompletten Strikers.',
+      'disc.grappling.name':'Grappling',
+      'disc.grappling.desc':'Takedowns, Kontrolle, Submissions und Bodenkampf. Baue dein Wrestling- und BJJ-Spiel von Grund auf oder verfeinere das, was du bereits hast.',
+      'disc.kettlebell.name':'Kettlebell Gruppentraining',
+      'disc.kettlebell.desc':'Funktionale Kraft und Konditionierung mit Kettlebells in der Gruppe. Power, Griffstärke und Ausdauer – gebaut für Kämpfer, offen für alle.',
+      'disc.bodycombat.name':'Les Mills BodyCombat',
+      'disc.bodycombat.desc':'Hochenergetisches, kampfkünstlerisches Fitness. Ganzkörper-Konditionierung auf Basis von Schlagmustern – kein Kontakt, volle Intensität. Alle Niveaus willkommen.',
+      'disc.personal.name':'Personal Training',
+      'disc.personal.desc':'1-zu-1-Coaching auf deine Ziele zugeschnitten. Kraft, Muskelaufbau, Gewichtsabnahme, Power, Kampfkünste oder Grappling – wir bauen ein Programm um dich herum.',
+      'disc.kids.name':'Kids Training',
+      'disc.kids.desc':'Kampfkünste für 5–14-Jährige. Disziplin, Selbstvertrauen und Technik in einem sicheren, strukturierten Umfeld.',
       'sched.heading':'Wöchentlicher <em>Trainingsplan</em>','sched.desc':'Komm jederzeit vorbei. Alle Niveaus willkommen — wir platzieren dich in der richtigen Klasse.',
       'sched.mon':'Montag','sched.tue':'Dienstag','sched.wed':'Mittwoch','sched.thu':'Donnerstag','sched.fri':'Freitag',
       'sched.all':'Alle','sched.adults':'Erwachsene','sched.now':'JETZT',
