@@ -75,7 +75,7 @@
       const slots = JSON.parse(rows[0].value) || [];
       return slots.filter(s => !s.hidden && !s.archived && s.name);
     })
-    .catch(() => []);
+    .catch(err => { console.warn('[PowerFight] Schedule load failed:', err); return []; });
     return _slotsPromise;
   }
 
@@ -513,8 +513,15 @@
         #bottomRow{display:none!important}
         #waFloat{bottom:80px;right:16px}
         #schedFab{display:flex;bottom:20px;right:16px}
-        #trialFab{display:flex;bottom:20px;left:16px;right:80px}
+        #trialFab{display:flex;bottom:20px;left:16px;right:80px;overflow:hidden}
+        #trialFab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
       }
+      @media(max-width:375px){
+        #trialFab{font-size:10px;padding:0 12px;gap:6px}
+        #trialFab svg{width:16px;height:16px}
+      }
+      .info-popup-overlay{padding:12px}
+      @media(max-width:360px){.info-popup{max-width:calc(100vw - 24px)}}
       footer{padding-bottom:calc(40px + 6rem)!important}
       @media(max-width:640px){footer{padding-bottom:calc(32px + 6rem)!important}}
       h1,h2,h3,h4,h5,h6{text-wrap:balance}
@@ -634,6 +641,7 @@
       const trialFabEl = document.createElement('a');
       trialFabEl.id = 'trialFab';
       trialFabEl.href = '/contact';
+      trialFabEl.setAttribute('aria-label', 'Book a free trial week');
       trialFabEl.innerHTML = `${SCHED_CAL_SVG}<span data-ci18n="trial.book">Gratis Probewoche buchen</span>`;
       document.body.appendChild(trialFabEl);
 

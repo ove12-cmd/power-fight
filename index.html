@@ -239,6 +239,7 @@
     object-fit:cover; object-position:center 100%; z-index:0;
     opacity:0.18;
   }
+  @media(max-width:640px){.hero-video{object-position:center center}}
   .hero-video-overlay{
     position:absolute; inset:0; z-index:1;
     background:
@@ -437,11 +438,13 @@
   .disc-subs{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
   .disc-sub{
     font-size:9px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;
-    padding:3px 10px;border-radius:20px;white-space:nowrap;
+    padding:3px 10px;border-radius:20px;white-space:nowrap;max-width:100%;
     color:var(--dc,var(--lime));
     border:1px solid color-mix(in srgb,var(--dc,var(--lime)) 35%,transparent);
     background:color-mix(in srgb,var(--dc,var(--lime)) 10%,transparent);
   }
+  body::after{opacity:0.5}
+  @media(max-width:640px){body::after{opacity:0.25}}
   @media(max-width:900px){
     .discipline-row{gap:0 20px; padding:24px 24px}
     .disc-tag{display:none}
