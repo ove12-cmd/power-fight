@@ -540,7 +540,7 @@
         'foot.fb':'Leave Feedback →','foot.maps':'Open in Maps',
         'pop.addr':'Address','pop.phone':'Phone','pop.email':'Email',
         'pop.hours':'Training Hours','pop.loading':'Loading schedule…',
-        'sticky.text':'Browse our weekly training schedule.',
+        'sticky.text':'Book your free trial week.','sticky.cta':'Book now',
         'fb.title':'Leave Feedback','fb.sub':'Trained with us? Your experience appears directly in the Testimonials.',
         'fb.lbl.name':'Your Name','fb.lbl.training':'Training Type','fb.lbl.text':'Your Experience',
         'fb.lbl.rating':'Rating','fb.ph.training':'Choose discipline','fb.ph.text':'How was your training at Power Fight?',
@@ -557,7 +557,7 @@
         'foot.fb':'Feedback hinterlassen →','foot.maps':'In Maps öffnen',
         'pop.addr':'Adresse','pop.phone':'Telefon','pop.email':'E-Mail',
         'pop.hours':'Trainingszeiten','pop.loading':'Stundenplan wird geladen…',
-        'sticky.text':'Unser wöchentlicher Trainingsplan.',
+        'sticky.text':'Buche deine gratis Probewoche.','sticky.cta':'Jetzt buchen',
         'fb.title':'Feedback hinterlassen','fb.sub':'Hast du bei uns trainiert? Deine Erfahrung erscheint direkt in den Testimonials.',
         'fb.lbl.name':'Dein Name','fb.lbl.training':'Trainingsart','fb.lbl.text':'Deine Erfahrung',
         'fb.lbl.rating':'Bewertung','fb.ph.training':'Disziplin wählen','fb.ph.text':'Wie war dein Training bei Power Fight?',
@@ -613,9 +613,9 @@
     bottomRow.innerHTML = `
       <div id="stickyCta">
         <div class="sticky-cta-inner">
-          <span class="sticky-cta-text" data-ci18n="sticky.text">Unser wöchentlicher Trainingsplan.</span>
+          <span class="sticky-cta-text" data-ci18n="sticky.text">Buche deine gratis Probewoche.</span>
           <div class="sticky-cta-actions">
-            <a class="btn btn-primary sticky-cta-btn" href="${sh}"><span data-ci18n="cta">Stundenplan ansehen</span></a>
+            <a class="btn btn-primary sticky-cta-btn" href="/contact"><span data-ci18n="sticky.cta">Jetzt buchen</span></a>
             <button class="sticky-cta-close" id="stickyCtaClose" aria-label="Dismiss"><svg viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>
           </div>
         </div>
