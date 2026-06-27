@@ -4,3 +4,7 @@
 /booking.html   /booking   301
 /register.html  /register  301
 /admin.html     /admin     301
+
+# Block public access to uploaded function *source* files. The real runnable
+# endpoint is /.netlify/functions/* (leading dot) and is unaffected.
+/netlify/*      /404.html  404
