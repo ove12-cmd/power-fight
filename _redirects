@@ -7,4 +7,5 @@
 
 # Block public access to uploaded function *source* files. The real runnable
 # endpoint is /.netlify/functions/* (leading dot) and is unaffected.
-/netlify/*      /404.html  404
+# The "!" forces the rule even though a static file exists at that path.
+/netlify/*      /404.html  404!
