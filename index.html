@@ -437,6 +437,8 @@
   }
   .disc-join-btn:hover{background:#d8ff5a; box-shadow:0 0 18px rgba(199,255,63,.3)}
   .disc-subs{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+  .disc-free{margin-top:11px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:var(--lime);display:inline-flex;align-items:center;gap:7px}
+  .disc-free::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime-glow);flex-shrink:0}
   .disc-sub{
     font-size:9px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;
     padding:3px 10px;border-radius:20px;white-space:nowrap;max-width:100%;
@@ -1472,13 +1474,16 @@
         <span class="disc-name" data-i18n="disc.personal.name">Personal Training</span>
         <p class="disc-desc" data-i18n="disc.personal.desc">1-zu-1-Coaching auf deine Ziele zugeschnitten. Kraft, Muskelaufbau, Gewichtsabnahme, Power, Kampfkünste oder Grappling – wir bauen ein Programm um dich herum.</p>
         <div class="disc-subs" style="--dc:#A78BFA">
-          <span class="disc-sub">Strength</span>
+          <span class="disc-sub">Muay Thai</span>
+          <span class="disc-sub">Kickboxing</span>
+          <span class="disc-sub">Grappling</span>
+          <span class="disc-sub">Strength &amp; Conditioning</span>
+          <span class="disc-sub">Performance Training</span>
           <span class="disc-sub">Muscle Building</span>
           <span class="disc-sub">Weight Loss</span>
-          <span class="disc-sub">Power</span>
-          <span class="disc-sub">Martial Arts</span>
-          <span class="disc-sub">Grappling</span>
+          <span class="disc-sub">Nutrition Programs</span>
         </div>
+        <div class="disc-free" data-i18n="disc.personal.free">Erstes Training gratis</div>
       </div>
       <div class="disc-right">
         <a class="disc-join-btn" href="contact.html?t=Personal%20Training" data-i18n="prog.join">Beitreten</a>
@@ -1779,7 +1784,7 @@
 <section class="final" id="contact">
   <div class="final-left">
     <div class="final-eyebrow" data-i18n="final.eyebrow">Jetzt starten</div>
-    <h2 class="reveal" data-i18n-html="final.heading">Dein erstes<br>Training ist <em>kostenlos.</em></h2>
+    <h2 class="reveal" data-i18n-html="final.heading">Deine erste<br>Woche ist <em>kostenlos.</em></h2>
     <img class="final-mob-img" src="cta.png" alt="">
     <p class="reveal" data-i18n="final.desc">Komm rein, triff die Trainer, trainiere mit dem Team. Keine Verpflichtung. Kein Verkaufsgespräch. Einfach erscheinen und schauen, ob es passt.</p>
     <div class="final-ctas reveal">
@@ -2136,7 +2141,7 @@
   const T = {
     en: {
       'nav.schedules':'Schedules','nav.trainings':'Programs','nav.register':'Register',
-      'nav.contact':'Contact','nav.info':'Info','nav.cta':'First Training Free',
+      'nav.contact':'Contact','nav.info':'Info','nav.cta':'First Week Free',
       'meta.next':'Next Training','meta.date':'Date','meta.time':'Time',
       'hero.watch':'Watch Us Train',
       'hero.desk1':'Martial Arts <em>&</em>','hero.desk2':'Physical Performance Gym',
@@ -2197,7 +2202,7 @@
       'testi.q3':'The 1-to-1 ratio isn\'t marketing. Every session someone is watching your technique and correcting it. I\'ve fixed movement patterns I didn\'t even know were wrong.','testi.q3.meta':'Striking · 1.5 years',
       'testi.q4':'I trained for a year before I found Power Fight. The difference in how fast I improved after joining was honestly embarrassing. The coaching level here is different.','testi.q4.meta':'MMA · 3 years',
       'testi.q5':'The sparring sessions are the best I\'ve experienced. Coached, intentional, and safe — but with real pressure. It\'s the closest thing to competition prep I\'ve found outside of fight camp.','testi.q5.meta':'Sparring · 1 year',
-      'final.eyebrow':'Get Started','final.heading':'Your first<br>training is <em>free.</em>',
+      'final.eyebrow':'Get Started','final.heading':'Your first<br>week is <em>free.</em>',
       'final.desc':'Come in, meet the coaches, train with the team. No commitment. No sales pitch. Just show up and see if it fits.',
       'final.cta1':'Book a free trial week','final.cta2':'View Programs',
       'foot.brand':'A serious training environment for fighters who are serious about getting better. Open to all levels — built for those who want to compete.',
@@ -2213,6 +2218,7 @@
       'disc.bodycombat.desc':'High-energy, martial arts-inspired fitness. Full-body conditioning based on striking patterns — no contact, full intensity. All levels welcome.',
       'disc.personal.name':'Personal Training',
       'disc.personal.desc':'1-on-1 coaching built around your goals. Strength, muscle building, weight loss, power, martial arts or grappling — we build the program around you.',
+      'disc.personal.free':'First training free',
       'disc.kids.name':'Kids Training',
       'disc.kids.desc':'Martial arts for ages 5–14. Discipline, confidence and technique in a safe, structured environment.',
       'sched.heading':'Weekly <em>Schedule</em>','sched.desc':'Drop in any time. All levels welcome — we\'ll put you in the right class.',
@@ -2221,7 +2227,7 @@
     },
     de: {
       'nav.schedules':'Trainingsplan','nav.trainings':'Programme','nav.register':'Anmelden',
-      'nav.contact':'Kontakt','nav.info':'Info','nav.cta':'Erstes Training gratis',
+      'nav.contact':'Kontakt','nav.info':'Info','nav.cta':'Erste Woche gratis',
       'meta.next':'Nächstes Training','meta.date':'Datum','meta.time':'Zeit',
       'hero.watch':'Sieh uns beim Training',
       'hero.desk1':'Kampfsport <em>&</em>','hero.desk2':'Physical Performance Gym',
@@ -2282,7 +2288,7 @@
       'testi.q3':'Das 1-zu-1-Verhältnis ist kein Marketing. In jeder Session beobachtet jemand deine Technik und korrigiert sie. Ich habe Bewegungsmuster korrigiert, von denen ich nicht wusste, dass sie falsch waren.','testi.q3.meta':'Schlag · 1,5 Jahre',
       'testi.q4':'Ich trainierte ein Jahr lang, bevor ich Power Fight fand. Der Unterschied in meiner Entwicklung danach war ehrlich gesagt beschämend. Das Coaching-Niveau hier ist einfach anders.','testi.q4.meta':'MMA · 3 Jahre',
       'testi.q5':'Die Sparring-Sessions sind die besten, die ich je erlebt habe. Gecoacht, intentional und sicher — aber mit echtem Druck. Es ist das Nächste an Wettkampfvorbereitung außerhalb eines Kampflagers.','testi.q5.meta':'Sparring · 1 Jahr',
-      'final.eyebrow':'Jetzt starten','final.heading':'Dein erstes<br>Training ist <em>kostenlos.</em>',
+      'final.eyebrow':'Jetzt starten','final.heading':'Deine erste<br>Woche ist <em>kostenlos.</em>',
       'final.desc':'Komm vorbei, lern die Trainer kennen, trainiere mit dem Team. Keine Verpflichtung. Kein Verkaufsgespräch. Komm einfach und schau, ob es passt.',
       'final.cta1':'Gratis Probewoche buchen','final.cta2':'Programme ansehen',
       'foot.brand':'Eine ernste Trainingsumgebung für Kämpfer, die ernsthaft besser werden wollen. Offen für alle Niveaus — gebaut für die, die wettkämpfen wollen.',
@@ -2298,6 +2304,7 @@
       'disc.bodycombat.desc':'Hochenergetisches, kampfkünstlerisches Fitness. Ganzkörper-Konditionierung auf Basis von Schlagmustern – kein Kontakt, volle Intensität. Alle Niveaus willkommen.',
       'disc.personal.name':'Personal Training',
       'disc.personal.desc':'1-zu-1-Coaching auf deine Ziele zugeschnitten. Kraft, Muskelaufbau, Gewichtsabnahme, Power, Kampfkünste oder Grappling – wir bauen ein Programm um dich herum.',
+      'disc.personal.free':'Erstes Training gratis',
       'disc.kids.name':'Kids Training',
       'disc.kids.desc':'Kampfkünste für 5–14-Jährige. Disziplin, Selbstvertrauen und Technik in einem sicheren, strukturierten Umfeld.',
       'sched.heading':'Wöchentlicher <em>Trainingsplan</em>','sched.desc':'Komm jederzeit vorbei. Alle Niveaus willkommen — wir platzieren dich in der richtigen Klasse.',
