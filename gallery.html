@@ -405,7 +405,7 @@
 <div class="gallery-type-tabs">
   <button class="gtt-btn active" data-type="photos">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    Fotos <span class="gtt-count" id="photosCount"></span>
+    <span data-pi18n="tab.photos">Fotos</span> <span class="gtt-count" id="photosCount"></span>
   </button>
   <button class="gtt-btn" data-type="videos">
     <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -417,8 +417,8 @@
 <div class="gallery-filter">
   <div class="gf-sort">
     <select class="gs-select" id="sortSelect">
-      <option value="newest">Neueste zuerst</option>
-      <option value="oldest">Älteste zuerst</option>
+      <option value="newest" data-pi18n="sort.newest">Neueste zuerst</option>
+      <option value="oldest" data-pi18n="sort.oldest">Älteste zuerst</option>
     </select>
   </div>
 </div>
@@ -441,7 +441,7 @@
 <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
   <div class="load-more-bar"><div class="load-more-bar-fill" id="loadBar"></div></div>
   <div class="load-more-count" id="loadCount"></div>
-  <a class="btn" href="#" id="loadMoreBtn"><span>Mehr laden</span></a>
+  <a class="btn" href="#" id="loadMoreBtn"><span data-pi18n="load.more">Mehr laden</span></a>
 </div>
 
 <!-- LIGHTBOX -->
@@ -475,6 +475,7 @@
   let activeCat = 'all';
   let sortOrder = 'newest';
   let shown = 0;
+  let _pfLang = (localStorage.getItem('pf_lang') === 'en') ? 'en' : 'de';
 
   // ── Helpers ───────────────────────────────────────────────────────
   function fmtDate(iso) {
@@ -483,7 +484,11 @@
   }
 
   function catLabel(slug) {
-    const map = { trainings:'Programs', events:'Events', 'special-guests':'Besondere Gäste', videos:'Videos' };
+    const maps = {
+      en: { trainings:'Programs', events:'Events', 'special-guests':'Special Guests', videos:'Videos' },
+      de: { trainings:'Programme', events:'Events', 'special-guests':'Besondere Gäste', videos:'Videos' }
+    };
+    const map = maps[_pfLang] || maps.de;
     return map[slug] || slug.replace(/-/g,' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 
@@ -583,7 +588,7 @@
       return b;
     }
 
-    makeTab('all', 'All', typeItems.length, true);
+    makeTab('all', (_pfLang === 'en' ? 'All' : 'Alle'), typeItems.length, true);
     cats.forEach(c => {
       const n = typeItems.filter(i => i.dataset.cat === c).length;
       makeTab(c, catLabel(c), n, false);
@@ -595,10 +600,13 @@
     if (!el || !allItems.length) return;
     const photos = allItems.filter(i => !i.dataset.video).length;
     const videos = allItems.filter(i =>  !!i.dataset.video).length;
+    const photoWord = _pfLang === 'en' ? 'Photo' : 'Foto';
+    const pPlural = photos !== 1 ? 's' : '';
+    const vPlural = videos !== 1 ? 's' : '';
     let txt = '';
-    if (photos && videos) txt = `${photos} Foto${photos !== 1 ? 's' : ''} · ${videos} Video${videos !== 1 ? 's' : ''}`;
-    else if (photos)      txt = `${photos} Foto${photos !== 1 ? 's' : ''}`;
-    else if (videos)      txt = `${videos} Video${videos !== 1 ? 's' : ''}`;
+    if (photos && videos) txt = `${photos} ${photoWord}${pPlural} · ${videos} Video${vPlural}`;
+    else if (photos)      txt = `${photos} ${photoWord}${pPlural}`;
+    else if (videos)      txt = `${videos} Video${vPlural}`;
     el.textContent = txt;
     el.style.display = '';
   }
@@ -628,7 +636,9 @@
 
   function updateLoadMore() {
     const total = getFiltered().length;
-    document.getElementById('loadCount').textContent = `Zeige ${shown} von ${total}`;
+    document.getElementById('loadCount').textContent = _pfLang === 'en'
+      ? `Showing ${shown} of ${total}`
+      : `Zeige ${shown} von ${total}`;
     document.getElementById('loadBar').style.width = total ? (shown / total * 100) + '%' : '0%';
     document.getElementById('loadMoreWrap').style.display = shown >= total ? 'none' : '';
   }
@@ -787,21 +797,56 @@
     en: {
       'hero.h1':'Our <em>Gallery</em>',
       'hero.meta':'Training sessions, events, special guests and daily life at Power Fight.',
+      'tab.photos':'Photos',
+      'sort.newest':'Newest first',
+      'sort.oldest':'Oldest first',
+      'load.more':'Load more',
+      'meta.title':'Gallery — Power Fight',
+      'meta.desc':'Photos and videos of training sessions, competitions and events at the Power Fight MMA gym in Aesch, Switzerland.',
     },
     de: {
       'hero.h1':'Unsere <em>Galerie</em>',
       'hero.meta':'Trainingseinheiten, Events, besondere Gäste und der Alltag bei Power Fight.',
+      'tab.photos':'Fotos',
+      'sort.newest':'Neueste zuerst',
+      'sort.oldest':'Älteste zuerst',
+      'load.more':'Mehr laden',
+      'meta.title':'Galerie — Power Fight',
+      'meta.desc':'Fotos und Videos von Trainingseinheiten, Wettkämpfen und Events im Power Fight MMA Gym in Aesch, Schweiz.',
     }
   };
   function _applyPageLang(lang) {
-    const t = PAGE_T[lang] || PAGE_T.de;
+    _pfLang = (lang === 'en') ? 'en' : 'de';
+    const t = PAGE_T[_pfLang] || PAGE_T.de;
     document.querySelectorAll('[data-pi18n]').forEach(el => {
       const key = el.dataset.pi18n;
       if (t[key] !== undefined) el.innerHTML = t[key];
     });
+    // Document title + meta (guard each)
+    if (t['meta.title']) document.title = t['meta.title'];
+    const setMeta = (sel, val) => {
+      if (!val) return;
+      const el = document.querySelector(sel);
+      if (el) el.setAttribute('content', val);
+    };
+    if (t['meta.title']) {
+      setMeta('meta[property="og:title"]', t['meta.title']);
+      setMeta('meta[name="twitter:title"]', t['meta.title']);
+    }
+    if (t['meta.desc']) {
+      setMeta('meta[name="description"]', t['meta.desc']);
+      setMeta('meta[property="og:description"]', t['meta.desc']);
+      setMeta('meta[name="twitter:description"]', t['meta.desc']);
+    }
   }
   _applyPageLang(localStorage.getItem('pf_lang') || 'de');
-  document.addEventListener('pfLangChange', e => _applyPageLang(e.detail));
+  document.addEventListener('pfLangChange', e => {
+    _applyPageLang(e.detail);
+    // Re-render JS-built text that PAGE_T doesn't touch
+    if (typeof rebuildFilterTabs === 'function') rebuildFilterTabs();
+    if (typeof updateHeroCount === 'function') updateHeroCount();
+    if (typeof updateLoadMore === 'function') updateLoadMore();
+  });
 </script>
 </body>
 </html>

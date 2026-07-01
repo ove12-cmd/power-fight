@@ -318,24 +318,24 @@
       <div class="form-row" style="margin-bottom:20px">
         <div class="form-group">
           <label class="form-label" data-pi18n="form.fname">Vorname</label>
-          <input class="form-input" type="text" name="first_name" placeholder="John" required>
+          <input class="form-input" type="text" name="first_name" placeholder="John" data-pi18n-ph="form.fname.ph" required>
           <span class="form-error" data-pi18n="form.err.name">Name ist erforderlich</span>
         </div>
         <div class="form-group">
           <label class="form-label" data-pi18n="form.lname">Nachname</label>
-          <input class="form-input" type="text" name="last_name" placeholder="Doe">
+          <input class="form-input" type="text" name="last_name" placeholder="Doe" data-pi18n-ph="form.lname.ph">
         </div>
       </div>
 
       <div class="form-row" style="margin-bottom:20px">
         <div class="form-group">
           <label class="form-label" data-pi18n="form.email.lbl">E-Mail</label>
-          <input class="form-input" type="email" name="email" placeholder="you@email.com" required>
+          <input class="form-input" type="email" name="email" placeholder="you@email.com" data-pi18n-ph="form.email.ph" required>
           <span class="form-error" data-pi18n="form.err.email">Gültige E-Mail erforderlich</span>
         </div>
         <div class="form-group">
           <label class="form-label" data-pi18n-html="form.phone">Telefon <span style="color:var(--ink-mute)">(optional)</span></label>
-          <input class="form-input" type="tel" name="phone" placeholder="+41 XX XXX XX XX">
+          <input class="form-input" type="tel" name="phone" placeholder="+41 XX XXX XX XX" data-pi18n-ph="form.phone.ph">
         </div>
       </div>
 
@@ -373,7 +373,7 @@
       <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
       <div>
         <div class="info-label" data-pi18n="info.addr">Adresse</div>
-        <div class="info-value">Pfeffingerring 201<br>4147 Aesch, Switzerland</div>
+        <div class="info-value" data-pi18n-html="info.country">Pfeffingerring 201<br>4147 Aesch, Switzerland</div>
         <a href="https://www.google.com/maps/search/?api=1&query=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span data-pi18n="info.maps">In Maps öffnen</span></a>
       </div>
     </div>
@@ -599,6 +599,13 @@
       'info.fri':'Friday',
       'info.sat':'Sat – Sun',
       'info.closed':'Closed',
+      'info.country':'Pfeffingerring 201<br>4147 Aesch, Switzerland',
+      'form.fname.ph':'John',
+      'form.lname.ph':'Doe',
+      'form.email.ph':'you@email.com',
+      'form.phone.ph':'+41 XX XXX XX XX',
+      'meta.title':'Contact — Power Fight',
+      'meta.desc':'Contact the Power Fight MMA Gym in Aesch, Switzerland. Book a trial session, ask questions, or find out how to join.',
     },
     de: {
       'hero.h1':'Lass uns in <em>Kontakt treten.</em>',
@@ -633,6 +640,13 @@
       'info.fri':'Freitag',
       'info.sat':'Sa – So',
       'info.closed':'Geschlossen',
+      'info.country':'Pfeffingerring 201<br>4147 Aesch, Schweiz',
+      'form.fname.ph':'Max',
+      'form.lname.ph':'Muster',
+      'form.email.ph':'you@email.com',
+      'form.phone.ph':'+41 XX XXX XX XX',
+      'meta.title':'Kontakt — Power Fight',
+      'meta.desc':'Kontaktiere das Power Fight MMA Gym in Aesch, Schweiz. Buche eine Probestunde, stelle Fragen oder erfahre, wie du beitreten kannst.',
     }
   };
   function _applyPageLang(lang) {
@@ -645,11 +659,32 @@
       const key = el.dataset.pi18nHtml;
       if (t[key] !== undefined) el.innerHTML = t[key];
     });
-    // Textarea placeholder
+    // Generic placeholders
+    document.querySelectorAll('[data-pi18n-ph]').forEach(el => {
+      const key = el.dataset.pi18nPh;
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+    // Textarea placeholder (special-cased: no data-pi18n-ph key)
     const msgEl = document.getElementById('msgTextarea');
     if (msgEl) msgEl.placeholder = lang === 'en'
       ? 'Tell us about yourself – experience level, goals, questions…'
       : 'Erzähl uns etwas über dich – Erfahrungsniveau, Ziele, Fragen…';
+    // Document title + meta tags
+    if (t['meta.title'] !== undefined) {
+      document.title = t['meta.title'];
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', t['meta.title']);
+      const twTitle = document.querySelector('meta[name="twitter:title"]');
+      if (twTitle) twTitle.setAttribute('content', t['meta.title']);
+    }
+    if (t['meta.desc'] !== undefined) {
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', t['meta.desc']);
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute('content', t['meta.desc']);
+      const twDesc = document.querySelector('meta[name="twitter:description"]');
+      if (twDesc) twDesc.setAttribute('content', t['meta.desc']);
+    }
   }
   _applyPageLang(localStorage.getItem('pf_lang') || 'de');
   document.addEventListener('pfLangChange', e => _applyPageLang(e.detail));

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>404 — Page Not Found · Power Fight</title>
+<title id="t-title">404 — Page Not Found · Power Fight</title>
 <meta name="robots" content="noindex" />
 <link rel="icon" type="image/png" href="favicon.png" />
 <link rel="apple-touch-icon" href="favicon.png" />
@@ -108,32 +108,92 @@
 
 <nav class="nav-stub">
   <a href="/" class="nav-logo">POWER <em>FIGHT</em></a>
-  <a href="/" class="nav-home">← Back to home</a>
+  <a href="/" class="nav-home" id="t-navhome">← Back to home</a>
 </nav>
 
 <main class="page">
   <div class="bg-num" aria-hidden="true">404</div>
 
   <div class="content">
-    <span class="eyebrow">Wrong corner</span>
-    <h1 class="heading">You stepped<br>out of <em>bounds.</em></h1>
-    <p class="sub">The page you're looking for doesn't exist — maybe it was moved, or you took a wrong turn. Happens to the best fighters.</p>
+    <span class="eyebrow" id="t-eyebrow">Wrong corner</span>
+    <h1 class="heading" id="t-heading">You stepped<br>out of <em>bounds.</em></h1>
+    <p class="sub" id="t-sub">The page you're looking for doesn't exist — maybe it was moved, or you took a wrong turn. Happens to the best fighters.</p>
     <div class="ctas">
       <a href="/" class="btn btn-primary">
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1L1 7l6 6M1 7h12"/></svg>
-        Back to home
+        <span id="t-btnprimary">Back to home</span>
       </a>
-      <a href="index.html#schedule" class="btn btn-ghost">View schedule</a>
+      <a href="index.html#schedule" class="btn btn-ghost" id="t-btnghost">View schedule</a>
     </div>
     <div class="divider"></div>
     <nav class="quick" aria-label="Quick links">
-      <a href="/gallery">Gallery</a>
-      <a href="/faq">FAQ</a>
-      <a href="/contact">Contact</a>
-      <a href="/booking">Book a session</a>
+      <a href="/gallery" id="t-gallery">Gallery</a>
+      <a href="/faq" id="t-faq">FAQ</a>
+      <a href="/contact" id="t-contact">Contact</a>
+      <a href="/booking" id="t-booking">Book a session</a>
     </nav>
   </div>
 </main>
+
+<script>
+  (function () {
+    var lang = localStorage.getItem('pf_lang') || 'de';
+    if (lang !== 'en' && lang !== 'de') lang = 'de';
+    document.documentElement.lang = lang;
+
+    var dict = {
+      en: {
+        title: '404 — Page Not Found · Power Fight',
+        navhome: '← Back to home',
+        eyebrow: 'Wrong corner',
+        heading: 'You stepped<br>out of <em>bounds.</em>',
+        sub: "The page you're looking for doesn't exist — maybe it was moved, or you took a wrong turn. Happens to the best fighters.",
+        btnprimary: 'Back to home',
+        btnghost: 'View schedule',
+        gallery: 'Gallery',
+        faq: 'FAQ',
+        contact: 'Contact',
+        booking: 'Book a session'
+      },
+      de: {
+        title: '404 — Seite nicht gefunden · Power Fight',
+        navhome: '← Zurück zur Startseite',
+        eyebrow: 'Falsche Ecke',
+        heading: 'Du bist<br>im <em>Aus.</em>',
+        sub: 'Die gesuchte Seite gibt es nicht — vielleicht wurde sie verschoben, oder du hast einen falschen Haken geschlagen. Passiert auch den besten Fightern.',
+        btnprimary: 'Zurück zur Startseite',
+        btnghost: 'Trainingsplan ansehen',
+        gallery: 'Galerie',
+        faq: 'FAQ',
+        contact: 'Kontakt',
+        booking: 'Session buchen'
+      }
+    };
+
+    var t = dict[lang];
+
+    function setText(id, value) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+    function setHTML(id, value) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = value;
+    }
+
+    setText('t-title', t.title);
+    setHTML('t-navhome', t.navhome);
+    setText('t-eyebrow', t.eyebrow);
+    setHTML('t-heading', t.heading);
+    setText('t-sub', t.sub);
+    setText('t-btnprimary', t.btnprimary);
+    setText('t-btnghost', t.btnghost);
+    setText('t-gallery', t.gallery);
+    setText('t-faq', t.faq);
+    setText('t-contact', t.contact);
+    setText('t-booking', t.booking);
+  })();
+</script>
 
 </body>
 </html>

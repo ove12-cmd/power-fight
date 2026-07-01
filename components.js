@@ -86,15 +86,18 @@
   }
 
   /* Render training names → footer Trainings column (fixed list from Our Classes) */
-  const _FOOTER_TRAININGS = [
-    'Striking for MMA','Grappling','Kettlebell Group Training',
-    'Les Mills BodyCombat','Personal Training','Kids Training'
-  ];
+  const _FOOTER_TRAININGS = {
+    en: ['Striking for MMA','Grappling','Kettlebell Group Training',
+         'Les Mills BodyCombat','Personal Training','Kids Training'],
+    de: ['Striking für MMA','Grappling','Kettlebell Gruppentraining',
+         'Les Mills BodyCombat','Personal Training','Kids Training']
+  };
   function _loadFooterTrainings() {
     const list = document.getElementById('footTrainingList');
     if (!list) return;
+    const trainings = _FOOTER_TRAININGS[_uiLang] || _FOOTER_TRAININGS.de;
     const privLink = `<li><a href="/booking" style="color:var(--lime)"><span data-ci18n="foot.priv">${_uiLang === 'en' ? 'Private Bookings →' : 'Private Buchungen →'}</span></a></li>`;
-    list.innerHTML = _FOOTER_TRAININGS.map(n => `<li><a href="${pr}">${n}</a></li>`).join('') + privLink;
+    list.innerHTML = trainings.map(n => `<li><a href="${pr}">${n}</a></li>`).join('') + privLink;
   }
 
   /* Populate #fbTraining select with unique class names from schedule */
@@ -264,13 +267,13 @@
     <div class="foot-col">
       <h5 data-ci18n="foot.h1">Stundenplan</h5>
       <ul id="footSchedList" style="gap:14px">
-        <li><span class="foot-sched-row" style="opacity:0.35;font-size:12px;color:var(--ink-mute)">Lädt…</span></li>
+        <li><span class="foot-sched-row" style="opacity:0.35;font-size:12px;color:var(--ink-mute)" data-ci18n="foot.loading">Lädt…</span></li>
       </ul>
     </div>
     <div class="foot-col">
       <h5 data-ci18n="foot.h2">Training</h5>
       <ul id="footTrainingList" style="gap:10px">
-        <li><span style="opacity:.35;font-size:12px;color:var(--ink-mute)">Lädt…</span></li>
+        <li><span style="opacity:.35;font-size:12px;color:var(--ink-mute)" data-ci18n="foot.loading">Lädt…</span></li>
       </ul>
     </div>
     <div class="foot-col">
@@ -307,7 +310,7 @@
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
         <div>
           <div class="info-label" data-ci18n="pop.addr">Adresse</div>
-          <div class="info-val">Pfeffingerring 201<br>4147 Aesch, Switzerland</div>
+          <div class="info-val" data-ci18n-html="pop.country">Pfeffingerring 201<br>4147 Aesch, Switzerland</div>
           <a href="https://www.google.com/maps/search/?api=1&query=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span data-ci18n="foot.maps">In Maps öffnen</span></a>
         </div>
       </div>
@@ -539,7 +542,15 @@
         'foot.priv':'Private Bookings →','foot.contact':'Contact Us',
         'foot.fb':'Leave Feedback →','foot.maps':'Open in Maps',
         'pop.addr':'Address','pop.phone':'Phone','pop.email':'Email',
+        'pop.country':'Pfeffingerring 201<br>4147 Aesch, Switzerland',
         'pop.hours':'Training Hours','pop.loading':'Loading schedule…',
+        'foot.loading':'Loading…',
+        'aria.menuOpen':'Open menu','aria.menuClose':'Close menu',
+        'aria.dismiss':'Dismiss','aria.whatsapp':'Contact us on WhatsApp',
+        'aria.sched':'Schedules','aria.trial':'Book a free trial week',
+        'aria.fbClose':'Close','aria.rating':'Rating',
+        'aria.star1':'1 star','aria.star2':'2 stars','aria.star3':'3 stars',
+        'aria.star4':'4 stars','aria.star5':'5 stars',
         'sticky.text':'Book your free trial week.','sticky.cta':'Book now',
         'fb.title':'Leave Feedback','fb.sub':'Trained with us? Your experience appears directly in the Testimonials.',
         'fb.lbl.name':'Your Name','fb.lbl.training':'Training Type','fb.lbl.text':'Your Experience',
@@ -556,7 +567,15 @@
         'foot.priv':'Private Buchungen →','foot.contact':'Kontaktiere uns',
         'foot.fb':'Feedback hinterlassen →','foot.maps':'In Maps öffnen',
         'pop.addr':'Adresse','pop.phone':'Telefon','pop.email':'E-Mail',
+        'pop.country':'Pfeffingerring 201<br>4147 Aesch, Schweiz',
         'pop.hours':'Trainingszeiten','pop.loading':'Stundenplan wird geladen…',
+        'foot.loading':'Lädt…',
+        'aria.menuOpen':'Menü öffnen','aria.menuClose':'Menü schliessen',
+        'aria.dismiss':'Schliessen','aria.whatsapp':'Kontaktiere uns auf WhatsApp',
+        'aria.sched':'Stundenplan','aria.trial':'Gratis Probewoche buchen',
+        'aria.fbClose':'Schliessen','aria.rating':'Bewertung',
+        'aria.star1':'1 Stern','aria.star2':'2 Sterne','aria.star3':'3 Sterne',
+        'aria.star4':'4 Sterne','aria.star5':'5 Sterne',
         'sticky.text':'Buche deine gratis Probewoche.','sticky.cta':'Jetzt buchen',
         'fb.title':'Feedback hinterlassen','fb.sub':'Hast du bei uns trainiert? Deine Erfahrung erscheint direkt in den Testimonials.',
         'fb.lbl.name':'Dein Name','fb.lbl.training':'Trainingsart','fb.lbl.text':'Deine Erfahrung',
@@ -578,6 +597,28 @@
       document.querySelectorAll('[data-ci18n-ph]').forEach(el => {
         const key = el.dataset.ci18nPh;
         if (t[key] !== undefined) el.placeholder = t[key];
+      });
+      // Translate elements whose content includes markup (e.g. <br>) via data-ci18n-html
+      document.querySelectorAll('[data-ci18n-html]').forEach(el => {
+        const key = el.dataset.ci18nHtml;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+      // Language-aware aria-labels (no visible text, so set directly)
+      const _setAria = (sel, key) => {
+        const el = typeof sel === 'string' ? document.querySelector(sel) : sel;
+        if (el && t[key] !== undefined) el.setAttribute('aria-label', t[key]);
+      };
+      _setAria('#hamburger', 'aria.menuOpen');
+      _setAria('#mobClose', 'aria.menuClose');
+      _setAria('#stickyCtaClose', 'aria.dismiss');
+      _setAria('#waFloatBtn', 'aria.whatsapp');
+      // Two elements share id="schedFab" (mobile-menu template + JS-created FAB)
+      document.querySelectorAll('#schedFab').forEach(el => _setAria(el, 'aria.sched'));
+      _setAria('#trialFab', 'aria.trial');
+      _setAria('#fbModalClose', 'aria.fbClose');
+      _setAria('#fbStars', 'aria.rating');
+      document.querySelectorAll('#fbStars .fb-star').forEach(star => {
+        _setAria(star, 'aria.star' + star.dataset.val);
       });
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -624,14 +665,14 @@
 
     const waFloatEl = document.createElement('div');
     waFloatEl.id = 'waFloat';
-    waFloatEl.innerHTML = `<a class="wa-btn" href="https://wa.me/41788937929" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">${WA_SVG}</a>`;
+    waFloatEl.innerHTML = `<a class="wa-btn" id="waFloatBtn" href="https://wa.me/41788937929" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">${WA_SVG}</a>`;
     document.body.appendChild(waFloatEl);
 
     const SCHED_CAL_SVG = `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
     const schedFabEl = document.createElement('a');
     schedFabEl.id = 'schedFab';
     schedFabEl.href = sh;
-    schedFabEl.setAttribute('aria-label', 'Schedules');
+    schedFabEl.setAttribute('aria-label', (COMP_T[_uiLang] || COMP_T.de)['aria.sched']);
     schedFabEl.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`;
     document.body.appendChild(schedFabEl);
 
@@ -641,7 +682,7 @@
       const trialFabEl = document.createElement('a');
       trialFabEl.id = 'trialFab';
       trialFabEl.href = '/contact';
-      trialFabEl.setAttribute('aria-label', 'Book a free trial week');
+      trialFabEl.setAttribute('aria-label', (COMP_T[_uiLang] || COMP_T.de)['aria.trial']);
       trialFabEl.innerHTML = `${SCHED_CAL_SVG}<span data-ci18n="trial.book">Gratis Probewoche buchen</span>`;
       document.body.appendChild(trialFabEl);
 
