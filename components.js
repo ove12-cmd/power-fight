@@ -177,6 +177,7 @@
       <a href="${sh}" data-ci18n="nav.sched">Stundenplan</a>
       <a href="${pr}" data-ci18n="nav.train">Training</a>
       <a href="/contact" data-nav-contact data-ci18n="nav.cont">Kontakt</a>
+      <a href="/pricing" data-nav-pricing data-ci18n="nav.pricing">Preise</a>
       <a href="/faq" data-nav-faq>FAQ</a>
     </div>
     <div class="lang-switch">
@@ -216,6 +217,12 @@
       <span class="mob-link-text" data-ci18n="nav.cont">Kontakt</span>
       <svg class="mob-link-arr" viewBox="0 0 9 15"><polyline points="1,1 8,7.5 1,14"/></svg>
     </a>
+    <a href="/pricing" class="mob-link">
+      <span class="mob-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+      <span class="mob-link-sep">|</span>
+      <span class="mob-link-text" data-ci18n="nav.pricing">Preise</span>
+      <svg class="mob-link-arr" viewBox="0 0 9 15"><polyline points="1,1 8,7.5 1,14"/></svg>
+    </a>
     <a href="/faq" class="mob-link">
       <span class="mob-link-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></span>
       <span class="mob-link-sep">|</span>
@@ -234,7 +241,7 @@
     <a class="btn btn-ghost" href="/contact"><span data-ci18n="nav.cont">Kontakt</span></a>
   </div>
   <div class="mob-social">
-    <a href="https://www.instagram.com/powerfightteam" target="_blank" rel="noopener" aria-label="Instagram">
+    <a href="https://www.instagram.com/powerfightteam_" target="_blank" rel="noopener" aria-label="Instagram">
       <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
     </a>
     <a href="https://www.facebook.com/p/Power-Fight-Team-100068990680962/" target="_blank" rel="noopener" aria-label="Facebook – Power Fight">
@@ -261,7 +268,7 @@
         <div>Pfeffingerring 201, 4147 Aesch</div>
         <a href="https://www.google.com/maps/search/?api=1&query=Pfeffingerring+201,+4147+Aesch,+Switzerland" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-top:2px;transition:color .3s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span data-ci18n="foot.maps">In Maps öffnen</span></a>
         <a href="tel:+41788937929">+41788937929</a>
-        <a href="mailto:Nurmsoog@gmail.com">Nurmsoog@gmail.com</a>
+        <a href="mailto:powerfightt@gmail.com">powerfightt@gmail.com</a>
       </div>
     </div>
     <div class="foot-col">
@@ -279,11 +286,12 @@
     <div class="foot-col">
       <h5 data-ci18n="foot.h3">Folge uns</h5>
       <ul>
-        <li><a href="https://www.instagram.com/powerfightteam" target="_blank" rel="noopener">Instagram – Power Fight</a></li>
+        <li><a href="https://www.instagram.com/powerfightteam_" target="_blank" rel="noopener">Instagram – Power Fight</a></li>
         <li><a href="https://www.facebook.com/p/Power-Fight-Team-100068990680962/" target="_blank" rel="noopener">Facebook – Power Fight</a></li>
         <li><a href="https://www.youtube.com/@germoofficial-experienceta1157" target="_blank" rel="noopener">YouTube</a></li>
       </ul>
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+        <a class="btn btn-ghost" href="/pricing" style="font-size:10px;padding:11px 18px"><span data-ci18n="foot.pricing">Preise ansehen</span></a>
         <a class="btn btn-ghost" href="/contact" style="font-size:10px;padding:11px 18px"><span data-ci18n="foot.contact">Kontaktiere uns</span></a>
         <button onclick="openFeedbackModal()" style="background:none;border:none;padding:0;text-align:left;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;transition:color .2s" onmouseover="this.style.color='var(--lime)'" onmouseout="this.style.color='var(--ink-dim)'"><span data-ci18n="foot.fb">Feedback hinterlassen →</span></button>
       </div>
@@ -325,7 +333,7 @@
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
         <div>
           <div class="info-label" data-ci18n="pop.email">E-Mail</div>
-          <div class="info-val"><a href="mailto:Nurmsoog@gmail.com">Nurmsoog@gmail.com</a></div>
+          <div class="info-val"><a href="mailto:powerfightt@gmail.com">powerfightt@gmail.com</a></div>
         </div>
       </div>
       <div class="info-row">
@@ -536,6 +544,7 @@
     const COMP_T = {
       en: {
         'nav.sched':'Schedules','nav.train':'Programs','nav.cont':'Contact','nav.info':'Find Us',
+        'nav.pricing':'Pricing','foot.pricing':'View Pricing',
         'cta':'See Schedules','trial.book':'Book a Free Trial Week',
         'foot.brand':'A serious training environment for fighters who are serious about getting better. Open to all levels — built for those who want to compete.',
         'foot.h1':'Schedule','foot.h2':'Programs','foot.h3':'Follow Us',
@@ -561,6 +570,7 @@
       },
       de: {
         'nav.sched':'Stundenplan','nav.train':'Programme','nav.cont':'Kontakt','nav.info':'Finde uns',
+        'nav.pricing':'Preise','foot.pricing':'Preise ansehen',
         'cta':'Stundenplan ansehen','trial.book':'Gratis Probewoche buchen',
         'foot.brand':'Ein ernsthaftes Trainingsumfeld für Kämpfer, die besser werden wollen. Offen für alle Niveaus – gebaut für alle, die kämpfen wollen.',
         'foot.h1':'Stundenplan','foot.h2':'Programme','foot.h3':'Folge uns',

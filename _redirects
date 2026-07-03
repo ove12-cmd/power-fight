@@ -3,6 +3,7 @@
 /faq.html       /faq       301
 /booking.html   /booking   301
 /register.html  /register  301
+/pricing.html   /pricing   301
 /admin.html     /admin     301
 
 # Block public access to uploaded function *source* files. The real runnable

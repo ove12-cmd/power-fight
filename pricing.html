@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Preise — Power Fight</title>
+<meta name="description" content="Mitgliedschaften ab 50 CHF/Monat. Erste Woche und erstes Personal Training gratis. Faire, transparente Preise im Power Fight MMA Gym in Aesch." />
+<meta property="og:title" content="Preise — Power Fight" />
+<meta property="og:description" content="Mitgliedschaften ab 50 CHF/Monat. Erste Woche und erstes Personal Training gratis. Faire, transparente Preise im Power Fight MMA Gym in Aesch." />
+<meta property="og:image" content="https://powerfight.ch/og-image.jpg" />
+<meta property="og:url" content="https://powerfight.ch/pricing" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Power Fight" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Preise — Power Fight" />
+<meta name="twitter:description" content="Mitgliedschaften ab 50 CHF/Monat. Erste Woche und erstes Personal Training gratis. Faire, transparente Preise im Power Fight MMA Gym in Aesch." />
+<meta name="twitter:image" content="https://powerfight.ch/og-image.jpg" />
+<link rel="canonical" href="https://powerfight.ch/pricing" />
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="apple-touch-icon" href="favicon.png" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#040505; --bg-2:#0a0b0c;
+    --line:rgba(231,255,164,0.08); --line-2:rgba(255,255,255,0.06);
+    --ink:#e8e8e4; --ink-dim:#8a8c86; --ink-mute:#4a4c47;
+    --lime:#C7FF3F; --lime-glow:rgba(199,255,63,0.55);
+    --display:"Clash Display",ui-sans-serif,system-ui,sans-serif;
+    --sans:"General Sans",ui-sans-serif,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  ::selection{background:var(--lime);color:#000}
+
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:2;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity:0.5;mix-blend-mode:overlay;
+  }
+
+  /* NAV */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;transition:background .4s,border-color .4s,padding .4s cubic-bezier(0.22,1,0.36,1);border-bottom:1px solid transparent}
+  .nav.scrolled{padding:0 32px;height:3.75rem;background:rgba(6,7,8,0.75);backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid var(--line)}
+  .logo-wrap{display:block;line-height:0}
+  .logo-default{height:120px;width:auto;display:block}
+  .logo-scrolled{height:2.5rem;width:auto;display:none}
+  .nav.scrolled .logo-default{display:none}
+  .nav.scrolled .logo-scrolled{display:block}
+  @media(max-width:640px){.logo-default{height:60px}}
+  .nav-links{display:flex;gap:36px}
+  .nav-links a{font-family:var(--sans);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-dim);position:relative;padding:6px 0}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--lime);transform:scaleX(0) translateZ(0);transform-origin:left;transition:transform .35s ease}
+  .nav-links a:hover::after{transform:scaleX(1) translateZ(0)}
+  .nav-links a.active{color:var(--ink)}
+  .nav-links a.active::after{transform:scaleX(1) translateZ(0);box-shadow:0 0 8px var(--lime-glow)}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+  .btn{display:inline-flex;align-items:center;padding:14px 22px;font-family:var(--sans);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;border:1px solid var(--line);background:rgba(255,255,255,0.015);position:relative;overflow:hidden}
+  .btn span{position:relative;z-index:1;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+  .btn::before{content:"";position:absolute;inset:0;z-index:0;background:#fff;transform:translateX(-101%);transition:transform .6s cubic-bezier(0.22,1,0.36,1)}
+  .btn:hover::before{transform:translateX(0%)}
+  .btn:hover span{color:#080808}
+  .btn:active{transform:scale(0.95);transition:transform .1s ease}
+  .btn-primary{background:var(--lime);color:#080808;border-color:var(--lime);box-shadow:0 10px 40px -10px rgba(199,255,63,0.4)}
+  .btn-ghost{color:var(--ink)!important;background:rgba(10,11,12,0.85)!important}
+  .btn-ghost:hover span{color:#080808!important}
+  .lang-switch{display:flex;align-items:center;gap:6px}
+  .lang-sep{font-size:10px;color:var(--ink-mute)}
+  .lang-btn{font-family:var(--sans);font-size:10px;letter-spacing:0.2em;color:var(--ink-dim);cursor:pointer;padding:2px 0;transition:color .3s;background:none;border:none}
+  .lang-btn:hover{color:var(--ink)}
+  .lang-btn.active{color:var(--lime);font-weight:600}
+  .hamburger{display:none;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;cursor:pointer;padding:10px;z-index:60}
+  .hamburger span{display:block;width:100%;height:2px;background:var(--ink);transition:transform .35s cubic-bezier(0.22,1,0.36,1),opacity .25s;transform-origin:center}
+  @media(max-width:1100px){.nav-links{display:none}}
+  @media(max-width:640px){.nav-cta{display:none}.hamburger{display:flex}}
+
+  .mob-lang-nav{display:none;align-items:center;gap:6px}
+  @media(max-width:640px){.mob-lang-nav{display:flex;margin-left:auto;margin-right:1rem}}
+
+  .mob-menu{position:fixed;inset:0;z-index:55;background:#040505;display:flex;flex-direction:column;padding:0 28px 40px;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(0.22,1,0.36,1);overflow-y:auto}
+  .mob-menu.open{opacity:1;pointer-events:all}
+  .mob-menu-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 32px;flex-shrink:0}
+  .mob-menu-header img{height:72px;width:auto}
+  .mob-close{position:fixed;top:0;right:0;z-index:61;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;background:transparent;border:none;margin:calc((3.75rem - 44px)/2) 10px}
+  .mob-close svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:1.4;stroke-linecap:round}
+  .mob-menu nav{display:flex;flex-direction:column;gap:0;margin-bottom:40px;flex:1}
+  .mob-menu nav a{display:flex;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;transition:color .3s}
+  .mob-menu nav a:last-child{border-bottom:none}
+  .mob-menu nav a:hover .mob-link-text{color:var(--lime)}
+  .mob-link-icon{width:34px;flex-shrink:0;display:flex;align-items:center;color:var(--lime)}
+  .mob-link-icon svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mob-link-sep{color:var(--lime);font-size:20px;font-weight:300;opacity:0.55;margin:0 14px;flex-shrink:0;line-height:1}
+  .mob-link-text{font-family:var(--display);font-size:clamp(26px,7.5vw,38px);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;flex:1;line-height:1;transition:color .3s}
+  .mob-link-arr{width:9px;height:15px;flex-shrink:0;stroke:var(--lime);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .mob-menu .mob-cta{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+  .mob-menu .mob-cta .btn{justify-content:center}
+  .mob-social{display:flex;gap:20px;padding-top:24px;border-top:1px solid var(--line)}
+  .mob-social a{display:grid;place-items:center;color:var(--ink-dim);transition:color .3s}
+  .mob-social a:hover{color:var(--lime)}
+  .mob-social svg{width:20px;height:20px;fill:currentColor}
+  .mob-social svg{width:20px;height:20px;fill:currentColor}
+
+  .info-popup-overlay{position:fixed;inset:0;z-index:300;background:rgba(4,5,5,0.85);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .35s cubic-bezier(0.22,1,0.36,1);display:grid;place-items:center;padding:20px}
+  .info-popup-overlay.open{opacity:1;pointer-events:all}
+  .info-popup{background:var(--bg-2);border:1px solid var(--line-2);max-width:480px;width:100%;transform:translateY(20px) scale(0.97);transition:transform .4s cubic-bezier(0.22,1,0.36,1);position:relative}
+  .info-popup-overlay.open .info-popup{transform:translateY(0) scale(1)}
+  .info-popup-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line-2)}
+  .info-popup-head img{height:32px;width:auto;display:block}
+  .info-popup-close{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line-2);cursor:pointer;background:none;transition:border-color .3s;border-radius:4px}
+  .info-popup-close:hover{border-color:var(--lime)}
+  .info-popup-close svg{width:12px;height:12px;stroke:var(--ink);fill:none;stroke-width:1.4;stroke-linecap:round}
+  .info-popup-body{padding:24px}
+  .info-row{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line-2)}
+  .info-row:last-child{border-bottom:none;padding-bottom:0}
+  .info-row:first-child{padding-top:0}
+  .info-icon{width:32px;height:32px;border:1px solid var(--line-2);display:grid;place-items:center;flex-shrink:0}
+  .info-icon svg{width:14px;height:14px;stroke:var(--lime);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+  .info-label{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:4px}
+  .info-val{font-size:14px;color:var(--ink);font-weight:500;line-height:1.45}
+  .info-val a{color:var(--ink);transition:color .3s}
+  .info-val a:hover{color:var(--lime)}
+  .info-hours-grid{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+  .info-hour-row{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--ink-dim)}
+  .info-hour-day{width:80px;flex-shrink:0;font-size:10px;letter-spacing:0.12em;text-transform:uppercase}
+  .info-hour-pills{display:flex;gap:4px;flex-wrap:wrap}
+  .info-popup-cta{padding:0 24px 24px}
+  .info-popup-cta .btn{width:100%;justify-content:center}
+  .foot-sched-row{display:flex;align-items:center;justify-content:flex-start;gap:12px;color:var(--ink-dim);font-size:12px;letter-spacing:0.06em;padding:4px 0}
+  .foot-pills{display:flex;gap:4px;flex-wrap:wrap}
+  .foot-pill{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;padding:3px 7px;border-radius:0}
+  .fp-strike{background:rgba(255,100,50,0.15);color:#ff9060}
+  .fp-grapple{background:rgba(80,140,255,0.15);color:#7aabff}
+  .fp-kids{background:rgba(255,200,50,0.15);color:#ffd060}
+  .fp-sc{background:rgba(150,100,255,0.15);color:#b090ff}
+  .fp-sparring{background:rgba(255,50,100,0.15);color:#ff7090}
+
+  /* PAGE HERO */
+  .page-hero{padding:160px 32px 80px;border-bottom:1px solid var(--line)}
+  .page-hero-inner{max-width:1400px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:40px;flex-wrap:wrap}
+  .page-eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:0.28em;color:var(--lime);text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:16px}
+  .page-eyebrow::before{content:"";width:20px;height:1px;background:var(--lime)}
+  .page-hero h1{font-family:var(--display);font-weight:600;font-size:clamp(56px,10vw,140px);line-height:0.92;letter-spacing:-0.035em;margin:0}
+  .page-hero h1 em{font-style:normal;color:var(--lime)}
+  .page-hero-meta{font-size:14px;color:var(--ink-dim);line-height:1.6;max-width:360px}
+  @media(max-width:640px){.page-hero{padding:120px 20px 60px}.page-hero-meta{display:none}}
+
+  /* PRICING BODY */
+  .pricing-body{max-width:1200px;margin:0 auto;padding:80px 32px 100px}
+  @media(max-width:900px){.pricing-body{padding:60px 32px 80px}}
+  @media(max-width:640px){.pricing-body{padding:50px 20px 70px}}
+
+  /* INTRO OFFERS */
+  .intro-offers{border:1px solid var(--lime);background:linear-gradient(180deg,rgba(199,255,63,0.06),rgba(199,255,63,0.015));position:relative;overflow:hidden;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:64px}
+  .intro-offers::before{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 60px -20px var(--lime-glow)}
+  .intro-offer{display:flex;gap:16px;align-items:flex-start;padding:12px 20px;position:relative;z-index:1}
+  .intro-offer + .intro-offer{border-left:1px solid var(--line)}
+  .intro-offer-icon{width:40px;height:40px;flex-shrink:0;display:grid;place-items:center;border:1px solid var(--lime);border-radius:50%;color:var(--lime)}
+  .intro-offer-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .intro-offer-h{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-0.01em;color:var(--ink);margin:0 0 6px}
+  .intro-offer-p{font-size:13.5px;color:var(--ink-dim);line-height:1.55;margin:0}
+  @media(max-width:640px){.intro-offers{grid-template-columns:1fr;padding:20px}.intro-offer{padding:16px 8px}.intro-offer + .intro-offer{border-left:none;border-top:1px solid var(--line)}}
+
+  /* PLAN CARDS */
+  .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+  @media(max-width:720px){.plan-grid{grid-template-columns:1fr;gap:20px}}
+
+  .plan-card{position:relative;display:flex;flex-direction:column;background:var(--bg-2);border:1px solid var(--line-2);padding:40px 36px;transition:transform .4s cubic-bezier(0.22,1,0.36,1),border-color .4s,box-shadow .4s}
+  .plan-card:hover{transform:translateY(-6px);border-color:var(--line);box-shadow:0 24px 60px -30px rgba(0,0,0,0.8)}
+  .plan-card.featured{border-color:rgba(199,255,63,0.45);box-shadow:0 20px 60px -30px rgba(199,255,63,0.25)}
+  .plan-card.featured:hover{border-color:var(--lime);box-shadow:0 28px 70px -28px rgba(199,255,63,0.35)}
+  .plan-badge{position:absolute;top:0;right:32px;transform:translateY(-50%);background:var(--lime);color:#080808;font-family:var(--sans);font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;padding:6px 12px}
+  .plan-label{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:20px}
+  .featured .plan-label{color:var(--lime)}
+  .plan-price{display:flex;align-items:baseline;gap:8px;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--line-2)}
+  .plan-price-amount{font-family:var(--display);font-weight:600;font-size:clamp(48px,7vw,64px);line-height:1;letter-spacing:-0.03em;color:var(--ink)}
+  .featured .plan-price-amount{color:var(--lime)}
+  .plan-price-period{font-size:14px;color:var(--ink-dim);font-weight:500}
+  .plan-terms{list-style:none;padding:0;margin:0 0 32px;display:flex;flex-direction:column;gap:14px;flex:1}
+  .plan-terms li{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--ink-dim);line-height:1.5}
+  .plan-terms li svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;stroke:var(--lime);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .plan-cta{width:100%;justify-content:center}
+
+  /* FINE PRINT */
+  .plan-fineprint{max-width:720px;margin:36px auto 0;text-align:center;font-size:12.5px;color:var(--ink-mute);line-height:1.65}
+
+  /* CLOSING CTA */
+  .pricing-cta-row{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:64px;padding-top:56px;border-top:1px solid var(--line)}
+  @media(max-width:640px){.pricing-cta-row{flex-direction:column}.pricing-cta-row .btn{justify-content:center}}
+
+  footer{border-top:1px solid var(--line);padding:60px 32px 40px;position:relative;z-index:2}
+  .foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:60px}
+  .foot-brand p{font-size:14px;color:var(--ink-dim);line-height:1.6;max-width:300px;margin:0}
+  .foot-contact{margin-top:24px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--ink-dim);line-height:1.5}
+  .foot-contact-name{font-family:var(--display);font-size:15px;font-weight:600;color:var(--ink);letter-spacing:0.04em;margin-bottom:2px}
+  .foot-contact a{color:var(--ink-dim);transition:color .3s;font-weight:600}
+  .foot-contact a:hover{color:var(--lime)}
+  .foot-col h5{font-size:11px;letter-spacing:0.2em;color:var(--ink-dim);text-transform:uppercase;margin:0 0 16px}
+  .foot-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+  .foot-col a{font-size:14px;color:var(--ink-dim);transition:color .3s}
+  .foot-col a:hover{color:var(--lime)}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--line);font-size:11px;letter-spacing:0.18em;color:var(--ink-mute);text-transform:uppercase}
+  @media(max-width:900px){.foot-top{grid-template-columns:1fr 1fr;gap:40px}}
+  @media(max-width:640px){.foot-top{grid-template-columns:1fr;gap:32px}.foot-bottom{flex-direction:column;gap:16px;text-align:center}footer{padding:50px 20px 32px}}
+</style>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<!-- PAGE HERO -->
+<header class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-eyebrow">Power Fight</div>
+      <h1 data-pi18n="hero.h1">Preise</h1>
+    </div>
+    <p class="page-hero-meta" data-pi18n="hero.meta">Transparente Preise. Kein Kleingedrucktes. Erste Woche und erstes Personal Training gratis.</p>
+  </div>
+</header>
+
+<!-- BODY -->
+<div class="pricing-body">
+
+  <!-- INTRO OFFERS -->
+  <div class="intro-offers">
+    <div class="intro-offer">
+      <div class="intro-offer-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div>
+        <h3 class="intro-offer-h" data-pi18n="offer.week.t">Erste Woche gratis</h3>
+        <p class="intro-offer-p" data-pi18n="offer.week.d">Trainiere eine ganze Woche kostenlos, bevor du dich entscheidest.</p>
+      </div>
+    </div>
+    <div class="intro-offer">
+      <div class="intro-offer-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div>
+        <h3 class="intro-offer-h" data-pi18n="offer.pt.t">Erstes Personal Training gratis</h3>
+        <p class="intro-offer-p" data-pi18n="offer.pt.d">Deine erste 1-zu-1-Session geht aufs Haus.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN CARDS -->
+  <div class="plan-grid">
+
+    <!-- CARD A — Adults (featured) -->
+    <div class="plan-card featured">
+      <div class="plan-badge" data-pi18n="plan.badge">Beliebt</div>
+      <div class="plan-label" data-pi18n="plan.adult.label">Erwachsene (18+)</div>
+      <div class="plan-price">
+        <span class="plan-price-amount">100 CHF</span>
+        <span class="plan-price-period" data-pi18n="plan.period">/ Monat</span>
+      </div>
+      <ul class="plan-terms">
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span data-pi18n="plan.adult.b1">Start mit 6- oder 12-Monats-Vertrag</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span data-pi18n="plan.adult.b2">Danach monatlich kündbar</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span data-pi18n="plan.adult.b3">Zugang zu allen Gruppenklassen</span></li>
+      </ul>
+      <a class="btn btn-primary plan-cta" href="/register"><span data-pi18n="plan.cta">Jetzt starten</span></a>
+    </div>
+
+    <!-- CARD B — Youth -->
+    <div class="plan-card">
+      <div class="plan-label" data-pi18n="plan.youth.label">Jugendliche (unter 18)</div>
+      <div class="plan-price">
+        <span class="plan-price-amount">50 CHF</span>
+        <span class="plan-price-period" data-pi18n="plan.period">/ Monat</span>
+      </div>
+      <ul class="plan-terms">
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span data-pi18n="plan.youth.b1">Vergünstigter Jugendtarif</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span data-pi18n="plan.youth.b2">Alle Kids- &amp; Jugendklassen</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span data-pi18n="plan.youth.b3">Sichere, strukturierte Umgebung</span></li>
+      </ul>
+      <a class="btn plan-cta" href="/register"><span data-pi18n="plan.cta">Jetzt starten</span></a>
+    </div>
+
+  </div>
+
+  <!-- FINE PRINT -->
+  <p class="plan-fineprint" data-pi18n="fineprint">Der Einstiegsvertrag (6 oder 12 Monate) gilt nur für Erwachsene ab 18. Preise in CHF, inkl. aller Gruppenklassen. Fragen? Kontaktiere uns.</p>
+
+  <!-- CLOSING CTA -->
+  <div class="pricing-cta-row">
+    <a class="btn btn-primary" href="/contact"><span data-pi18n="cta.primary">Gratis Probewoche buchen</span></a>
+    <a class="btn btn-ghost" href="/contact"><span data-pi18n="cta.secondary">Kontakt</span></a>
+  </div>
+
+</div>
+
+<div id="footer-root"></div>
+
+<script src="components.js"></script>
+<script>
+  initComponents('pricing');
+
+  // ── Page i18n ────────────────────────────────────────────────────────
+  const PAGE_T = {
+    en: {
+      // SEO meta
+      'meta.title':'Pricing — Power Fight',
+      'meta.desc':'Memberships from 50 CHF/month. First week and first personal training free. Fair, transparent pricing at Power Fight MMA Gym in Aesch.',
+      // Hero
+      'hero.h1':'Pricing',
+      'hero.meta':'Transparent pricing. No fine print. First week and first personal training free.',
+      // Intro offers
+      'offer.week.t':'First week free',
+      'offer.week.d':'Train a full week for free before you decide.',
+      'offer.pt.t':'First personal training free',
+      'offer.pt.d':'Your first 1-on-1 session is on us.',
+      // Plans (shared)
+      'plan.badge':'Popular',
+      'plan.period':'/ month',
+      'plan.cta':'Get started',
+      // Plan A — Adults
+      'plan.adult.label':'Adults (18+)',
+      'plan.adult.b1':'Start on a 6- or 12-month contract',
+      'plan.adult.b2':'Then switch to month-to-month',
+      'plan.adult.b3':'Access to all group classes',
+      // Plan B — Youth
+      'plan.youth.label':'Youth (Under 18)',
+      'plan.youth.b1':'Discounted youth rate',
+      'plan.youth.b2':'All kids &amp; youth classes',
+      'plan.youth.b3':'Safe, structured environment',
+      // Fine print
+      'fineprint':'The initial contract (6 or 12 months) applies to adults 18+ only. Prices in CHF, all group classes included. Questions? Get in touch.',
+      // Closing CTA
+      'cta.primary':'Book a free trial week',
+      'cta.secondary':'Contact',
+    },
+    de: {
+      // SEO meta
+      'meta.title':'Preise — Power Fight',
+      'meta.desc':'Mitgliedschaften ab 50 CHF/Monat. Erste Woche und erstes Personal Training gratis. Faire, transparente Preise im Power Fight MMA Gym in Aesch.',
+      // Hero
+      'hero.h1':'Preise',
+      'hero.meta':'Transparente Preise. Kein Kleingedrucktes. Erste Woche und erstes Personal Training gratis.',
+      // Intro offers
+      'offer.week.t':'Erste Woche gratis',
+      'offer.week.d':'Trainiere eine ganze Woche kostenlos, bevor du dich entscheidest.',
+      'offer.pt.t':'Erstes Personal Training gratis',
+      'offer.pt.d':'Deine erste 1-zu-1-Session geht aufs Haus.',
+      // Plans (shared)
+      'plan.badge':'Beliebt',
+      'plan.period':'/ Monat',
+      'plan.cta':'Jetzt starten',
+      // Plan A — Adults
+      'plan.adult.label':'Erwachsene (18+)',
+      'plan.adult.b1':'Start mit 6- oder 12-Monats-Vertrag',
+      'plan.adult.b2':'Danach monatlich kündbar',
+      'plan.adult.b3':'Zugang zu allen Gruppenklassen',
+      // Plan B — Youth
+      'plan.youth.label':'Jugendliche (unter 18)',
+      'plan.youth.b1':'Vergünstigter Jugendtarif',
+      'plan.youth.b2':'Alle Kids- &amp; Jugendklassen',
+      'plan.youth.b3':'Sichere, strukturierte Umgebung',
+      // Fine print
+      'fineprint':'Der Einstiegsvertrag (6 oder 12 Monate) gilt nur für Erwachsene ab 18. Preise in CHF, inkl. aller Gruppenklassen. Fragen? Kontaktiere uns.',
+      // Closing CTA
+      'cta.primary':'Gratis Probewoche buchen',
+      'cta.secondary':'Kontakt',
+    }
+  };
+  function _applyPageLang(lang) {
+    const t = PAGE_T[lang] || PAGE_T.de;
+    document.querySelectorAll('[data-pi18n]').forEach(el => {
+      const key = el.dataset.pi18n;
+      if (t[key] !== undefined) el.textContent = t[key];
+    });
+    document.querySelectorAll('[data-pi18n-html]').forEach(el => {
+      const key = el.dataset.pi18nHtml;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    document.querySelectorAll('[data-pi18n-ph]').forEach(el => {
+      const key = el.dataset.pi18nPh;
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+    // SEO meta
+    if (t['meta.title'] !== undefined) {
+      document.title = t['meta.title'];
+      const ogt = document.querySelector('meta[property="og:title"]');
+      if (ogt) ogt.setAttribute('content', t['meta.title']);
+      const twt = document.querySelector('meta[name="twitter:title"]');
+      if (twt) twt.setAttribute('content', t['meta.title']);
+    }
+    if (t['meta.desc'] !== undefined) {
+      const md = document.querySelector('meta[name="description"]');
+      if (md) md.setAttribute('content', t['meta.desc']);
+      const ogd = document.querySelector('meta[property="og:description"]');
+      if (ogd) ogd.setAttribute('content', t['meta.desc']);
+      const twd = document.querySelector('meta[name="twitter:description"]');
+      if (twd) twd.setAttribute('content', t['meta.desc']);
+    }
+  }
+  _applyPageLang(localStorage.getItem('pf_lang') || 'de');
+  document.addEventListener('pfLangChange', e => _applyPageLang(e.detail));
+</script>
+</body>
+</html>
