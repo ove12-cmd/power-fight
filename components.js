@@ -185,7 +185,6 @@
       <span class="lang-sep">|</span>
       <button class="lang-btn active" data-lang="de">DE</button>
     </div>
-    <a class="btn btn-ghost" href="${sh}"><span data-ci18n="cta">Stundenplan ansehen</span></a>
     <button class="btn btn-primary" id="infoBtn" onclick="openInfoPopup()">
       <span style="display:inline-flex;align-items:center;gap:0.5rem"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;position:relative;z-index:1"><path d="M7 1C4.79 1 3 2.79 3 5c0 3.5 4 8 4 8s4-4.5 4-8c0-2.21-1.79-4-4-4z"/><circle cx="7" cy="5" r="1.5"/></svg><span data-ci18n="nav.info">Find Us</span></span>
     </button>
@@ -537,6 +536,14 @@
       @media(max-width:640px){footer{padding-bottom:calc(32px + 6rem)!important}}
       h1,h2,h3,h4,h5,h6{text-wrap:balance}
       p,li,blockquote,.faq-a-inner,.sched-card-name,.page-hero-tag{text-wrap:pretty}
+      /* Tablet nav fix: the desktop nav links hide at <=1100px, but the hamburger
+         only showed at <=640px — leaving 641-1100px with no way to open the menu.
+         Show the hamburger + mobile language toggle across the whole <=1100px range. */
+      @media(max-width:1100px){
+        .nav-cta{display:none!important}
+        .hamburger{display:flex!important}
+        .mob-lang-nav{display:flex!important}
+      }
     `;
     document.head.appendChild(stickyStyle);
 
