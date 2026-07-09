@@ -868,7 +868,7 @@
             </div>
           </div>
           <div class="adm-card-body">
-            <div style="display:grid;grid-template-columns:1fr;gap:16px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
 
               <div class="adm-field">
                 <label>Image 1 — Large (left)</label>
@@ -2323,6 +2323,14 @@
     _cache.gallery = items;
     renderGallery(items);
     sbSaveGallery(items).catch(() => { delete _cache.gallery; renderGallery(); });
+    // Track pin recency (newest first) so the homepage always shows the latest pins
+    try {
+      let order = [];
+      try { order = JSON.parse(await sbGetSetting('pf_pinned_order', '[]')) || []; } catch(_) {}
+      order = order.filter(x => x !== id);
+      if (item.featured) order.unshift(id);
+      await sbSetSetting('pf_pinned_order', JSON.stringify(order));
+    } catch(_) {}
     toast(item.featured ? 'Pinned to homepage ✓' : 'Removed from homepage');
   };
 

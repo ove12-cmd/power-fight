@@ -244,7 +244,9 @@
 
     <!-- FORM -->
     <div class="reg-form-panel">
-      <form id="regForm" action="mailto:powerfightt@gmail.com" method="post" enctype="text/plain">
+      <form id="regForm" name="register" method="POST" netlify netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="register">
+        <div style="display:none" aria-hidden="true"><label>Don't fill this out: <input name="bot-field"></label></div>
         <input type="hidden" id="trainingsInput" name="Trainings">
         <input type="hidden" id="levelInput" name="Level">
 
@@ -353,10 +355,17 @@
         </div>
 
         <div class="reg-submit">
-          <button type="submit" class="btn btn-primary"><span data-pi18n="form.submit">Registrierung senden</span></button>
+          <button type="submit" id="regSubmitBtn" class="btn btn-primary"><span id="regBtnLabel" data-pi18n="form.submit">Registrierung senden</span></button>
           <p class="reg-submit-note" data-pi18n="form.note">Wir antworten innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.</p>
         </div>
       </form>
+      <div id="regSuccess" style="display:none;text-align:center;padding:60px 24px">
+        <div style="width:56px;height:56px;margin:0 auto 20px;display:grid;place-items:center;border:1px solid var(--lime);border-radius:50%;color:var(--lime)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3 style="font-family:var(--display);font-size:26px;font-weight:600;margin:0 0 10px" data-pi18n="success.title">Anmeldung gesendet!</h3>
+        <p style="font-size:14px;color:var(--ink-dim);line-height:1.6;margin:0" data-pi18n="success.sub">Wir melden uns innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.</p>
+      </div>
     </div>
 
     <!-- INFO PANEL -->
@@ -456,13 +465,33 @@
     });
   });
 
-  // Form submit guard — require at least one training selected
-  document.getElementById('regForm').addEventListener('submit', e => {
+  // Form submit — require at least one training, then POST to Netlify Forms over HTTPS
+  document.getElementById('regForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
     const selected = Array.from(tps).filter(t => t.classList.contains('active'));
     if (selected.length === 0) {
-      e.preventDefault();
       tps[0].closest('.training-pills').style.outline = '1px solid rgba(255,77,109,0.6)';
       setTimeout(() => tps[0].closest('.training-pills').style.outline = '', 2000);
+      return;
+    }
+    if (!this.reportValidity()) return;
+    const btn = document.getElementById('regSubmitBtn');
+    const label = document.getElementById('regBtnLabel');
+    const tt = PAGE_T[localStorage.getItem('pf_lang') || 'de'] || PAGE_T.de;
+    btn.disabled = true;
+    label.textContent = tt['form.sending'];
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(this)).toString()
+      });
+      this.style.display = 'none';
+      document.getElementById('regSuccess').style.display = 'block';
+    } catch (_) {
+      btn.disabled = false;
+      label.textContent = tt['form.submit'];
+      alert(tt['form.error']);
     }
   });
 
@@ -486,6 +515,10 @@
       'hero.meta':'Choose your training, fill in your details — we\'ll confirm and get you ready for your first session.',
       'form.submit':'Send Registration',
       'form.note':'We\'ll reply within 24 hours to confirm your first training session.',
+      'form.sending':'Sending…',
+      'form.error':'Something went wrong. Please try again or contact us directly.',
+      'success.title':'Registration sent!',
+      'success.sub':'We\'ll get back to you within 24 hours to confirm your first training session.',
       // Section labels
       'sec.training':'Choose Training',
       'sec.level':'Experience Level',
@@ -548,6 +581,10 @@
       'hero.meta':'Wähle dein Training, fülle deine Daten aus – wir bestätigen und bereiten dich auf deine erste Session vor.',
       'form.submit':'Registrierung senden',
       'form.note':'Wir antworten innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.',
+      'form.sending':'Wird gesendet…',
+      'form.error':'Etwas ist schiefgelaufen. Bitte versuche es erneut oder kontaktiere uns direkt.',
+      'success.title':'Anmeldung gesendet!',
+      'success.sub':'Wir melden uns innerhalb von 24 Stunden, um deine erste Trainingseinheit zu bestätigen.',
       // Section labels
       'sec.training':'Training wählen',
       'sec.level':'Erfahrungsniveau',

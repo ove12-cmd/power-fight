@@ -1906,6 +1906,16 @@
       let { data } = await _sb.from('gallery_items').select('*').eq('featured', true).order('ord');
       data = data || [];
       if (!data.length) return;
+      // Most recently pinned first (pf_pinned_order holds ids, newest first);
+      // legacy pins without a recency entry fall back to ord order after them.
+      try {
+        const { data: po } = await _sb.from('settings').select('value').eq('key','pf_pinned_order').maybeSingle();
+        const rank = new Map((JSON.parse(po?.value || '[]') || []).map((id, i) => [id, i]));
+        data.sort((a, b) =>
+          ((rank.has(a.id) ? rank.get(a.id) : Infinity) - (rank.has(b.id) ? rank.get(b.id) : Infinity)) ||
+          (a.ord - b.ord)
+        );
+      } catch(_) {}
       const grid = document.getElementById('galleryGrid');
       if (!grid) return;
       const viewAll = grid.querySelector('.gallery-view-all');

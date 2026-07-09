@@ -568,11 +568,11 @@
         'aria.star1':'1 star','aria.star2':'2 stars','aria.star3':'3 stars',
         'aria.star4':'4 stars','aria.star5':'5 stars',
         'sticky.text':'Book your free trial week.','sticky.cta':'Book now',
-        'fb.title':'Leave Feedback','fb.sub':'Trained with us? Your experience appears directly in the Testimonials.',
+        'fb.title':'Leave Feedback','fb.sub':'Trained with us? Your experience appears in the Testimonials after a quick review.',
         'fb.lbl.name':'Your Name','fb.lbl.training':'Training Type','fb.lbl.text':'Your Experience',
         'fb.lbl.rating':'Rating','fb.ph.training':'Choose discipline','fb.ph.text':'How was your training at Power Fight?',
         'fb.submit':'Submit Feedback',
-        'fb.success.title':'Thanks for your feedback!','fb.success.sub':'Your review is now visible in the Testimonials section.',
+        'fb.success.title':'Thanks for your feedback!','fb.success.sub':'Your review has been received and will appear in the Testimonials once approved.',
         'fb.success.close':'Close',
       },
       de: {
@@ -594,11 +594,11 @@
         'aria.star1':'1 Stern','aria.star2':'2 Sterne','aria.star3':'3 Sterne',
         'aria.star4':'4 Sterne','aria.star5':'5 Sterne',
         'sticky.text':'Buche deine gratis Probewoche.','sticky.cta':'Jetzt buchen',
-        'fb.title':'Feedback hinterlassen','fb.sub':'Hast du bei uns trainiert? Deine Erfahrung erscheint direkt in den Testimonials.',
+        'fb.title':'Feedback hinterlassen','fb.sub':'Hast du bei uns trainiert? Deine Erfahrung erscheint nach kurzer Prüfung in den Testimonials.',
         'fb.lbl.name':'Dein Name','fb.lbl.training':'Trainingsart','fb.lbl.text':'Deine Erfahrung',
         'fb.lbl.rating':'Bewertung','fb.ph.training':'Disziplin wählen','fb.ph.text':'Wie war dein Training bei Power Fight?',
         'fb.submit':'Feedback einreichen',
-        'fb.success.title':'Danke für dein Feedback!','fb.success.sub':'Deine Bewertung ist nun im Testimonials-Bereich sichtbar.',
+        'fb.success.title':'Danke für dein Feedback!','fb.success.sub':'Deine Bewertung ist eingegangen und erscheint nach Freigabe im Testimonials-Bereich.',
         'fb.success.close':'Schliessen',
       }
     };
@@ -795,15 +795,45 @@
       star.addEventListener('click', () => { fbRating = +star.dataset.val; fbStarBtns.forEach(s => s.classList.toggle('active', +s.dataset.val <= fbRating)); });
     });
 
-    document.getElementById('fbForm').addEventListener('submit', e => {
+    document.getElementById('fbForm').addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('fbName').value.trim();
       const training = document.getElementById('fbTraining').value;
       const text = document.getElementById('fbText').value.trim();
       if (!name || !training || !text) return;
-      const entry = { name, training, text, rating: fbRating || 5, ts: Date.now() };
+      const entry = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        name, training, text, rating: fbRating || 5,
+        approved: false, created_at: new Date().toISOString()
+      };
+      const btn = document.querySelector('#fbForm button[type="submit"], #fbForm .btn');
+      if (btn) btn.disabled = true;
+      // Persist to Supabase (pf_reviews_v1) so it reaches the admin approval queue
+      try {
+        const hdrs = { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' };
+        const res = await fetch(`${SB_URL}/rest/v1/settings?key=eq.pf_reviews_v1&select=value`, { headers: hdrs });
+        const rows = res.ok ? await res.json() : [];
+        let reviews = [];
+        try { reviews = JSON.parse(rows?.[0]?.value || '[]') || []; } catch (_) {}
+        reviews.push(entry);
+        const up = await fetch(`${SB_URL}/rest/v1/settings?on_conflict=key`, {
+          method: 'POST',
+          headers: { ...hdrs, Prefer: 'resolution=merge-duplicates' },
+          body: JSON.stringify({ key: 'pf_reviews_v1', value: JSON.stringify(reviews) })
+        });
+        if (!up.ok) throw new Error('upsert ' + up.status);
+      } catch (err) {
+        console.warn('[PowerFight] Feedback save failed:', err);
+        if (btn) btn.disabled = false;
+        alert(_uiLang === 'en'
+          ? 'Something went wrong sending your feedback. Please try again.'
+          : 'Beim Senden deines Feedbacks ist etwas schiefgelaufen. Bitte versuche es erneut.');
+        return;
+      }
+      // Local backup copy
       const all = window.loadFeedback(); all.push(entry); saveFeedback(all);
       if (window.onFeedbackSubmit) window.onFeedbackSubmit(entry);
+      if (btn) btn.disabled = false;
       document.getElementById('fbName').value = '';
       document.getElementById('fbTraining').value = '';
       document.getElementById('fbText').value = '';
