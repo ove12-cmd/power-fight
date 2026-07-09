@@ -1653,8 +1653,9 @@
     const file = this.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = e => {
-      _pendingAthPhoto = e.target.result;
+    reader.onload = async e => {
+      // Compress like gallery uploads — raw phone photos would bloat pf_athletes
+      _pendingAthPhoto = await _compressImage(e.target.result);
       document.getElementById('ath-photo-preview').src = _pendingAthPhoto;
       document.getElementById('ath-photo-preview-wrap').style.display = '';
     };
@@ -1912,6 +1913,11 @@
       document.getElementById('uploadDate').value = new Date().toISOString().slice(0, 10);
     files.forEach(file => {
       const isVideo = file.type.startsWith('video/');
+      // Video files are stored uncompressed — refuse big ones, point to the URL tab
+      if (isVideo && file.size > 8 * 1048576) {
+        toast(`"${file.name}" is ${(file.size / 1048576).toFixed(0)} MB — too large to store directly. Use the "Add Video" tab with a YouTube/Vimeo URL instead.`, true);
+        return;
+      }
       const reader = new FileReader();
       reader.onload = async e => {
         // Compress non-video images before storing
