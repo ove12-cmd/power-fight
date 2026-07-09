@@ -815,7 +815,8 @@
         const rows = res.ok ? await res.json() : [];
         let reviews = [];
         try { reviews = JSON.parse(rows?.[0]?.value || '[]') || []; } catch (_) {}
-        reviews.push(entry);
+        reviews.unshift(entry); // newest first — shows at the top of admin + homepage slider
+
         const up = await fetch(`${SB_URL}/rest/v1/settings?on_conflict=key`, {
           method: 'POST',
           headers: { ...hdrs, Prefer: 'resolution=merge-duplicates' },

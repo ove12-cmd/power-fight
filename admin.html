@@ -1072,6 +1072,11 @@
           <div class="panel-title">Reviews</div>
           <div class="panel-subtitle">Manage reviews shown in the Fighter Voices slider</div>
         </div>
+        <button class="btn-adm" id="publishAllBtn" onclick="publishAllReviews()" style="display:none;background:var(--lime);color:#080808;border-color:var(--lime);font-weight:600;box-shadow:0 0 24px rgba(199,255,63,.25)">
+          <svg viewBox="0 0 24 24" style="stroke:#080808"><path d="M20 6L9 17l-5-5"/></svg>
+          Publish all
+          <span id="publishAllCount" style="background:rgba(0,0,0,.18);border-radius:20px;padding:1px 8px;font-size:10px">0</span>
+        </button>
       </div>
       <div class="panel-body">
 
@@ -2699,6 +2704,16 @@
     const empty = document.getElementById('reviewEmpty');
     list.innerHTML = '';
     empty.style.display = all.length ? 'none' : '';
+    // "Publish all" button: visible + counting only while reviews are pending
+    const _pending = all.filter(r => !r.approved).length;
+    const pab = document.getElementById('publishAllBtn');
+    if (pab) {
+      pab.style.display = _pending ? '' : 'none';
+      const pac = document.getElementById('publishAllCount');
+      if (pac) pac.textContent = _pending;
+    }
+    const badge = document.getElementById('badgeReviews');
+    if (badge) badge.textContent = _pending > 0 ? _pending + ' pending' : all.length;
     if (!all.length) { return; }
 
     all.forEach((entry, idx) => {
@@ -2714,11 +2729,22 @@
           <span class="review-name">${escHtml(entry.name)}</span>
           ${entry.training ? `<span class="review-training">${escHtml(entry.training)}</span>` : ''}
           <span class="review-stars">${stars}</span>
-          <span class="review-approved" style="${isApproved ? '' : 'opacity:.4'}">✓ Published</span>
+          ${isApproved
+            ? `<span class="review-approved">✓ Published</span>`
+            : `<span class="review-approved" style="color:#FACC15;border-color:rgba(250,204,21,.35)">⏳ Pending</span>`}
         </div>
         <div class="review-text">"${escHtml(entry.text)}"</div>
         <div class="review-date">${date}</div>
         <div class="review-actions">
+          ${isApproved
+            ? `<button class="btn-adm btn-ghost" onclick="unapproveReview('${entry.id}')" style="font-size:10px;padding:6px 10px">
+                 <svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                 Unpublish
+               </button>`
+            : `<button class="btn-adm" onclick="approveReview('${entry.id}')" style="font-size:10px;padding:6px 10px;background:var(--lime);color:#080808;border-color:var(--lime);font-weight:600">
+                 <svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:#080808"><path d="M20 6L9 17l-5-5"/></svg>
+                 Publish
+               </button>`}
           <button class="btn-adm btn-ghost" onclick="editReview('${entry.id}')" style="font-size:10px;padding:6px 10px">
             <svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             Edit
@@ -2743,6 +2769,16 @@
     await sbSaveReviews(all);
     renderTestimonials(all);
     toast('Review published on site ✓');
+  };
+
+  window.publishAllReviews = async () => {
+    const all = await sbLoadFeedback();
+    const pending = all.filter(r => !r.approved);
+    if (!pending.length) return;
+    pending.forEach(r => r.approved = true);
+    await sbSaveReviews(all);
+    renderTestimonials(all);
+    toast(`Published ${pending.length} review${pending.length === 1 ? '' : 's'} ✓`);
   };
 
   window.unapproveReview = async id => {
@@ -2814,7 +2850,7 @@
       toast('Review updated ✓');
     } else {
       const entry = { id: uid(), name, training, rating, text, approved: true, created_at: new Date().toISOString() };
-      all.push(entry);
+      all.unshift(entry); // newest first
       await sbSaveReviews(all);
       renderTestimonials(all);
       _resetReviewForm();
