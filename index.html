@@ -835,15 +835,12 @@
   .gallery-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    grid-auto-flow:dense;
     gap:4px; margin-top:60px;
   }
   .gallery-item{
     position:relative; overflow:hidden; background:var(--bg-2); cursor:pointer;
     aspect-ratio:3/2;
   }
-  /* First image = larger ~square feature: 2 cols wide x 3 rows of 3:2 tiles ≈ square, tiles flush */
-  .gallery-item.gi-feature{aspect-ratio:auto; grid-column:span 2; grid-row:span 3}
   .gallery-item img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s cubic-bezier(0.22,1,0.36,1)}
   .gallery-item:hover img{transform:scale(1.06)}
   .gallery-item .ph{
@@ -1942,10 +1939,10 @@
       const viewAll = grid.querySelector('.gallery-view-all');
       // Uniform 2:3 portrait grid (see CSS .gallery-item aspect-ratio:2/3)
       const delays = ['d1','d2','d3','d1','d2','d3','d1','d2'];
-      const N = Math.min(data.length, 8);
+      const N = Math.min(data.length, 7);
       data.slice(0, N).forEach((item, i) => {
         const div = document.createElement('div');
-        div.className = `gallery-item ${i === 0 ? 'gi-feature' : ''} ${delays[i]}`.trim();
+        div.className = `gallery-item ${delays[i]}`.trim();
         if (item.is_video) {
           div.dataset.video = item.src;
           div.innerHTML = `<video class="gi-video-thumb" src="${item.src}" autoplay muted loop playsinline style="pointer-events:none"></video>
