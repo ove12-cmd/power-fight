@@ -835,12 +835,15 @@
   .gallery-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
+    grid-auto-flow:dense;
     gap:4px; margin-top:60px;
   }
   .gallery-item{
     position:relative; overflow:hidden; background:var(--bg-2); cursor:pointer;
-    aspect-ratio:2/3;
+    aspect-ratio:3/2;
   }
+  /* First image = larger ~square feature: 2 cols wide x 3 rows of 3:2 tiles ≈ square, tiles flush */
+  .gallery-item.gi-feature{aspect-ratio:auto; grid-column:span 2; grid-row:span 3}
   .gallery-item img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s cubic-bezier(0.22,1,0.36,1)}
   .gallery-item:hover img{transform:scale(1.06)}
   .gallery-item .ph{
@@ -884,7 +887,7 @@
     background:var(--bg-2); border:1px solid var(--line-2);
     display:grid; place-items:center; text-decoration:none;
     transition:border-color .3s, background .3s;
-    aspect-ratio:2/3;
+    aspect-ratio:3/2;
   }
   .gallery-view-all:hover{border-color:var(--lime); background:rgba(199,255,63,0.05)}
   .gallery-view-all-inner{display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--ink)}
@@ -1556,11 +1559,26 @@
         </div>
         <div class="coach-certs">
           <div class="coach-certs-label" data-i18n="coach.certs.label">Zertifizierungen</div>
+          <div class="coach-certs-grid" style="margin-bottom:14px">
+            <div class="cert-thumb" data-img="QUALIFIED INTERNATIONAL PERSONAL TRAINER.webp">
+              <img src="QUALIFIED INTERNATIONAL PERSONAL TRAINER.webp" alt="Qualified International Personal Trainer" loading="lazy">
+              <div class="cert-thumb-label" data-i18n="coach.cert.pt">Personal Trainer</div>
+            </div>
+            <div class="cert-thumb" data-img="QUALIFIED MUAY THAI AND KICKBOXING COACH.webp">
+              <img src="QUALIFIED MUAY THAI AND KICKBOXING COACH.webp" alt="Qualified Muay Thai and Kickboxing Coach" loading="lazy">
+              <div class="cert-thumb-label" data-i18n="coach.cert.mtk">Muay Thai &amp; Kickboxing</div>
+            </div>
+            <div class="cert-thumb" data-img="THE EUROPEAN REGISTER OF EXERCISE PROFESSIONALS.png">
+              <img src="THE EUROPEAN REGISTER OF EXERCISE PROFESSIONALS.png" alt="European Register of Exercise Professionals" loading="lazy">
+              <div class="cert-thumb-label" data-i18n="coach.cert.erep">Exercise Professionals</div>
+            </div>
+            <div class="cert-thumb" data-img="MMA COACH.jpeg">
+              <img src="MMA COACH.jpeg" alt="MMA Coach" loading="lazy">
+              <div class="cert-thumb-label" data-i18n="coach.cert.mma">MMA Coach</div>
+            </div>
+          </div>
           <div class="coach-duo-tags" style="margin-bottom:0">
-            <span class="coach-tag" data-i18n="coach.cert.1">Zertifizierter Personal Trainer</span>
             <span class="coach-tag" data-i18n="coach.cert.2">Diplom Sportpsychologie</span>
-            <span class="coach-tag" data-i18n="coach.cert.3">MMA-Coach-Zertifikat</span>
-            <span class="coach-tag" data-i18n="coach.cert.4">Muay-Thai-Coach Level 3 (Estland)</span>
             <span class="coach-tag" data-i18n="coach.cert.5">Anti-Mobbing-Zertifikat</span>
             <span class="coach-tag" data-i18n="coach.cert.6">Anti-Doping-Zertifikat</span>
             <span class="coach-tag" data-i18n="coach.cert.7">Kinderschutz-Zertifikat</span>
@@ -1927,7 +1945,7 @@
       const N = Math.min(data.length, 8);
       data.slice(0, N).forEach((item, i) => {
         const div = document.createElement('div');
-        div.className = `gallery-item ${delays[i]}`.trim();
+        div.className = `gallery-item ${i === 0 ? 'gi-feature' : ''} ${delays[i]}`.trim();
         if (item.is_video) {
           div.dataset.video = item.src;
           div.innerHTML = `<video class="gi-video-thumb" src="${item.src}" autoplay muted loop playsinline style="pointer-events:none"></video>
