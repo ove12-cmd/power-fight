@@ -677,7 +677,8 @@
   }
   .badge-head{background:rgba(199,255,63,0.12); color:var(--lime); border:1px solid rgba(199,255,63,0.3)}
   .badge-coach{background:rgba(91,224,255,0.1); color:#5BE0FF; border:1px solid rgba(91,224,255,0.25)}
-  .coach-duo-name{font-family:var(--display); font-size:clamp(28px,2.8vw,44px); font-weight:600; letter-spacing:-0.02em; line-height:0.95; margin:0 0 16px}
+  .coach-duo-name{font-family:var(--display); font-size:clamp(28px,2.8vw,44px); font-weight:600; letter-spacing:-0.02em; line-height:0.95; margin:0 0 8px}
+  .coach-duo-role{font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; color:var(--lime); margin:0 0 18px}
   .coach-duo-bio{font-size:14px; line-height:1.65; color:var(--ink-dim); margin:0 0 24px}
   .coach-duo-tags{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px}
   .coach-tag{font-size:10px; letter-spacing:0.18em; text-transform:uppercase; padding:6px 13px; border:1px solid var(--line-2); color:var(--ink-dim)}
@@ -834,11 +835,11 @@
   .gallery-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    grid-auto-rows:220px;
     gap:4px; margin-top:60px;
   }
   .gallery-item{
     position:relative; overflow:hidden; background:var(--bg-2); cursor:pointer;
+    aspect-ratio:2/3;
   }
   .gallery-item img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s cubic-bezier(0.22,1,0.36,1)}
   .gallery-item:hover img{transform:scale(1.06)}
@@ -846,8 +847,8 @@
     position:absolute; inset:0;
     background:repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 14px);
   }
-  .gi-tall{grid-row:span 2}
-  .gi-wide{grid-column:span 2}
+  /* legacy mosaic classes neutralised — gallery is now a uniform 2:3 grid */
+  .gi-tall,.gi-wide{grid-row:auto; grid-column:auto}
   .gallery-item-overlay{
     position:absolute; inset:0; background:rgba(4,5,5,0.35);
     display:grid; place-items:center;
@@ -883,6 +884,7 @@
     background:var(--bg-2); border:1px solid var(--line-2);
     display:grid; place-items:center; text-decoration:none;
     transition:border-color .3s, background .3s;
+    aspect-ratio:2/3;
   }
   .gallery-view-all:hover{border-color:var(--lime); background:rgba(199,255,63,0.05)}
   .gallery-view-all-inner{display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--ink)}
@@ -892,13 +894,10 @@
   .gallery-view-all:hover svg{transform:translateX(4px)}
   @media(max-width:900px){
     .gallery-grid{grid-template-columns:repeat(3,1fr)}
-    .gi-wide{grid-column:span 1}
   }
   @media(max-width:640px){
     .gallery{padding:70px 20px}
-    .gallery-grid{grid-template-columns:1fr 1fr; grid-auto-rows:160px}
-    .gi-tall{grid-row:span 1}
-    .gallery-view-all{grid-column:span 2}
+    .gallery-grid{grid-template-columns:1fr 1fr}
   }
 
   /* ---------- TESTIMONIALS ---------- */
@@ -1309,7 +1308,7 @@
     .discipline-row{padding:22px 0}
     .sched-cols{flex-wrap:wrap}
     .sched-masonry-col{flex:0 0 calc(50% - 6px);min-width:0}
-    .gallery-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px}
+    .gallery-grid{grid-template-columns:repeat(2,1fr)}
     .coach-duo-info{padding:30px}
   }
 
@@ -1539,47 +1538,38 @@
     <!-- Head Coach -->
     <div class="coach-duo-card reveal d1">
       <div class="coach-duo-photo">
-        <img src="germo.png" alt="Germo Nurmsoo">
+        <img src="germo.webp" alt="Germo Nurmsoo" loading="lazy">
         <div class="pf"></div>
         <div class="corner"></div>
       </div>
       <div class="coach-duo-info">
         <span class="coach-duo-badge badge-head" data-i18n="coach.badge.head">Head Coach</span>
         <h3 class="coach-duo-name">Germo Nurmsoo</h3>
-        <p class="coach-duo-bio" data-i18n="coach.c1.bio">Professioneller Kämpfer und international zertifizierter Trainer. Begann mit Boxing im Alter von 12 Jahren, durchlief Kickboxen, Muay Thai und BJJ – Training in Thailand unter Master Kay LookMuangPetch. Über 12 Jahre Wettkampferfahrung kombiniert mit einem wissenschaftlichen Trainingsansatz für jeden Athleten auf jedem Niveau.</p>
+        <div class="coach-duo-role" data-i18n="coach.c1.role">MMA-Striking-Coach &amp; Profikämpfer</div>
+        <p class="coach-duo-bio" data-i18n="coach.c1.bio">Ein professioneller Striker und Grappler mit umfassender internationaler Trainings- und Wettkampferfahrung – und mehreren Grappling-Turnieren.</p>
         <div class="coach-duo-tags">
+          <span class="coach-tag">Muay Thai</span>
           <span class="coach-tag">Boxing</span>
           <span class="coach-tag">Kickboxing</span>
-          <span class="coach-tag">Muay Thai</span>
-          <span class="coach-tag">MMA</span>
-          <span class="coach-tag">BJJ</span>
-          <span class="coach-tag">Personal Training</span>
-        </div>
-        <div class="coach-duo-stats">
-          <div><span class="n">12+</span><span class="l" data-i18n="coach.c1.stat1">Jahre als Kämpfer</span></div>
-          <div><span class="n">4</span><span class="l" data-i18n="coach.c1.stat2">Zertifizierungen</span></div>
-          <div><span class="n">All</span><span class="l" data-i18n="coach.c1.stat3">Niveaus willkommen</span></div>
+          <span class="coach-tag">Brazilian Jiu-Jitsu</span>
+          <span class="coach-tag">Grappling</span>
         </div>
         <div class="coach-certs">
           <div class="coach-certs-label" data-i18n="coach.certs.label">Zertifizierungen</div>
-          <div class="coach-certs-grid">
-            <div class="cert-thumb" data-img="QUALIFIED INTERNATIONAL PERSONAL TRAINER.webp">
-              <img src="QUALIFIED INTERNATIONAL PERSONAL TRAINER.webp" alt="Qualified International Personal Trainer">
-              <div class="cert-thumb-label" data-i18n="coach.cert.pt">Personal Trainer</div>
-            </div>
-            <div class="cert-thumb" data-img="QUALIFIED MUAY THAI AND KICKBOXING COACH.webp">
-              <img src="QUALIFIED MUAY THAI AND KICKBOXING COACH.webp" alt="Qualified Muay Thai and Kickboxing Coach">
-              <div class="cert-thumb-label" data-i18n="coach.cert.mtk">Muay Thai &amp; Kickboxing</div>
-            </div>
-            <div class="cert-thumb" data-img="THE EUROPEAN REGISTER OF EXERCISE PROFESSIONALS.png">
-              <img src="THE EUROPEAN REGISTER OF EXERCISE PROFESSIONALS.png" alt="European Register of Exercise Professionals">
-              <div class="cert-thumb-label" data-i18n="coach.cert.erep">Exercise Professionals</div>
-            </div>
-            <div class="cert-thumb" data-img="MMA COACH.jpeg">
-              <img src="MMA COACH.jpeg" alt="MMA Coach">
-              <div class="cert-thumb-label" data-i18n="coach.cert.mma">MMA Coach</div>
-            </div>
+          <div class="coach-duo-tags" style="margin-bottom:0">
+            <span class="coach-tag" data-i18n="coach.cert.1">Zertifizierter Personal Trainer</span>
+            <span class="coach-tag" data-i18n="coach.cert.2">Diplom Sportpsychologie</span>
+            <span class="coach-tag" data-i18n="coach.cert.3">MMA-Coach-Zertifikat</span>
+            <span class="coach-tag" data-i18n="coach.cert.4">Muay-Thai-Coach Level 3 (Estland)</span>
+            <span class="coach-tag" data-i18n="coach.cert.5">Anti-Mobbing-Zertifikat</span>
+            <span class="coach-tag" data-i18n="coach.cert.6">Anti-Doping-Zertifikat</span>
+            <span class="coach-tag" data-i18n="coach.cert.7">Kinderschutz-Zertifikat</span>
           </div>
+        </div>
+        <div class="coach-duo-stats">
+          <div><span class="n">20+</span><span class="l" data-i18n="coach.c1.stat1">Jahre</span></div>
+          <div><span class="n">10</span><span class="l" data-i18n="coach.c1.stat2">Profikämpfe</span></div>
+          <div><span class="n">100+</span><span class="l" data-i18n="coach.c1.stat3">Amateurkämpfe</span></div>
         </div>
       </div>
     </div>
@@ -1587,21 +1577,34 @@
     <!-- Second Coach -->
     <div class="coach-duo-card reveal d2">
       <div class="coach-duo-photo">
+        <img src="kaijo.webp" alt="Kaijo Nurmsoo" loading="lazy">
         <div class="pf"></div>
         <div class="corner"></div>
       </div>
       <div class="coach-duo-info">
         <span class="coach-duo-badge badge-coach" data-i18n="coach.badge.coach">Coach</span>
-        <h3 class="coach-duo-name">Coach Name</h3>
-        <p class="coach-duo-bio" data-i18n="coach.c2.bio">Trainerbio hier einfügen. Disziplin, Hintergrund, Erfahrung und was sie zum Team bei Power Fight beitragen.</p>
+        <h3 class="coach-duo-name">Kaijo Nurmsoo</h3>
+        <div class="coach-duo-role" data-i18n="coach.c2.role">Striking-Coach &amp; Profikämpfer</div>
+        <p class="coach-duo-bio" data-i18n="coach.c2.bio">Internationale Kampferfahrung – trainierte an der Seite von Weltklasse-Athleten und Trainern wie Tyson Fury, Junior Cigano, Dustin Poirier und Nieky Holzken.</p>
         <div class="coach-duo-tags">
-          <span class="coach-tag">MMA</span>
-          <span class="coach-tag">Striking</span>
-          <span class="coach-tag">Grappling</span>
+          <span class="coach-tag">Muay Thai</span>
+          <span class="coach-tag">Kickboxing</span>
+        </div>
+        <div class="coach-certs">
+          <div class="coach-certs-label" data-i18n="coach.spec.label">Spezialgebiete</div>
+          <div class="coach-duo-tags" style="margin-bottom:0">
+            <span class="coach-tag" data-i18n="coach.spec.1">Striking</span>
+            <span class="coach-tag" data-i18n="coach.spec.2">Kampfstrategie</span>
+            <span class="coach-tag" data-i18n="coach.spec.3">Kondition &amp; Fitness</span>
+            <span class="coach-tag" data-i18n="coach.spec.4">Mentale Stärke</span>
+            <span class="coach-tag" data-i18n="coach.spec.5">Disziplin &amp; Respekt</span>
+            <span class="coach-tag" data-i18n="coach.spec.6">Führung &amp; Motivation</span>
+          </div>
         </div>
         <div class="coach-duo-stats">
-          <div><span class="n">—</span><span class="l" data-i18n="coach.c2.stat1">Jahre Wettkampf</span></div>
-          <div><span class="n">—</span><span class="l" data-i18n="coach.c2.stat2">Jahre Coaching</span></div>
+          <div><span class="n">14–3</span><span class="l" data-i18n="coach.c2.stat1">Profi-Bilanz</span></div>
+          <div><span class="n">100+</span><span class="l" data-i18n="coach.c2.stat2">Amateurkämpfe</span></div>
+          <div><span class="n">15</span><span class="l" data-i18n="coach.c2.stat3">Jahre</span></div>
         </div>
       </div>
     </div>
@@ -1919,16 +1922,12 @@
       const grid = document.getElementById('galleryGrid');
       if (!grid) return;
       const viewAll = grid.querySelector('.gallery-view-all');
-      // Row layout (4-col grid):
-      //  Row 1: gi-tall | gi-wide     | normal   (items 0,1,2)
-      //  Row 2: gi-tall | normal      | gi-wide  (items 3,4 — col 1 blocked by tall)
-      //  Row 3: normal  | normal      | normal   | see-all  (items 5,6,7 + viewAll)
-      const sizes = ['gi-tall','gi-wide','','','gi-wide','','',''];
+      // Uniform 2:3 portrait grid (see CSS .gallery-item aspect-ratio:2/3)
       const delays = ['d1','d2','d3','d1','d2','d3','d1','d2'];
       const N = Math.min(data.length, 8);
       data.slice(0, N).forEach((item, i) => {
         const div = document.createElement('div');
-        div.className = `gallery-item ${sizes[i] || ''} ${delays[i]}`.trim();
+        div.className = `gallery-item ${delays[i]}`.trim();
         if (item.is_video) {
           div.dataset.video = item.src;
           div.innerHTML = `<video class="gi-video-thumb" src="${item.src}" autoplay muted loop playsinline style="pointer-events:none"></video>
@@ -1940,12 +1939,6 @@
         }
         grid.insertBefore(div, viewAll);
       });
-      // Make "See all" span whatever columns remain in its row so the grid is always full
-      // Items 0-4 fill rows 1-2; items 5+ fill row 3. Remaining cols = 4 - (N - 5).
-      const itemsInRow3 = Math.max(0, N - 5);
-      const remainingCols = 4 - itemsInRow3;
-      if (remainingCols >= 2) viewAll.classList.add('gi-wide');
-      if (remainingCols >= 4) viewAll.style.gridColumn = '1 / -1';
 
       // re-trigger reveal observer for new items if needed
       if (window._pfRevealObs) grid.querySelectorAll('.reveal').forEach(el => window._pfRevealObs.observe(el));
@@ -2186,11 +2179,14 @@
       'sys.p4.title':'1-to-1 Coaching','sys.p4.desc':'Every fighter gets direct coach attention every session. No lost reps, no uncorrected bad habits, no one falling through the gaps.',
       'coach.eyebrow':'The Coaches','coach.heading':'Built by <em>fighters,</em><br>for fighters.',
       'coach.desc':'Every coach at Power Fight has competed. They know the pressure, the doubt, and the discipline it takes — because they\'ve been there.',
-      'coach.c1.role':'Head Coach · MMA & Striking','coach.c1.bio':'Professional fighter and internationally certified trainer. Started boxing at age 12, progressed through Kickboxing, Muay Thai and BJJ — including training in Thailand under Master Kay LookMuangPetch. Over 12 years of competitive experience combined with a scientific approach to training for athletes at every level.',
-      'coach.c1.stat1':'Years as Fighter','coach.c1.stat2':'Certifications','coach.c1.stat3':'All levels welcome',
+      'coach.c1.role':'MMA Striking Coach & Professional Fighter','coach.c1.bio':'A professional striker and grappler with extensive international training and competition experience — and multiple grappling tournaments.',
+      'coach.c1.stat1':'Years','coach.c1.stat2':'Pro Fights','coach.c1.stat3':'Amateur Fights',
       'coach.certs.label':'Certifications',
-      'coach.c2.role':'Grappling Coach · BJJ & Wrestling','coach.c2.bio':'Add trainer bio here. Discipline, background, experience and what they bring to the Power Fight team.',
-      'coach.c2.stat1':'Years Competing','coach.c2.stat2':'Years Coaching',
+      'coach.cert.1':'Certified Personal Trainer','coach.cert.2':'Sports Psychology Diploma','coach.cert.3':'MMA Coach Certificate','coach.cert.4':'Muay Thai Coach Level 3 (Estonia)','coach.cert.5':'Anti-Bullying Certificate','coach.cert.6':'Anti-Doping Certificate','coach.cert.7':'Child Safeguarding Certificate',
+      'coach.c2.role':'Striking Coach & Professional Fighter','coach.c2.bio':'International fight experience, having trained alongside world-class athletes and coaches including Tyson Fury, Junior Cigano, Dustin Poirier and Nieky Holzken.',
+      'coach.c2.stat1':'Pro Record','coach.c2.stat2':'Amateur Fights','coach.c2.stat3':'Years',
+      'coach.spec.label':'Specialties',
+      'coach.spec.1':'Striking','coach.spec.2':'Fight Strategy','coach.spec.3':'Conditioning & Fitness','coach.spec.4':'Mental Toughness','coach.spec.5':'Discipline & Respect','coach.spec.6':'Leadership & Motivation',
       'coach.c3.role':'Striking Coach · Muay Thai','coach.c3.bio':'Muay Thai veteran with over 80 professional fights. Technical, calm, and clinical in how he breaks down the stand-up game.',
       'coach.c4.role':'S&C Coach · Fight Conditioning','coach.c4.bio':'Sport science background with a specialisation in combat sports conditioning. Builds the engine that powers everything else.',
       'athletes.eyebrow':'Highlights','athletes.heading':'World-class <em style="font-style:normal;color:var(--lime)">Legends</em><br>at Power Fight.',
@@ -2282,11 +2278,14 @@
       'sys.p4.title':'1-zu-1-Coaching','sys.p4.desc':'Jeder Kämpfer bekommt in jeder Session direkte Coaching-Aufmerksamkeit. Keine verlorenen Wiederholungen, keine unkorrigierten schlechten Gewohnheiten.',
       'coach.eyebrow':'Die Trainer','coach.heading':'Gebaut von <em>Kämpfern,</em><br>für Kämpfer.',
       'coach.desc':'Jeder Trainer bei Power Fight hat an Wettkämpfen teilgenommen. Sie kennen den Druck, die Zweifel und die Disziplin — weil sie selbst dort waren.',
-      'coach.c1.role':'Cheftrainer · MMA & Schlag','coach.c1.bio':'Professioneller Kämpfer und international zertifizierter Trainer. Begann mit Boxing im Alter von 12 Jahren, durchlief Kickboxen, Muay Thai und BJJ – Training in Thailand unter Master Kay LookMuangPetch. Über 12 Jahre Wettkampferfahrung kombiniert mit einem wissenschaftlichen Trainingsansatz für jeden Athleten auf jedem Niveau.',
-      'coach.c1.stat1':'Jahre als Kämpfer','coach.c1.stat2':'Zertifizierungen','coach.c1.stat3':'Niveaus willkommen',
+      'coach.c1.role':'MMA-Striking-Coach & Profikämpfer','coach.c1.bio':'Ein professioneller Striker und Grappler mit umfassender internationaler Trainings- und Wettkampferfahrung – und mehreren Grappling-Turnieren.',
+      'coach.c1.stat1':'Jahre','coach.c1.stat2':'Profikämpfe','coach.c1.stat3':'Amateurkämpfe',
       'coach.certs.label':'Zertifizierungen',
-      'coach.c2.role':'Grappling-Trainer · BJJ & Ringen','coach.c2.bio':'Trainerbio hier einfügen. Disziplin, Hintergrund, Erfahrung und was sie zum Team bei Power Fight beitragen.',
-      'coach.c2.stat1':'Jahre Wettkampf','coach.c2.stat2':'Jahre Coaching',
+      'coach.cert.1':'Zertifizierter Personal Trainer','coach.cert.2':'Diplom Sportpsychologie','coach.cert.3':'MMA-Coach-Zertifikat','coach.cert.4':'Muay-Thai-Coach Level 3 (Estland)','coach.cert.5':'Anti-Mobbing-Zertifikat','coach.cert.6':'Anti-Doping-Zertifikat','coach.cert.7':'Kinderschutz-Zertifikat',
+      'coach.c2.role':'Striking-Coach & Profikämpfer','coach.c2.bio':'Internationale Kampferfahrung – trainierte an der Seite von Weltklasse-Athleten und Trainern wie Tyson Fury, Junior Cigano, Dustin Poirier und Nieky Holzken.',
+      'coach.c2.stat1':'Profi-Bilanz','coach.c2.stat2':'Amateurkämpfe','coach.c2.stat3':'Jahre',
+      'coach.spec.label':'Spezialgebiete',
+      'coach.spec.1':'Striking','coach.spec.2':'Kampfstrategie','coach.spec.3':'Kondition & Fitness','coach.spec.4':'Mentale Stärke','coach.spec.5':'Disziplin & Respekt','coach.spec.6':'Führung & Motivation',
       'coach.c3.role':'Schlag-Trainer · Muay Thai','coach.c3.bio':'Muay Thai-Veteran mit über 80 Profikämpfen. Technisch, ruhig und präzise in der Analyse des Stehkampfs.',
       'coach.c4.role':'Kraft & Kondition · Kampfkondition','coach.c4.bio':'Sportwissenschaftlicher Hintergrund mit Spezialisierung auf Kampfsportkonditionierung. Baut den Motor, der alles andere antreibt.',
       'athletes.eyebrow':'Highlights','athletes.heading':'Weltklasse <em style="font-style:normal;color:var(--lime)">Legenden</em><br>bei Power Fight.',
