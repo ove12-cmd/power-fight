@@ -680,6 +680,12 @@
   .coach-duo-name{font-family:var(--display); font-size:clamp(28px,2.8vw,44px); font-weight:600; letter-spacing:-0.02em; line-height:0.95; margin:0 0 8px}
   .coach-duo-role{font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; color:var(--lime); margin:0 0 18px}
   .coach-duo-bio{font-size:14px; line-height:1.65; color:var(--ink-dim); margin:0 0 24px}
+  .coach-duo-bio + .coach-bio-more{
+    display:inline-block; margin:-16px 0 24px; padding:0; background:none; border:none; cursor:pointer;
+    font-family:var(--sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    font-weight:600; color:var(--lime); transition:opacity .2s;
+  }
+  .coach-bio-more:hover{opacity:0.75}
   .coach-duo-tags{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px}
   .coach-tag{font-size:10px; letter-spacing:0.18em; text-transform:uppercase; padding:6px 13px; border:1px solid var(--line-2); color:var(--ink-dim)}
   .coach-duo-stats{display:flex; gap:32px; padding-top:24px; border-top:1px solid var(--line-2); margin-top:auto}
@@ -2424,8 +2430,12 @@
   // Lang buttons are wired by components.js (which dispatches pfLangChange).
   // We only need to listen for that event + apply on init.
   applyLang(currentLang);
+  if (typeof _pfWireStaticBios === 'function') _pfWireStaticBios(currentLang);
 
-  document.addEventListener('pfLangChange', e => applyLang(e.detail));
+  document.addEventListener('pfLangChange', e => {
+    applyLang(e.detail);
+    if (typeof _pfWireStaticBios === 'function') _pfWireStaticBios(e.detail || currentLang);
+  });
 
   // Button directional fill sweep
   const SWEEP_DIRS = ['sweep-left','sweep-right','sweep-top','sweep-bot'];
@@ -2819,6 +2829,44 @@
     return obj[lang] || obj.en || obj.de || '';
   }
 
+  // Add a "Read more" toggle after a coach bio when it exceeds 75 words.
+  // fullText must be the authoritative, untruncated bio for the current language.
+  function _pfWireBioReadMore(el, fullText, lang) {
+    if (!el || typeof fullText !== 'string') return;
+    const existing = el.nextElementSibling;
+    if (existing && existing.classList && existing.classList.contains('coach-bio-more')) existing.remove();
+    const words = fullText.trim().split(/\s+/).filter(Boolean);
+    if (words.length <= 75) { el.textContent = fullText; return; }
+    const truncated = words.slice(0, 75).join(' ') + '…';
+    const moreLabel = lang === 'en' ? 'Read more' : 'Mehr lesen';
+    const lessLabel = lang === 'en' ? 'Read less' : 'Weniger anzeigen';
+    el.textContent = truncated;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'coach-bio-more';
+    btn.textContent = moreLabel;
+    let expanded = false;
+    btn.addEventListener('click', () => {
+      expanded = !expanded;
+      el.textContent = expanded ? fullText : truncated;
+      btn.textContent = expanded ? lessLabel : moreLabel;
+    });
+    el.insertAdjacentElement('afterend', btn);
+  }
+
+  // Static/fallback coach bios (used only while _pfCoachesData hasn't loaded yet).
+  function _pfWireStaticBios(lang) {
+    if (_pfCoachesData) return; // dynamic data owns the section now — don't touch it
+    const dict = T[lang] || T.de;
+    const cards = document.querySelectorAll('#coaches .coach-duo-card');
+    const keys = ['coach.c1.bio', 'coach.c2.bio'];
+    cards.forEach((card, i) => {
+      const key = keys[i];
+      if (!key || !dict[key]) return;
+      _pfWireBioReadMore(card.querySelector('.coach-duo-bio'), dict[key], lang);
+    });
+  }
+
   // Rebuild the whole Coaches section from _pfCoachesData for the given language.
   function _pfRenderCoaches(lang) {
     try {
@@ -2879,6 +2927,14 @@
           </div>
         </div>`;
       }).join('');
+
+      // Read-more toggle for long bios — source the full text from the data,
+      // never from the DOM (avoids re-truncating an already-truncated bio).
+      const cardEls = duo.querySelectorAll('.coach-duo-card');
+      coaches.forEach((c, i) => {
+        const card = cardEls[i];
+        if (card) _pfWireBioReadMore(card.querySelector('.coach-duo-bio'), _coL(c.bio, lang), lang);
+      });
 
       // Cert thumbnails are injected dynamically — use one delegated listener.
       if (!_pfCoachesWired) {
