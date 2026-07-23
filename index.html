@@ -681,9 +681,9 @@
   .coach-duo-role{font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; color:var(--lime); margin:0 0 18px}
   .coach-duo-bio{font-size:14px; line-height:1.65; color:var(--ink-dim); margin:0 0 24px}
   .coach-duo-bio + .coach-bio-more{
-    display:inline-block; margin:-16px 0 24px; padding:0; background:none; border:none; cursor:pointer;
+    display:inline-block; align-self:flex-start; margin:-16px 0 24px; padding:0; background:none; border:none; cursor:pointer;
     font-family:var(--sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-    font-weight:600; color:var(--lime); transition:opacity .2s;
+    font-weight:600; color:var(--lime); transition:opacity .2s; text-align:left;
   }
   .coach-bio-more:hover{opacity:0.75}
   .coach-duo-tags{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px}
@@ -2836,8 +2836,8 @@
     const existing = el.nextElementSibling;
     if (existing && existing.classList && existing.classList.contains('coach-bio-more')) existing.remove();
     const words = fullText.trim().split(/\s+/).filter(Boolean);
-    if (words.length <= 75) { el.textContent = fullText; return; }
-    const truncated = words.slice(0, 75).join(' ') + '…';
+    if (words.length <= 30) { el.textContent = fullText; return; }
+    const truncated = words.slice(0, 30).join(' ') + '…';
     const moreLabel = lang === 'en' ? 'Read more' : 'Mehr lesen';
     const lessLabel = lang === 'en' ? 'Read less' : 'Weniger anzeigen';
     el.textContent = truncated;
