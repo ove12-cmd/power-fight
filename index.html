@@ -2743,6 +2743,169 @@
     _afInit();
   })();
 
+  // ── Coaches section (data-driven; falls back to hardcoded markup) ────
+  // Same shape as admin's DEFAULT_COACHES — used only as a safety fallback.
+  var _pfCoachesData = null;      // set once Supabase data is loaded
+  var _pfCoachesWired = false;    // cert-thumb delegation attached only once
+  const DEFAULT_COACHES = {
+    eyebrow: { en:'The Coaches', de:'Die Trainer' },
+    heading: { en:'Built by <em>fighters,</em><br>for fighters.', de:'Gebaut von <em>Kämpfern,</em><br>für Kämpfer.' },
+    desc: {
+      en:"Every coach at Power Fight has competed. They know the pressure, the doubt, and the discipline it takes — because they've been there.",
+      de:'Jeder Trainer bei Power Fight hat an Wettkämpfen teilgenommen. Sie kennen den Druck, die Zweifel und die Disziplin — weil sie selbst dort waren.'
+    },
+    coaches: [
+      {
+        id:'c1', photo:'germo.webp',
+        badge:{ en:'Head Coach', de:'Head Coach' },
+        name:'Germo Nurmsoo',
+        role:{ en:'MMA Striking Coach & Professional Fighter', de:'MMA-Striking-Coach & Profikämpfer' },
+        bio:{
+          en:'A professional striker and grappler with extensive international training and competition experience — and multiple grappling tournaments.',
+          de:'Ein professioneller Striker und Grappler mit umfassender internationaler Trainings- und Wettkampferfahrung – und mehreren Grappling-Turnieren.'
+        },
+        tags:['Muay Thai','Boxing','Kickboxing','Brazilian Jiu-Jitsu','Grappling'],
+        stats:[
+          { n:'20+',  l:{ en:'Years',          de:'Jahre' } },
+          { n:'10',   l:{ en:'Pro Fights',     de:'Profikämpfe' } },
+          { n:'100+', l:{ en:'Amateur Fights', de:'Amateurkämpfe' } },
+        ],
+        listLabel:{ en:'Certifications', de:'Zertifizierungen' },
+        list:[
+          { img:'QUALIFIED INTERNATIONAL PERSONAL TRAINER.webp',       label:{ en:'Personal Trainer',       de:'Personal Trainer' } },
+          { img:'QUALIFIED MUAY THAI AND KICKBOXING COACH.webp',       label:{ en:'Muay Thai & Kickboxing', de:'Muay Thai & Kickboxing' } },
+          { img:'THE EUROPEAN REGISTER OF EXERCISE PROFESSIONALS.png', label:{ en:'Exercise Professionals', de:'Fitness-Fachkräfte' } },
+          { img:'MMA COACH.jpeg',                                      label:{ en:'MMA Coach',              de:'MMA Coach' } },
+          { label:{ en:'Sports Psychology Diploma',      de:'Diplom Sportpsychologie' } },
+          { label:{ en:'Anti-Bullying Certificate',      de:'Anti-Mobbing-Zertifikat' } },
+          { label:{ en:'Anti-Doping Certificate',        de:'Anti-Doping-Zertifikat' } },
+          { label:{ en:'Child Safeguarding Certificate', de:'Kinderschutz-Zertifikat' } },
+        ],
+      },
+      {
+        id:'c2', photo:'kaijo.webp',
+        badge:{ en:'Coach', de:'Coach' },
+        name:'Kaijo Nurmsoo',
+        role:{ en:'Striking Coach & Professional Fighter', de:'Striking-Coach & Profikämpfer' },
+        bio:{
+          en:'International fight experience, having trained alongside world-class athletes and coaches including Tyson Fury, Junior Cigano, Dustin Poirier and Nieky Holzken.',
+          de:'Internationale Kampferfahrung – trainierte an der Seite von Weltklasse-Athleten und Trainern wie Tyson Fury, Junior Cigano, Dustin Poirier und Nieky Holzken.'
+        },
+        tags:['Muay Thai','Kickboxing'],
+        stats:[
+          { n:'14–3', l:{ en:'Pro Record',     de:'Profi-Bilanz' } },
+          { n:'100+', l:{ en:'Amateur Fights', de:'Amateurkämpfe' } },
+          { n:'15',   l:{ en:'Years',          de:'Jahre' } },
+        ],
+        listLabel:{ en:'Specialties', de:'Spezialgebiete' },
+        list:[
+          { label:{ en:'Striking',               de:'Striking' } },
+          { label:{ en:'Fight Strategy',         de:'Kampfstrategie' } },
+          { label:{ en:'Conditioning & Fitness', de:'Kondition & Fitness' } },
+          { label:{ en:'Mental Toughness',       de:'Mentale Stärke' } },
+          { label:{ en:'Discipline & Respect',   de:'Disziplin & Respekt' } },
+          { label:{ en:'Leadership & Motivation', de:'Führung & Motivation' } },
+        ],
+      },
+    ],
+  };
+
+  function _coL(obj, lang) {
+    if (obj == null) return '';
+    if (typeof obj === 'string') return obj;
+    return obj[lang] || obj.en || obj.de || '';
+  }
+
+  // Rebuild the whole Coaches section from _pfCoachesData for the given language.
+  function _pfRenderCoaches(lang) {
+    try {
+      if (!_pfCoachesData) return;
+      const section = document.getElementById('coaches');
+      if (!section) return;
+      const data = _pfCoachesData;
+
+      // Section head — drop the data-i18n hooks so applyLang() stops overriding.
+      const eyebrowEl = section.querySelector('.section-head .eyebrow');
+      const headingEl = section.querySelector('.section-head h2');
+      const descEl    = section.querySelector('.section-head > p');
+      if (eyebrowEl && data.eyebrow) { eyebrowEl.removeAttribute('data-i18n'); eyebrowEl.textContent = _coL(data.eyebrow, lang); }
+      if (headingEl && data.heading) { headingEl.removeAttribute('data-i18n-html'); headingEl.innerHTML = _coL(data.heading, lang); }
+      if (descEl && data.desc)       { descEl.removeAttribute('data-i18n'); descEl.textContent = _coL(data.desc, lang); }
+
+      const duo = section.querySelector('.coaches-duo');
+      if (!duo) return;
+      const coaches = data.coaches || [];
+      duo.innerHTML = coaches.map((c, i) => {
+        const badgeClass = i === 0 ? 'badge-head' : 'badge-coach';
+        const tags = (c.tags || []).map(t => `<span class="coach-tag">${_escHtml(t)}</span>`).join('');
+        const list = c.list || [];
+        const withImg = list.filter(it => it.img);
+        const noImg   = list.filter(it => !it.img);
+        let certsBlock = '';
+        if (list.length) {
+          let inner = '';
+          if (withImg.length) {
+            inner += `<div class="coach-certs-grid"${noImg.length ? ' style="margin-bottom:14px"' : ''}>` + withImg.map(it => {
+              const lbl = _coL(it.label, lang);
+              return `<div class="cert-thumb" data-img="${_escHtml(it.img)}">`
+                + `<img src="${_escHtml(it.img)}" alt="${_escHtml(lbl)}" loading="lazy">`
+                + `<div class="cert-thumb-label">${_escHtml(lbl)}</div></div>`;
+            }).join('') + `</div>`;
+          }
+          if (noImg.length) {
+            inner += `<div class="coach-duo-tags" style="margin-bottom:0">` + noImg.map(it => `<span class="coach-tag">${_escHtml(_coL(it.label, lang))}</span>`).join('') + `</div>`;
+          }
+          certsBlock = `<div class="coach-certs"><div class="coach-certs-label">${_escHtml(_coL(c.listLabel, lang))}</div>${inner}</div>`;
+        }
+        const stats = (c.stats || []).map(s => `<div><span class="n">${_escHtml(s.n)}</span><span class="l">${_escHtml(_coL(s.l, lang))}</span></div>`).join('');
+        return `
+        <div class="coach-duo-card reveal in d${i+1}">
+          <div class="coach-duo-photo">
+            <img src="${_escHtml(c.photo)}" alt="${_escHtml(c.name)}" loading="lazy">
+            <div class="pf"></div>
+            <div class="corner"></div>
+          </div>
+          <div class="coach-duo-info">
+            <span class="coach-duo-badge ${badgeClass}">${_escHtml(_coL(c.badge, lang))}</span>
+            <h3 class="coach-duo-name">${_escHtml(c.name)}</h3>
+            <div class="coach-duo-role">${_escHtml(_coL(c.role, lang))}</div>
+            <p class="coach-duo-bio">${_escHtml(_coL(c.bio, lang))}</p>
+            ${tags ? `<div class="coach-duo-tags">${tags}</div>` : ''}
+            ${certsBlock}
+            ${stats ? `<div class="coach-duo-stats">${stats}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+
+      // Cert thumbnails are injected dynamically — use one delegated listener.
+      if (!_pfCoachesWired) {
+        _pfCoachesWired = true;
+        duo.addEventListener('click', e => {
+          const th = e.target.closest('.cert-thumb');
+          if (th && th.dataset.img && typeof openLightbox === 'function') openLightbox(th.dataset.img, false);
+        });
+      }
+    } catch (e) { /* leave whatever is rendered — never throw */ }
+  }
+
+  // Re-render on language toggle (fired by components.js). No-op until data loads.
+  document.addEventListener('pfLangChange', e => {
+    _pfRenderCoaches((e && e.detail) || localStorage.getItem('pf_lang') || 'de');
+  });
+
+  (async () => {
+    try {
+      const { data } = await _sb.from('settings').select('value').eq('key','pf_coaches').maybeSingle();
+      if (data && data.value) {
+        const parsed = JSON.parse(data.value);
+        if (parsed && Array.isArray(parsed.coaches) && parsed.coaches.length) {
+          _pfCoachesData = parsed;
+          _pfRenderCoaches(localStorage.getItem('pf_lang') || 'de');
+        }
+      }
+    } catch (e) { /* fallback: keep the hardcoded markup */ }
+  })();
+
   // Size wrap to tallest slide (measure off-screen, no layout shift)
   function afFitHeight() {
     const wrap = document.querySelector('.af-wrap');

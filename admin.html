@@ -612,6 +612,11 @@
         <span>Highlights</span>
         <span class="sb-badge" id="badgeHighlights">0</span>
       </button>
+      <button class="sb-link" data-tab="coaches">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Coaches</span>
+        <span class="sb-badge" id="badgeCoaches">0</span>
+      </button>
       <button class="sb-link" data-tab="schedule">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
         <span>Schedule</span>
@@ -775,6 +780,203 @@
         <div class="adm-card">
           <div class="adm-card-head"><span class="adm-card-title">Club Highlights</span></div>
           <div id="athList"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── COACHES TAB ──────────────────────────────────────────── -->
+    <div class="tab-panel" id="tabCoaches" style="display:none">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Coaches</div>
+          <div class="panel-subtitle">Manage the "Coaches" section on the homepage — heading, coaches, disciplines, certifications and specialties. Every text field is bilingual (EN / DE).</div>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <!-- Section heading card -->
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Section Heading</span></div>
+          <div class="adm-card-body">
+            <div class="adm-form">
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Eyebrow — EN</label>
+                  <input type="text" id="co-eyebrow-en" placeholder="The Coaches">
+                </div>
+                <div class="adm-field">
+                  <label>Eyebrow — DE</label>
+                  <input type="text" id="co-eyebrow-de" placeholder="Die Trainer">
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Heading — EN <span style="color:var(--ink-mute)">(HTML — &lt;em&gt;, &lt;br&gt; allowed)</span></label>
+                  <textarea id="co-heading-en" placeholder="Built by <em>fighters,</em><br>for fighters."></textarea>
+                </div>
+                <div class="adm-field">
+                  <label>Heading — DE <span style="color:var(--ink-mute)">(HTML — &lt;em&gt;, &lt;br&gt; allowed)</span></label>
+                  <textarea id="co-heading-de" placeholder="Gebaut von <em>Kämpfern,</em><br>für Kämpfer."></textarea>
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Description — EN</label>
+                  <textarea id="co-desc-en" placeholder="Every coach at Power Fight has competed…"></textarea>
+                </div>
+                <div class="adm-field">
+                  <label>Description — DE</label>
+                  <textarea id="co-desc-de" placeholder="Jeder Trainer bei Power Fight hat an Wettkämpfen teilgenommen…"></textarea>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end">
+                <button class="btn-adm btn-lime" id="saveCoHeadBtn">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  Save Heading
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add / Edit coach form -->
+        <div class="adm-card" id="coFormCard">
+          <div class="adm-card-head"><span class="adm-card-title" id="coFormTitle">Add Coach</span></div>
+          <div class="adm-card-body">
+            <div class="adm-form">
+              <input type="hidden" id="co-edit-idx" value="-1">
+              <div class="adm-form-row cols3">
+                <div class="adm-field" style="grid-column:span 2">
+                  <label>Name</label>
+                  <input type="text" id="co-name" placeholder="Germo Nurmsoo">
+                </div>
+                <div class="adm-field">
+                  <label>Photo</label>
+                  <label class="btn-adm btn-ghost" style="cursor:pointer;text-align:center;display:block">
+                    Upload Photo
+                    <input type="file" id="co-photo-file" accept="image/*" style="display:none">
+                  </label>
+                  <div id="co-photo-preview-wrap" style="display:none;margin-top:8px">
+                    <img id="co-photo-preview" src="" style="width:72px;height:72px;object-fit:cover;display:block">
+                    <button type="button" id="co-photo-clear" style="display:block;margin-top:4px;background:none;border:1px solid rgba(255,77,109,.3);color:var(--red);cursor:pointer;padding:3px 10px;font-size:11px">Remove</button>
+                  </div>
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Badge — EN</label>
+                  <input type="text" id="co-badge-en" placeholder="Head Coach">
+                </div>
+                <div class="adm-field">
+                  <label>Badge — DE</label>
+                  <input type="text" id="co-badge-de" placeholder="Head Coach">
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Role / Subtitle — EN</label>
+                  <input type="text" id="co-role-en" placeholder="MMA Striking Coach & Professional Fighter">
+                </div>
+                <div class="adm-field">
+                  <label>Role / Subtitle — DE</label>
+                  <input type="text" id="co-role-de" placeholder="MMA-Striking-Coach & Profikämpfer">
+                </div>
+              </div>
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>Bio — EN</label>
+                  <textarea id="co-bio-en" placeholder="Short bio shown on the card…"></textarea>
+                </div>
+                <div class="adm-field">
+                  <label>Bio — DE</label>
+                  <textarea id="co-bio-de" placeholder="Kurze Bio für die Karte…"></textarea>
+                </div>
+              </div>
+              <div class="adm-field">
+                <label>Discipline Tags <span style="color:var(--ink-mute)">(comma-separated — same in both languages)</span></label>
+                <input type="text" id="co-tags" placeholder="Muay Thai, Boxing, Kickboxing, Grappling">
+              </div>
+
+              <div style="font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);margin:6px 0 -4px">Stats (up to 3)</div>
+              <div class="adm-form-row cols3">
+                <div class="adm-field">
+                  <label>Stat 1 — Value</label>
+                  <input type="text" id="co-s1n" placeholder="20+">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 1 — Label EN</label>
+                  <input type="text" id="co-s1le" placeholder="Years">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 1 — Label DE</label>
+                  <input type="text" id="co-s1ld" placeholder="Jahre">
+                </div>
+              </div>
+              <div class="adm-form-row cols3">
+                <div class="adm-field">
+                  <label>Stat 2 — Value</label>
+                  <input type="text" id="co-s2n" placeholder="10">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 2 — Label EN</label>
+                  <input type="text" id="co-s2le" placeholder="Pro Fights">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 2 — Label DE</label>
+                  <input type="text" id="co-s2ld" placeholder="Profikämpfe">
+                </div>
+              </div>
+              <div class="adm-form-row cols3">
+                <div class="adm-field">
+                  <label>Stat 3 — Value</label>
+                  <input type="text" id="co-s3n" placeholder="100+">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 3 — Label EN</label>
+                  <input type="text" id="co-s3le" placeholder="Amateur Fights">
+                </div>
+                <div class="adm-field">
+                  <label>Stat 3 — Label DE</label>
+                  <input type="text" id="co-s3ld" placeholder="Amateurkämpfe">
+                </div>
+              </div>
+
+              <div class="adm-form-row">
+                <div class="adm-field">
+                  <label>List Label — EN <span style="color:var(--ink-mute)">(e.g. Certifications / Specialties)</span></label>
+                  <input type="text" id="co-listlabel-en" placeholder="Certifications">
+                </div>
+                <div class="adm-field">
+                  <label>List Label — DE</label>
+                  <input type="text" id="co-listlabel-de" placeholder="Zertifizierungen">
+                </div>
+              </div>
+
+              <div class="adm-field">
+                <label>List Items <span style="color:var(--ink-mute)">(certifications with an optional image, or plain specialty chips)</span></label>
+                <div id="co-list-items"></div>
+                <button type="button" class="btn-adm btn-ghost" id="coAddItemBtn" style="margin-top:8px;font-size:12px">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add List Item
+                </button>
+              </div>
+
+              <div style="display:flex;justify-content:flex-end;gap:10px">
+                <button class="btn-adm btn-ghost" id="cancelCoBtn" style="display:none">Cancel</button>
+                <button class="btn-adm btn-lime" id="saveCoBtn">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span id="saveCoLabel">Add Coach</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coaches list -->
+        <div class="adm-card">
+          <div class="adm-card-head"><span class="adm-card-title">Coaches</span></div>
+          <div id="coList"></div>
         </div>
 
       </div>
@@ -1454,7 +1656,7 @@
 
   // ── TABS ──────────────────────────────────────────────────────────
   const tabBtns = document.querySelectorAll('.sb-link[data-tab]');
-  const tabPanels = { home: 'tabHome', ticker: 'tabTicker', gallery: 'tabGallery', highlights: 'tabHighlights', schedule: 'tabSchedule', testimonials: 'tabTestimonials', instagram: 'tabInstagram' };
+  const tabPanels = { home: 'tabHome', ticker: 'tabTicker', gallery: 'tabGallery', highlights: 'tabHighlights', coaches: 'tabCoaches', schedule: 'tabSchedule', testimonials: 'tabTestimonials', instagram: 'tabInstagram' };
 
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1463,15 +1665,17 @@
       Object.values(tabPanels).forEach(id => document.getElementById(id).style.display = 'none');
       document.getElementById(tabPanels[btn.dataset.tab]).style.display = '';
       if (btn.dataset.tab === 'gallery') loadFeaturedImages();
+      if (btn.dataset.tab === 'coaches') renderCoaches();
     });
   });
 
   // ── BADGES ────────────────────────────────────────────────────────
   async function updateBadges() {
-    const [ticker, gallery, highlights, schedule, reviews, instagram] = await Promise.all([
+    const [ticker, gallery, highlights, coaches, schedule, reviews, instagram] = await Promise.all([
       sbLoadTicker(),
       sbLoadGallery(),
       sbLoadAthletes(),
+      sbLoadCoaches(),
       sbLoadSchedule(),
       sbLoadFeedback(),
       sbLoadInstagram(),
@@ -1479,6 +1683,7 @@
     document.getElementById('badgeTicker').textContent = ticker.length;
     document.getElementById('badgeGallery').textContent = gallery.length;
     document.getElementById('badgeHighlights').textContent = highlights.length;
+    document.getElementById('badgeCoaches').textContent = (coaches.coaches || []).length;
     const schedChanges = schedule.length;
     document.getElementById('badgeSchedule').textContent = schedChanges ? schedChanges + ' edited' : '—';
     const pending = reviews.filter(r => !r.approved).length;
@@ -1491,11 +1696,12 @@
   // ── RENDER ALL ────────────────────────────────────────────────────
   async function renderAll() {
     Object.keys(_cache).forEach(k => delete _cache[k]); // fresh on every full reload
-    Progress.start(8); // 7 renders + 1 badges
+    Progress.start(9); // 8 renders + 1 badges
     try {
       await Promise.all([
         renderHome()        .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderHighlights()  .then(() => Progress.tick()).catch(() => Progress.tick()),
+        renderCoaches()     .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderTicker()      .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderGallery()     .then(() => Progress.tick()).catch(() => Progress.tick()),
         renderSchedule()    .then(() => Progress.tick()).catch(() => Progress.tick()),
@@ -1755,6 +1961,348 @@
     _cache.athletes = athletes;
     renderAdminAthletes(athletes);
     sbSaveAthletes(athletes).catch(() => { delete _cache.athletes; renderAdminAthletes(); });
+  };
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  COACHES
+  // ═══════════════════════════════════════════════════════════════════
+  const DEFAULT_COACHES = {
+    eyebrow: { en:'The Coaches', de:'Die Trainer' },
+    heading: { en:'Built by <em>fighters,</em><br>for fighters.', de:'Gebaut von <em>Kämpfern,</em><br>für Kämpfer.' },
+    desc: {
+      en:"Every coach at Power Fight has competed. They know the pressure, the doubt, and the discipline it takes — because they've been there.",
+      de:'Jeder Trainer bei Power Fight hat an Wettkämpfen teilgenommen. Sie kennen den Druck, die Zweifel und die Disziplin — weil sie selbst dort waren.'
+    },
+    coaches: [
+      {
+        id:'c1',
+        photo:'germo.webp',
+        badge:{ en:'Head Coach', de:'Head Coach' },
+        name:'Germo Nurmsoo',
+        role:{ en:'MMA Striking Coach & Professional Fighter', de:'MMA-Striking-Coach & Profikämpfer' },
+        bio:{
+          en:'A professional striker and grappler with extensive international training and competition experience — and multiple grappling tournaments.',
+          de:'Ein professioneller Striker und Grappler mit umfassender internationaler Trainings- und Wettkampferfahrung – und mehreren Grappling-Turnieren.'
+        },
+        tags:['Muay Thai','Boxing','Kickboxing','Brazilian Jiu-Jitsu','Grappling'],
+        stats:[
+          { n:'20+',  l:{ en:'Years',          de:'Jahre' } },
+          { n:'10',   l:{ en:'Pro Fights',     de:'Profikämpfe' } },
+          { n:'100+', l:{ en:'Amateur Fights', de:'Amateurkämpfe' } },
+        ],
+        listLabel:{ en:'Certifications', de:'Zertifizierungen' },
+        list:[
+          { img:'QUALIFIED INTERNATIONAL PERSONAL TRAINER.webp',      label:{ en:'Personal Trainer',          de:'Personal Trainer' } },
+          { img:'QUALIFIED MUAY THAI AND KICKBOXING COACH.webp',      label:{ en:'Muay Thai & Kickboxing',    de:'Muay Thai & Kickboxing' } },
+          { img:'THE EUROPEAN REGISTER OF EXERCISE PROFESSIONALS.png', label:{ en:'Exercise Professionals',    de:'Fitness-Fachkräfte' } },
+          { img:'MMA COACH.jpeg',                                     label:{ en:'MMA Coach',                 de:'MMA Coach' } },
+          { label:{ en:'Sports Psychology Diploma',    de:'Diplom Sportpsychologie' } },
+          { label:{ en:'Anti-Bullying Certificate',    de:'Anti-Mobbing-Zertifikat' } },
+          { label:{ en:'Anti-Doping Certificate',      de:'Anti-Doping-Zertifikat' } },
+          { label:{ en:'Child Safeguarding Certificate', de:'Kinderschutz-Zertifikat' } },
+        ],
+      },
+      {
+        id:'c2',
+        photo:'kaijo.webp',
+        badge:{ en:'Coach', de:'Coach' },
+        name:'Kaijo Nurmsoo',
+        role:{ en:'Striking Coach & Professional Fighter', de:'Striking-Coach & Profikämpfer' },
+        bio:{
+          en:'International fight experience, having trained alongside world-class athletes and coaches including Tyson Fury, Junior Cigano, Dustin Poirier and Nieky Holzken.',
+          de:'Internationale Kampferfahrung – trainierte an der Seite von Weltklasse-Athleten und Trainern wie Tyson Fury, Junior Cigano, Dustin Poirier und Nieky Holzken.'
+        },
+        tags:['Muay Thai','Kickboxing'],
+        stats:[
+          { n:'14–3', l:{ en:'Pro Record',     de:'Profi-Bilanz' } },
+          { n:'100+', l:{ en:'Amateur Fights', de:'Amateurkämpfe' } },
+          { n:'15',   l:{ en:'Years',          de:'Jahre' } },
+        ],
+        listLabel:{ en:'Specialties', de:'Spezialgebiete' },
+        list:[
+          { label:{ en:'Striking',              de:'Striking' } },
+          { label:{ en:'Fight Strategy',        de:'Kampfstrategie' } },
+          { label:{ en:'Conditioning & Fitness', de:'Kondition & Fitness' } },
+          { label:{ en:'Mental Toughness',      de:'Mentale Stärke' } },
+          { label:{ en:'Discipline & Respect',  de:'Disziplin & Respekt' } },
+          { label:{ en:'Leadership & Motivation', de:'Führung & Motivation' } },
+        ],
+      },
+    ],
+  };
+
+  // Deep-ish clone so edits never mutate the DEFAULT constant
+  function _cloneCoaches(src) { return JSON.parse(JSON.stringify(src)); }
+
+  async function sbLoadCoaches() {
+    if (_cache.coaches) return _cache.coaches;
+    const v = await sbGetSetting('pf_coaches', '');
+    let parsed = null;
+    try { if (v) parsed = JSON.parse(v); } catch(e) {}
+    if (!parsed || !Array.isArray(parsed.coaches) || !parsed.coaches.length) parsed = _cloneCoaches(DEFAULT_COACHES);
+    return (_cache.coaches = parsed);
+  }
+  async function sbSaveCoaches(data) {
+    _cache.coaches = data;
+    await sbSetSetting('pf_coaches', JSON.stringify(data));
+  }
+
+  let _pendingCoPhoto = null;   // pending coach photo dataURL
+  let _coListItems = [];        // working list of { en, de, img } while editing a coach
+
+  // ── Section heading render + save ─────────────────────────────────
+  async function renderCoaches() {
+    const data = await sbLoadCoaches();
+    document.getElementById('co-eyebrow-en').value = data.eyebrow?.en || '';
+    document.getElementById('co-eyebrow-de').value = data.eyebrow?.de || '';
+    document.getElementById('co-heading-en').value = data.heading?.en || '';
+    document.getElementById('co-heading-de').value = data.heading?.de || '';
+    document.getElementById('co-desc-en').value    = data.desc?.en || '';
+    document.getElementById('co-desc-de').value    = data.desc?.de || '';
+    renderAdminCoaches(data.coaches || []);
+    document.getElementById('badgeCoaches').textContent = (data.coaches || []).length;
+  }
+
+  document.getElementById('saveCoHeadBtn').addEventListener('click', async () => {
+    const data = _cache.coaches ? _cache.coaches : await sbLoadCoaches();
+    data.eyebrow = { en: document.getElementById('co-eyebrow-en').value.trim(), de: document.getElementById('co-eyebrow-de').value.trim() };
+    data.heading = { en: document.getElementById('co-heading-en').value.trim(), de: document.getElementById('co-heading-de').value.trim() };
+    data.desc    = { en: document.getElementById('co-desc-en').value.trim(),    de: document.getElementById('co-desc-de').value.trim() };
+    _cache.coaches = data;
+    sbSaveCoaches(data).then(() => toast('Heading saved ✓')).catch(() => { delete _cache.coaches; toast('Save failed', true); });
+  });
+
+  // ── Coaches list (admin) ──────────────────────────────────────────
+  function renderAdminCoaches(coaches) {
+    const list = document.getElementById('coList');
+    list.innerHTML = '';
+    if (!coaches.length) {
+      list.innerHTML = '<div style="padding:16px 20px;color:var(--ink-mute);font-size:13px">No coaches yet — add one above</div>';
+      return;
+    }
+    coaches.forEach((c, idx) => {
+      const role = c.role?.en || c.role?.de || '';
+      const row = document.createElement('div');
+      row.className = 'review-row';
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 16px';
+      row.innerHTML = `
+        <img src="${escHtml(c.photo)}" onerror="this.style.display='none'"
+             style="width:48px;height:48px;object-fit:cover;flex-shrink:0;background:var(--bg-3)">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--display);font-weight:700;font-size:14px;color:var(--ink)">${escHtml(c.name)}</div>
+          <div style="font-size:11px;color:var(--ink-mute);margin-top:2px">${escHtml(role)}${(c.list||[]).length ? ' · ' + (c.list.length) + ' list items' : ''}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          ${idx > 0 ? `<button class="btn-adm btn-ghost" onclick="coMove(${idx},-1)" style="padding:5px 10px;font-size:11px" title="Move up">↑</button>` : ''}
+          ${idx < coaches.length-1 ? `<button class="btn-adm btn-ghost" onclick="coMove(${idx},1)" style="padding:5px 10px;font-size:11px" title="Move down">↓</button>` : ''}
+          <button class="btn-adm btn-ghost" onclick="coEdit(${idx})" style="padding:5px 10px;font-size:11px">Edit</button>
+          <button class="btn-icon" onclick="coDelete(${idx})" title="Delete">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
+  // ── List-item editor (certs / specialties) ────────────────────────
+  function renderCoListEditor() {
+    const wrap = document.getElementById('co-list-items');
+    wrap.innerHTML = '';
+    if (!_coListItems.length) {
+      wrap.innerHTML = '<div style="color:var(--ink-mute);font-size:12px;padding:4px 0">No list items — items with an image show as certification thumbnails, items without show as chips.</div>';
+      return;
+    }
+    _coListItems.forEach((it, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;padding:8px;background:var(--bg);border:1px solid var(--line-2);border-radius:6px';
+      row.innerHTML = `
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <input type="text" class="co-li-en" data-i="${i}" placeholder="Label — EN" value="${escHtml(it.en)}" style="background:var(--bg-2);border:1px solid var(--line-2);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;outline:none">
+          <input type="text" class="co-li-de" data-i="${i}" placeholder="Label — DE" value="${escHtml(it.de)}" style="background:var(--bg-2);border:1px solid var(--line-2);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;outline:none">
+        </div>
+        <div style="width:70px;flex-shrink:0;text-align:center">
+          ${it.img
+            ? `<img src="${escHtml(it.img)}" style="width:64px;height:44px;object-fit:cover;display:block;border:1px solid var(--line-2)">`
+            : `<div style="width:64px;height:44px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line-2);color:var(--ink-mute);font-size:9px">no img</div>`}
+          <label class="btn-adm btn-ghost" style="cursor:pointer;display:block;margin-top:4px;font-size:10px;padding:3px 4px">
+            ${it.img ? 'Change' : 'Image'}
+            <input type="file" class="co-li-img" data-i="${i}" accept="image/*" style="display:none">
+          </label>
+          ${it.img ? `<button type="button" class="co-li-imgclear" data-i="${i}" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:10px;margin-top:2px">remove img</button>` : ''}
+        </div>
+        <button type="button" class="co-li-del" data-i="${i}" title="Remove item" style="flex-shrink:0;background:none;border:1px solid rgba(255,77,109,.3);color:var(--red);cursor:pointer;padding:6px 9px;border-radius:4px;font-size:13px">✕</button>`;
+      wrap.appendChild(row);
+    });
+
+    // Wire inputs
+    wrap.querySelectorAll('.co-li-en').forEach(inp => inp.addEventListener('input', () => { _coListItems[+inp.dataset.i].en = inp.value; }));
+    wrap.querySelectorAll('.co-li-de').forEach(inp => inp.addEventListener('input', () => { _coListItems[+inp.dataset.i].de = inp.value; }));
+    wrap.querySelectorAll('.co-li-del').forEach(btn => btn.addEventListener('click', () => { _coListItems.splice(+btn.dataset.i, 1); renderCoListEditor(); }));
+    wrap.querySelectorAll('.co-li-imgclear').forEach(btn => btn.addEventListener('click', () => { _coListItems[+btn.dataset.i].img = ''; renderCoListEditor(); }));
+    wrap.querySelectorAll('.co-li-img').forEach(inp => inp.addEventListener('change', function() {
+      const file = this.files[0];
+      if (!file) return;
+      const i = +this.dataset.i;
+      const reader = new FileReader();
+      reader.onload = async e => { _coListItems[i].img = await _compressImage(e.target.result); renderCoListEditor(); };
+      reader.readAsDataURL(file);
+      this.value = '';
+    }));
+  }
+
+  document.getElementById('coAddItemBtn').addEventListener('click', () => {
+    _coListItems.push({ en:'', de:'', img:'' });
+    renderCoListEditor();
+  });
+
+  // ── Coach form: photo, clear, save, edit, delete, move ────────────
+  function _clearCoForm() {
+    document.getElementById('co-edit-idx').value = '-1';
+    ['co-name','co-badge-en','co-badge-de','co-role-en','co-role-de','co-tags',
+     'co-s1n','co-s1le','co-s1ld','co-s2n','co-s2le','co-s2ld','co-s3n','co-s3le','co-s3ld',
+     'co-listlabel-en','co-listlabel-de'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('co-bio-en').value = '';
+    document.getElementById('co-bio-de').value = '';
+    _pendingCoPhoto = null;
+    document.getElementById('co-photo-preview-wrap').style.display = 'none';
+    document.getElementById('co-photo-preview').src = '';
+    document.getElementById('co-photo-file').value = '';
+    _coListItems = [];
+    renderCoListEditor();
+    document.getElementById('coFormTitle').textContent = 'Add Coach';
+    document.getElementById('saveCoLabel').textContent = 'Add Coach';
+    document.getElementById('cancelCoBtn').style.display = 'none';
+  }
+
+  document.getElementById('co-photo-file').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async e => {
+      _pendingCoPhoto = await _compressImage(e.target.result);
+      document.getElementById('co-photo-preview').src = _pendingCoPhoto;
+      document.getElementById('co-photo-preview-wrap').style.display = '';
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+
+  document.getElementById('co-photo-clear').addEventListener('click', () => {
+    _pendingCoPhoto = null;
+    document.getElementById('co-photo-preview').src = '';
+    document.getElementById('co-photo-preview-wrap').style.display = 'none';
+    document.getElementById('co-photo-file').value = '';
+  });
+
+  document.getElementById('saveCoBtn').addEventListener('click', async () => {
+    const name = document.getElementById('co-name').value.trim();
+    if (!name) { document.getElementById('co-name').focus(); toast('Name is required', true); return; }
+    const gv = id => document.getElementById(id).value.trim();
+    const tags = gv('co-tags').split(',').map(s => s.trim()).filter(Boolean);
+    const stats = [
+      { n: gv('co-s1n'), l:{ en: gv('co-s1le'), de: gv('co-s1ld') } },
+      { n: gv('co-s2n'), l:{ en: gv('co-s2le'), de: gv('co-s2ld') } },
+      { n: gv('co-s3n'), l:{ en: gv('co-s3le'), de: gv('co-s3ld') } },
+    ].filter(s => s.n || s.l.en || s.l.de);
+    const list = _coListItems
+      .map(it => {
+        const o = { label:{ en:(it.en||'').trim(), de:(it.de||'').trim() } };
+        if (it.img) o.img = it.img;
+        return o;
+      })
+      .filter(o => o.label.en || o.label.de || o.img);
+    const entry = {
+      id: uid(),
+      photo: _pendingCoPhoto || '',
+      badge:{ en: gv('co-badge-en'), de: gv('co-badge-de') },
+      name,
+      role:{ en: gv('co-role-en'), de: gv('co-role-de') },
+      bio:{ en: document.getElementById('co-bio-en').value.trim(), de: document.getElementById('co-bio-de').value.trim() },
+      tags,
+      stats,
+      listLabel:{ en: gv('co-listlabel-en'), de: gv('co-listlabel-de') },
+      list,
+    };
+    const data = _cache.coaches ? _cache.coaches : await sbLoadCoaches();
+    if (!Array.isArray(data.coaches)) data.coaches = [];
+    const editIdx = parseInt(document.getElementById('co-edit-idx').value);
+    if (editIdx >= 0) {
+      entry.id = data.coaches[editIdx]?.id || entry.id;
+      data.coaches[editIdx] = entry;
+    } else {
+      data.coaches.push(entry);
+    }
+    _cache.coaches = data;
+    renderAdminCoaches(data.coaches);
+    document.getElementById('badgeCoaches').textContent = data.coaches.length;
+    sbSaveCoaches(data).catch(() => { delete _cache.coaches; renderCoaches(); });
+    _clearCoForm();
+    toast(editIdx >= 0 ? 'Coach updated ✓' : 'Coach added ✓');
+  });
+
+  document.getElementById('cancelCoBtn').addEventListener('click', _clearCoForm);
+
+  window.coEdit = async idx => {
+    const data = _cache.coaches ? _cache.coaches : await sbLoadCoaches();
+    const c = (data.coaches || [])[idx];
+    if (!c) return;
+    document.getElementById('co-edit-idx').value = idx;
+    document.getElementById('co-name').value       = c.name || '';
+    document.getElementById('co-badge-en').value   = c.badge?.en || '';
+    document.getElementById('co-badge-de').value   = c.badge?.de || '';
+    document.getElementById('co-role-en').value    = c.role?.en || '';
+    document.getElementById('co-role-de').value    = c.role?.de || '';
+    document.getElementById('co-bio-en').value     = c.bio?.en || '';
+    document.getElementById('co-bio-de').value     = c.bio?.de || '';
+    document.getElementById('co-tags').value       = (c.tags || []).join(', ');
+    const st = c.stats || [];
+    document.getElementById('co-s1n').value  = st[0]?.n || '';
+    document.getElementById('co-s1le').value = st[0]?.l?.en || '';
+    document.getElementById('co-s1ld').value = st[0]?.l?.de || '';
+    document.getElementById('co-s2n').value  = st[1]?.n || '';
+    document.getElementById('co-s2le').value = st[1]?.l?.en || '';
+    document.getElementById('co-s2ld').value = st[1]?.l?.de || '';
+    document.getElementById('co-s3n').value  = st[2]?.n || '';
+    document.getElementById('co-s3le').value = st[2]?.l?.en || '';
+    document.getElementById('co-s3ld').value = st[2]?.l?.de || '';
+    document.getElementById('co-listlabel-en').value = c.listLabel?.en || '';
+    document.getElementById('co-listlabel-de').value = c.listLabel?.de || '';
+    _coListItems = (c.list || []).map(it => ({ en: it.label?.en || '', de: it.label?.de || '', img: it.img || '' }));
+    renderCoListEditor();
+    _pendingCoPhoto = c.photo || null;
+    if (c.photo) {
+      document.getElementById('co-photo-preview').src = c.photo;
+      document.getElementById('co-photo-preview-wrap').style.display = '';
+    } else {
+      document.getElementById('co-photo-preview-wrap').style.display = 'none';
+    }
+    document.getElementById('coFormTitle').textContent = 'Edit Coach';
+    document.getElementById('saveCoLabel').textContent = 'Save Changes';
+    document.getElementById('cancelCoBtn').style.display = '';
+    document.getElementById('coFormCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  window.coDelete = async idx => {
+    const data = _cache.coaches ? _cache.coaches : await sbLoadCoaches();
+    if (!Array.isArray(data.coaches)) return;
+    if (!confirm(`Remove ${escHtml(data.coaches[idx]?.name || 'this coach')}?`)) return;
+    data.coaches.splice(idx, 1);
+    _cache.coaches = data;
+    renderAdminCoaches(data.coaches);
+    document.getElementById('badgeCoaches').textContent = data.coaches.length;
+    sbSaveCoaches(data).catch(() => { delete _cache.coaches; renderCoaches(); });
+    toast('Removed');
+  };
+
+  window.coMove = async (idx, dir) => {
+    const data = _cache.coaches ? _cache.coaches : await sbLoadCoaches();
+    if (!Array.isArray(data.coaches)) return;
+    const to = idx + dir;
+    if (to < 0 || to >= data.coaches.length) return;
+    [data.coaches[idx], data.coaches[to]] = [data.coaches[to], data.coaches[idx]];
+    _cache.coaches = data;
+    renderAdminCoaches(data.coaches);
+    sbSaveCoaches(data).catch(() => { delete _cache.coaches; renderCoaches(); });
   };
 
   // ═══════════════════════════════════════════════════════════════════
